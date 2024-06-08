@@ -1,0 +1,43 @@
+; Example Assembly Program
+; Adds two numbers and stores the result
+
+section .data
+    num1 db 10       ; First number
+    num2 db 20       ; Second number
+    result db 0      ; Storage for the result
+
+section .bss
+
+section .text
+    global _start    ; Entry point for the program
+
+; Macro definition for loading a byte
+%macro LOAD_BYTE 2
+    mov al, [%1]
+    mov [%2], al
+%endmacro
+
+; Macro definition for adding two bytes
+%macro ADD_BYTES 3
+    mov al, [%1]
+    add al, [%2]
+    mov [%3], al
+%endmacro
+
+_start:
+    ; Load num1 into al
+    LOAD_BYTE num1, temp1
+    ; Load num2 into al
+    LOAD_BYTE num2, temp2
+
+    ; Add num1 and num2 and store the result
+    ADD_BYTES temp1, temp2, result
+
+    ; Exit the program
+    mov eax, 60      ; syscall: exit
+    xor edi, edi     ; status: 0
+    syscall          ; invoke syscall
+
+section .data
+    temp1 db 0       ; Temporary storage
+    temp2 db 0       ; Temporary storage
