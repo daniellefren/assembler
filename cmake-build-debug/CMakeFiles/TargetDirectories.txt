@@ -1,3 +1,0 @@
-/Users/daniellefrenklakh/CLionProjects/assembler/cmake-build-debug/CMakeFiles/assembler.dir
-/Users/daniellefrenklakh/CLionProjects/assembler/cmake-build-debug/CMakeFiles/edit_cache.dir
-/Users/daniellefrenklakh/CLionProjects/assembler/cmake-build-debug/CMakeFiles/rebuild_cache.dir
