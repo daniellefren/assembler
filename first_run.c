@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
-
+#include "structs.h"
 #include "first_run.h"
 #include "assembler.h"
 
@@ -17,7 +17,7 @@ const char *directives[] = {
 };
 
 
-bool first_run(FILE *file, int *ic, int *dc, SymbolTable *symbolTable){
+bool first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array){
     char line[MAX_LINE_LENGTH];
     int line_num = 1;
 

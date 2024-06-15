@@ -1,24 +1,31 @@
-#CC = gcc
-#EXEC = main
-#OBJS = main.o
-#COMP_FLAG = -ansi -Wall -pedantic
-#DEBUG_FLAG = -g
-#
-#$(EXEC): $(OBJS)
-#	$(CC) $(COMP_FLAG) $(DEBUG_FLAG) $(OBJS) -o $@
-#
-#my_scalar.o: main.c
-#	$(CC) -c $(COMP_FLAG) $*.c -o $@
-#
-#clean:
-#	-rm $(OBJS)
+CC = gcc  # Define compiler
+CFLAGS = -g -ansi -Wall -Wno-comment -pedantic  # Define compilation flags
 
-assembler: main.o first_run.o
-	gcc -g -ansi -Wall -pedantic main.o first_run.o -lm -o assembler
+# Define the header files
+HEADERS = assembler.h first_run.h prototypes.h second_run.h structs.h utils.h
 
-main.o: main.c first_run.h
-	gcc -c -ansi -Wall -pedantic main.c -o main.o
+# Define the source files (replace with your actual file names)
+SRC_FILES = main.c first_run.c second_run.c utils.c
 
-first_run.o: first_run.c first_run.h assembler.h
-	gcc -c -ansi -Wall -pedantic first_run.c -o first_run.o
+# Define the object files (automatically generated from source files)
+OBJ_FILES = $(SRC_FILES:.c=.o)  # Pattern rule for object files
 
+# Define the executable name
+EXEC = assembler
+
+# Target for building the executable
+all: $(EXEC)
+
+# Pattern rule for compiling C files
+.PHONY: all clean
+
+%.o: %.c $(HEADERS)  # Pattern for object files from C source
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Rule for linking the executable
+$(EXEC): $(OBJ_FILES)
+	$(CC) $(CFLAGS) -o $@ $(OBJ_FILES) -lm  # Link with math library
+
+# Rule for cleaning up object files
+clean:
+		-rm $(OBJ_FILES)

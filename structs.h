@@ -1,15 +1,31 @@
+enum Command_Types {
+    OPCODE = 1,
+    DATA = 2,
+    EXTERN = 3,
+    STRING = 4,
+    ENTRY = 5
+};
 
-
-
-
+enum Classification_Types {
+    Immediate_Addressing = 0,
+    Direct_Addressing = 1,
+    Indirect_Register_Addressing = 2,
+    Direct_Register_Addressing = 3
+};
 
 typedef struct {
-    char *instruction; // String containing the assembly instruction
-    unsigned int operand_number;
-    char *first_operand;
-    char *second_operand;
-    int command_type;
-    int classification_type;
-
-    // Add more fields if needed, like operand types, etc.
+    char *line_content; // String containing the assembly instruction (content of the line)
+    size_t length;  // Length of the line (excluding null terminator)
+    unsigned int operand_number; //int containing the operand number
+    char *first_operand; // string containing the first operand r0-r7(can be null)
+    char *second_operand; // string containing the second operand r0-r7(can be null)
+    /*int Command_Types command_types; // int containing enum values for command types
+    int Classification_Types classification_type; // int containing enum values for classification type */
 } InstructionLine;
+
+typedef struct {
+    //struct of an array of line after the first run
+    InstructionLine *lines;  // Pointer to an array of Line structs
+    unsigned int number_of_line;  // Number of lines currently stored
+    size_t capacity;  // Maximum capacity of the lines array
+} LinesArray;
