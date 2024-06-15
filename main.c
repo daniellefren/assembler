@@ -24,6 +24,8 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
 
+
+
     // Call the first_run function with the file pointer
     /*first_run(file, &ic, &dc, &lines_array);*/
 
