@@ -6,7 +6,7 @@
 #ifndef ASSEMBLER_FIRST_RUN_H
 #define ASSEMBLER_FIRST_RUN_H
 
-bool first_run(FILE *file, int *ic, int *dc);
+bool first_run(FILE *file, int *ic, int *dc, SymbolTable *symbolTable);
 void read_line(char *line);
 int ignore_line(char *line);
 char* skip_spaces(char *line);

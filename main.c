@@ -15,10 +15,18 @@ const char *classification_types[] = {
         "immediate", "direct", "direct_register", "direct_register_addressing", "indirect_register_addressing"
 };
 
+typedef struct {
+    Symbol *symbols;
+    size_t size;
+    size_t capacity;
+} SymbolTable;
+
 
 int main(int argc, char *argv[]) {
     FILE *file;
     int ic, dc = 0
+    SymbolTable symbolTable;
+
 
     // Check if the correct number of arguments is provided
     if (argc != 2) {
@@ -34,7 +42,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Call the first_run function with the file pointer
-    first_run(file, &ic, &dc);
+    first_run(file, &ic, &dc, &symbolTable);
 
     // Close the file
     fclose(file);

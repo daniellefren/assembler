@@ -17,11 +17,9 @@ const char *directives[] = {
 };
 
 
-bool first_run(FILE *file, int *ic, int *dc){
+bool first_run(FILE *file, int *ic, int *dc, SymbolTable *symbolTable){
     char line[MAX_LINE_LENGTH];
     int line_num = 1;
-    int ic = 0;
-    int dc = 0;
 
     while (fgets(line, MAX_LINE_LENGTH, file) != NULL) {
         if(!ignore_line(line)){
