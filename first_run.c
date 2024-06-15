@@ -21,6 +21,7 @@ bool first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array){
     char line[MAX_LINE_LENGTH];
     int line_num = 1;
 
+
     while (fgets(line, MAX_LINE_LENGTH, file) != NULL) {
         if(!ignore_line(line)){
             read_line(line);
@@ -30,15 +31,23 @@ bool first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array){
     }
 }
 
-void read_line(char *line){
+void read_line(const char *line){
     const char *directive;
     char *label = NULL;
+    bool hasLabel;
+
+    printf("%s\n", line);
 
     line = skip_spaces(line);
-    printf("%s\n", line);
-    if(find_label(line, &label)){
-        printf("label %s\n", label);
+
+    hasLabel = find_label(line, label);
+    printf("label %s\n", label);
+
+    if(hasLabel){
+        line = strchr(line, ':') + 1;
     }
+
+
     if((directive = find_directive(line)) != NULL){
         printf("directive %s\n", directive);
     }
@@ -57,7 +66,7 @@ int ignore_line(char *line){
     return (*line == ';' || *line == '\0' || *line == '\n');
 }
 
-char* skip_spaces(char *line){
+const char* skip_spaces(const char *line){
     if (line == NULL) return NULL;
     while (*line && isspace((unsigned char)*line)) {
         line++;
@@ -66,7 +75,7 @@ char* skip_spaces(char *line){
 }
 
 // Function to check if a line is a label
-bool find_label(const char *line, char **label) {
+bool find_label(const char *line, char *label) {
     // Function to check if a line is a label and return the label
     // Skip leading whitespace
     while (*line && isspace((unsigned char) *line)) {
@@ -84,13 +93,8 @@ bool find_label(const char *line, char **label) {
     // Check if the character after the label is a colon
     if (*line == ':') {
         size_t len = line - start;
-        *label = (char *) malloc(len + 1);  // Allocate memory for the label
-        if (*label == NULL) {
-            fprintf(stderr, "Memory allocation failed\n");
-            return false;
-        }
-        strncpy(*label, start, len);
-        (*label)[len] = '\0';  // Null-terminate the label
+        strncpy(label, start, len);
+        label[len] = '\0'; // Null-terminate the label
         return true;
     }
 
