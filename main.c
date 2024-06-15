@@ -5,7 +5,6 @@
 #include "second_run.h"
 
 
-
 int main(int argc, char *argv[]) {
     FILE *file;
     int ic, dc = 0;
@@ -26,8 +25,10 @@ int main(int argc, char *argv[]) {
     }
 
     // Call the first_run function with the file pointer
-    first_run(file, &ic, &dc, &lines_array);
+    /*first_run(file, &ic, &dc, &lines_array);*/
 
+    int return_value = second_run();
+    printf("the value is %d", return_value);
     // Close the file
     fclose(file);
 
