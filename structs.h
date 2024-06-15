@@ -1,26 +1,11 @@
-enum Command_Types {
-    OPCODE = 1,
-    DATA = 2,
-    EXTERN = 3,
-    STRING = 4,
-    ENTRY = 5
-};
-
-enum Classification_Types {
-    Immediate_Addressing = 0,
-    Direct_Addressing = 1,
-    Indirect_Register_Addressing = 2,
-    Direct_Register_Addressing = 3
-};
-
 typedef struct {
     char *line_content; // String containing the assembly instruction (content of the line)
     size_t length;  // Length of the line (excluding null terminator)
     unsigned int operand_number; //int containing the operand number
     char *first_operand; // string containing the first operand r0-r7(can be null)
     char *second_operand; // string containing the second operand r0-r7(can be null)
-    /*int Command_Types command_types; // int containing enum values for command types
-    int Classification_Types classification_type; // int containing enum values for classification type */
+    int command_types; // int containing enum values for command types
+    int classification_type; // int containing enum values for classification type
 } InstructionLine;
 
 typedef struct {

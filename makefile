@@ -2,7 +2,7 @@ CC = gcc  # Define compiler
 CFLAGS = -g -ansi -Wall -Wno-comment -pedantic  # Define compilation flags
 
 # Define the header files
-HEADERS = assembler.h first_run.h prototypes.h second_run.h structs.h utils.h
+HEADERS = assembler.h first_run.h prototypes.h second_run.h structs.h utils.h constants.h
 
 # Define the source files (replace with your actual file names)
 SRC_FILES = main.c first_run.c second_run.c utils.c

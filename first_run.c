@@ -6,16 +6,7 @@
 #include "structs.h"
 #include "first_run.h"
 #include "assembler.h"
-
-const char *commands[] = {
-        "mov", "cmp", "add", "sub", "not", "clr", "lea", "inc", "dec", "jmp", "bne",
-        "red", "prn", "jsr", "rts", "stop"
-};
-
-const char *directives[] = {
-        ".data", ".string", ".struct", ".entry", ".extern"
-};
-
+#include "constants.h"
 
 bool first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array){
     char line[MAX_LINE_LENGTH];
