@@ -6,7 +6,7 @@
 #include "../include/structs.h"
 #include "../include/first_run.h"
 #include "../include/assembler.h"
-#include "../include/constants.h"
+
 
 bool first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array){
     char line[MAX_LINE_LENGTH];
