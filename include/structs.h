@@ -2,15 +2,6 @@
 #define ASSEMBLER_STRUCTS_H
 #include "constants.h"
 
-/*
-LinesArray *init_line_array(LinesArray *lines_array_pointer);
-void free_lines_array(LinesArray *lines_array_pointer);
-
-
-InstructionLine *init_instruction_line(InstructionLine *instruction_line_pointer);
-void free_instruction_line(InstructionLine *instruction_line_pointer);
-LinesArray *generate_instruction_line_array(LinesArray *my_lines_array);
-*/
 typedef struct {
     char *line_content; // String containing the assembly instruction (content of the line)
     size_t length;  // Length of the line (excluding null terminator)
@@ -27,4 +18,14 @@ typedef struct {
     unsigned int number_of_line;  // Number of lines currently stored
     size_t capacity;  // Maximum capacity of the lines array
 } LinesArray;
+
+
+LinesArray *init_line_array(LinesArray *lines_array_pointer);
+void free_lines_array(LinesArray *lines_array_pointer);
+
+InstructionLine *init_instruction_line(InstructionLine *instruction_line_pointer);
+void free_instruction_line(InstructionLine *instruction_line_pointer);
+LinesArray *generate_instruction_line_array(int max_lines);
+
+
 #endif

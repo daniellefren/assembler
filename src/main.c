@@ -1,6 +1,4 @@
-#include <stdio.h>
 #include <stdlib.h>
-#include "../include/structs.h"
 #include "../include/first_run.h"
 #include "../include/second_run.h"
 

@@ -5,6 +5,7 @@
 #include <ctype.h>
 #include <stdbool.h>
 #include <string.h>
+#include "structs.h"
 
 bool first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array);
 void read_line(const char *line);
