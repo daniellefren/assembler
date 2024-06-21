@@ -2,6 +2,12 @@
 #define ASSEMBLER_STRUCTS_H
 #include "constants.h"
 
+
+#define INITIAL_IC 100
+#define MAX_LINE_LENGTH 100
+#define MAX_LABEL_LENGTH 30
+#define MAX_MACRO_LENGTH 100
+
 typedef struct {
     char *line_content; // String containing the assembly instruction (content of the line)
     size_t length;  // Length of the line (excluding null terminator)
@@ -18,6 +24,32 @@ typedef struct {
     unsigned int number_of_line;  // Number of lines currently stored
     size_t capacity;  // Maximum capacity of the lines array
 } LinesArray;
+
+typedef struct {
+    char label[MAX_LABEL_LENGTH];
+    int address;
+    char type[10]; // ".data", ".string", ".code", ".extern"
+} Symbol;
+
+typedef struct {
+    Symbol *symbols;
+    size_t size;
+    size_t capacity;
+} SymbolTable;
+
+
+typedef struct {
+    char name[MAX_LABEL_LENGTH];
+    char body[MAX_MACRO_LENGTH][MAX_LINE_LENGTH];
+    int lineCount;
+} Macro;
+
+typedef struct {
+    Macro *macros;
+    int count;
+    int capacity;
+} MacroTable;
+
 
 
 LinesArray *init_line_array(LinesArray *lines_array_pointer);

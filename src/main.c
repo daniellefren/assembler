@@ -7,6 +7,7 @@ int main(int argc, char *argv[]) {
     FILE *file;
     int ic, dc = 0;
     LinesArray lines_array;
+    SymbolTable symbol_table;
 
 
     // Check if the correct number of arguments is provided
@@ -25,7 +26,7 @@ int main(int argc, char *argv[]) {
 
 
     // Call the first_run function with the file pointer
-    /*first_run(file, &ic, &dc, &lines_array);*/
+    first_run(file, &ic, &dc, &lines_array, &symbol_table);
 
     int return_value = second_run();
     printf("the value is %d", return_value);
