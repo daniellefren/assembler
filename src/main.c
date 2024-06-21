@@ -1,8 +1,6 @@
-#include <stdio.h>
 #include <stdlib.h>
-#include "structs.h"
-#include "first_run.h"
-#include "second_run.h"
+#include "../include/first_run.h"
+#include "../include/second_run.h"
 
 
 int main(int argc, char *argv[]) {

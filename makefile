@@ -1,11 +1,20 @@
-CC = gcc  # Define compiler
-CFLAGS = -g -ansi -Wall -Wno-comment -pedantic  # Define compilation flags
+# Define compiler
+CC = gcc
 
-# Define the header files
-HEADERS = assembler.h first_run.h second_run.h structs.h constants.h
+# Define compilation flags (feel free to customize)
+CFLAGS = -g -ansi -Wall -Wno-comment -pedantic
 
-# Define the source files (replace with your actual file names)
-SRC_FILES = main.c first_run.c second_run.c
+# Define the header files directory
+HEADERS_DIR = include
+
+# Define all header files (relative to HEADERS_DIR)
+HEADERS = $(shell find $(HEADERS_DIR) -type f -name "*.h")
+
+# Define the source directory
+SRC_DIR = src
+
+# Define all source files (relative to SRC_DIR)
+SRC_FILES = $(shell find $(SRC_DIR) -type f -name "*.c")
 
 # Define the object files (automatically generated from source files)
 OBJ_FILES = $(SRC_FILES:.c=.o)  # Pattern rule for object files
@@ -16,10 +25,10 @@ EXEC = assembler
 # Target for building the executable
 all: $(EXEC)
 
-# Pattern rule for compiling C files
+# Pattern rule for compiling C files (using SRC_DIR)
 .PHONY: all clean
 
-%.o: %.c $(HEADERS)  # Pattern for object files from C source
+$(SRC_DIR)/%.o: $(SRC_DIR)/%.c $(HEADERS_DIR)/*.h  # Pattern for object files from C source with SRC_DIR
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # Rule for linking the executable
@@ -28,4 +37,4 @@ $(EXEC): $(OBJ_FILES)
 
 # Rule for cleaning up object files
 clean:
-		-rm $(OBJ_FILES)
+	-rm $(OBJ_FILES)

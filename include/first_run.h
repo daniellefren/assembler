@@ -1,10 +1,11 @@
+#ifndef ASSEMBLER_FIRST_RUN_H
+#define ASSEMBLER_FIRST_RUN_H
+
 #include <stdio.h>
 #include <ctype.h>
 #include <stdbool.h>
 #include <string.h>
-
-#ifndef ASSEMBLER_FIRST_RUN_H
-#define ASSEMBLER_FIRST_RUN_H
+#include "structs.h"
 
 bool first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array);
 void read_line(const char *line);

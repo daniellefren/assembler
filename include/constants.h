@@ -1,12 +1,12 @@
 #ifndef ASSEMBLER_CONSTANTS_H
 #define ASSEMBLER_CONSTANTS_H
 
-const char *commands[] = {
+static const char *commands[] = {
         "mov", "cmp", "add", "sub", "not", "clr", "lea", "inc", "dec", "jmp", "bne",
         "red", "prn", "jsr", "rts", "stop"
 };
 
-const char *directives[] = {
+static const char *directives[] = {
         ".data", ".string", ".struct", ".entry", ".extern"
 };
 

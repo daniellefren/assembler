@@ -1,12 +1,9 @@
-#include <stdio.h>
 #include <ctype.h>
 #include <string.h>
-#include <stdlib.h>
 #include <stdbool.h>
-#include "structs.h"
-#include "first_run.h"
-#include "assembler.h"
-#include "constants.h"
+#include "../include/first_run.h"
+#include "../include/assembler.h"
+
 
 bool first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array){
     char line[MAX_LINE_LENGTH];
@@ -46,6 +43,7 @@ void read_line(const char *line){
     if(is_macro(line)){
         printf("macro\n");
     }
+
     if(is_operand(line)){
         printf("operand\n");
     }
@@ -119,6 +117,7 @@ bool is_operand(const char *line) {
 
 // Function to check if a line is a directive
 const char *find_directive(const char *line) {
+
     // Valid directives
     const char* directive = NULL;
     while (*line && isspace((unsigned char)*line)) {
