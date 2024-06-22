@@ -1,3 +1,5 @@
+#define _STD_C99 1
+
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
@@ -74,7 +76,7 @@ void handleMacroDefinition(FILE *file, MacroTable *macroTable, const char *first
     addMacro(macroTable, macro);
 }
 
-void expandMacro(const Macro *macro, FILE *outputFile, const MacroTable *macroTable) {
+void expandMacro(const Macro *macro, FILE *outputFile) {
     for (int i = 0; i < macro->lineCount; ++i) {
         fprintf(outputFile, "%s", macro->body[i]);
     }
@@ -87,18 +89,34 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
     MacroTable macroTable;
     initMacroTable(&macroTable);
 
+    char macroNames[MAX_MACRO_NAMES][MAX_LABEL_LENGTH];  // Array to store macro names
+    int macroCount = 0;  // Keeps track of the number of encountered macros
+
 
     while (fgets(line, MAX_LINE_LENGTH, file) != NULL) {
+        if (!ignore_line(line)) {
+            read_line(line, &macroTable, symbol_table, ic, dc);
+        }
+
         if (isMacroDefinitionStart(line)) {
-            printf("\nMacro start process\n", line);
-            handleMacroDefinition(file, &macroTable, line);
-        } else {
-            if (!ignore_line(line)) {
-                read_line(line, &macroTable, symbol_table, ic, dc);
+            // Extract macro name on encountering a macro definition
+            char macroName[MAX_LABEL_LENGTH];
+            sscanf(line, "%*s %s", macroName);  // Skip "%macro" and capture the name
+
+            if (macroCount < MAX_MACRO_NAMES) {
+                strcpy(macroNames[macroCount++], macroName);
+            } else {
+                fprintf(stderr, "Warning: Reached maximum number of macro names (%d)\n", MAX_MACRO_NAMES);
             }
+            handleMacroDefinition(file, &macroTable, line);
         }
 
         line_num++;
+    }
+
+    printf("\nFound %d macros:\n", macroCount);
+    for (int i = 0; i < macroCount; ++i) {
+        printf("%s\n", macroNames[i]);
     }
 }
 
@@ -115,15 +133,15 @@ void read_line(const char *line, MacroTable *macroTable, SymbolTable *symbol_tab
     hasLabel = find_label(line, label);
 //    printf("label %s\n", label);
 
-    if(hasLabel){
+    if(hasLabel) {
         line = strchr(line, ':') + 1;
     }
 
     if(isMacroInvocation(line, macroName)){
 //        printf("yesyes");
         Macro *macro;
-        if(findMacro(macroTable, macroName, &macro)){
-            expandMacro(macro, stdout, 300);
+        if(findMacro(macroTable, macroName, macro)){
+            expandMacro(macro, stdout);
         } else {
             fprintf(stderr, "Error: Macro '%s' not defined\n", macroName);
         }
@@ -187,7 +205,7 @@ void handleInstruction(const char *line, int *ic) {
     (*ic)++;
 }
 
-int ignore_line(char *line){
+int ignore_line(const char *line){
     line = skip_spaces(line);
     return (*line == ';' || *line == '\0' || *line == '\n');
 }
@@ -281,3 +299,4 @@ void handleDataDirective(const char *line, int *dc){
 void handleStringDirective(const char *line, int *dc){
 
 }
+

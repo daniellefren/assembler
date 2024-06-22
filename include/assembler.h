@@ -5,6 +5,8 @@
 #define NO_ERROR 0
 #define ERROR -1
 
+
+
 /* A/R/E modes ordered by their numerical value */
 enum ARE {ABSOLUTE, EXTERNAL, RELOCATABLE};
 /* Addressing methods ordered by their code */

@@ -1,11 +1,12 @@
 #include <stdlib.h>
 #include "../include/first_run.h"
-#include "../include/second_run.h"
+//#include "../include/second_run.h"
 
 
 int main(int argc, char *argv[]) {
     FILE *file;
     int ic, dc = 0;
+    int return_value;
     LinesArray lines_array;
     SymbolTable symbol_table;
 
@@ -28,8 +29,8 @@ int main(int argc, char *argv[]) {
     // Call the first_run function with the file pointer
     first_run(file, &ic, &dc, &lines_array, &symbol_table);
 
-    int return_value = second_run();
-    printf("the value is %d", return_value);
+//    return_value = second_run();
+//    printf("the value is %d", return_value);
     // Close the file
     fclose(file);
 
