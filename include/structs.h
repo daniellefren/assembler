@@ -11,11 +11,17 @@
 typedef struct {
     char *line_content; // String containing the assembly instruction (content of the line)
     size_t length;  // Length of the line (excluding null terminator)
+
     unsigned int operand_number; //int containing the operand number
     char *first_operand; // string containing the first operand r0-r7(can be null)
+    enum operand_classification_type first_operand_classification_type; // int containing enum values for first operand classification type
     char *second_operand; // string containing the second operand r0-r7(can be null)
-    enum commands command_types; // int containing enum values for command types
-    enum methods classification_type; // int containing enum values for classification type
+    enum operand_classification_type second_operand_classification_type; // int containing enum values for second_operand classification type
+
+    enum opcode_command opcode_command_type; // enum containing enum values for opcode command types if it's an opcode
+    enum directives directive_type; // enum containing enum values for directive type if it's a directive
+
+    char *binary_instruction; //the line in binary instruction
 } InstructionLine;
 
 
@@ -58,7 +64,7 @@ void free_lines_array(LinesArray *lines_array_pointer);
 
 InstructionLine *init_instruction_line(InstructionLine *instruction_line_pointer);
 void free_instruction_line(InstructionLine *instruction_line_pointer);
-LinesArray *generate_instruction_line_array(int max_lines);
+LinesArray *generate_instruction_line_array(int max_lines, LinesArray *my_lines_array);
 
 
 #endif

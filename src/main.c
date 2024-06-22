@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include "../include/first_run.h"
-//#include "../include/second_run.h"
+#include "../include/second_run.h"
 
 
 int main(int argc, char *argv[]) {
@@ -27,7 +27,11 @@ int main(int argc, char *argv[]) {
 
 
     // Call the first_run function with the file pointer
-    first_run(file, &ic, &dc, &lines_array, &symbol_table);
+    //first_run(file, &ic, &dc, &lines_array, &symbol_table);
+    //call the second_run function with the LinesArray table
+    int x = second_run();
+    printf("%d", x);
+
 
 //    return_value = second_run();
 //    printf("the value is %d", return_value);

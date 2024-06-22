@@ -38,9 +38,7 @@ void free_instruction_line(InstructionLine *instruction_line_pointer){
 #include <stdlib.h>
 #include <string.h>  // for strlen
 
-LinesArray *generate_instruction_line_array(int max_lines) {
-    LinesArray *my_lines_array = malloc(sizeof(LinesArray));
-
+LinesArray *generate_instruction_line_array(int max_lines, LinesArray *my_lines_array) {
     if (my_lines_array == NULL) {
         printf("Memory allocation failed for LinesArray!\n");
         return NULL;
