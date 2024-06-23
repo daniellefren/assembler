@@ -21,6 +21,7 @@ void initMacroTable(MacroTable *table) {
     table->capacity = 10;
 }
 
+// init macro name array
 void initMacroNameArray(char **macroNames) {
     for (int i = 0; i < MAX_MACRO_NAMES; ++i) {
         macroNames[i] = malloc(MAX_LABEL_LENGTH * sizeof(char));
