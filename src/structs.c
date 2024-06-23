@@ -59,14 +59,17 @@ LinesArray *generate_instruction_line_array(int max_lines, LinesArray *my_lines_
     // Add test assembly instructions (assuming you have a function to create InstructionLine)
     InstructionLine instruction;
 
-    instruction.line_content = "jsr fn1";
+    instruction.line_content = "MOV fn1";
     instruction.length = strlen(instruction.line_content);
     my_lines_array->lines[my_lines_array->number_of_line++] = instruction;
 
-    instruction.line_content = "LOOP:";
+    instruction.line_content = "ADD";
     instruction.length = strlen(instruction.line_content);
     my_lines_array->lines[my_lines_array->number_of_line++] = instruction;
 
     return my_lines_array;
 }
 
+char *get_instruction_line_binary(LinesArray *linesArray, int number_of_line){
+    return linesArray->lines[number_of_line].binary_instruction;
+}
