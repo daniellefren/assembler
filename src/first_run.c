@@ -13,8 +13,23 @@
 
 void initMacroTable(MacroTable *table) {
     table->macros = (Macro *)malloc(10 * sizeof(Macro));
+    if (!table->macros) {
+        fprintf(stderr, "Error: Memory allocation failed for macro table\n");
+        exit(EXIT_FAILURE);
+    }
     table->count = 0;
     table->capacity = 10;
+}
+
+void initMacroNameArray(char **macroNames) {
+    for (int i = 0; i < MAX_MACRO_NAMES; ++i) {
+        macroNames[i] = malloc(MAX_LABEL_LENGTH * sizeof(char));
+        if (!macroNames[i]) {
+            fprintf(stderr, "Error: Memory allocation failed for macro name %d\n", i);
+            exit(EXIT_FAILURE);
+        }
+        macroNames[i][0] = '\0'; // Ensure the string is initialized
+    }
 }
 
 void addMacro(MacroTable *table, Macro macro) {
@@ -46,13 +61,23 @@ bool isMacroDefinitionEnd(const char *line) {
     return strstr(line, "endmacr") != NULL;
 }
 
-bool isMacroInvocation(const char *line, char *macroName) {
+bool isMacroInvocation(const char *line, char *macroName, char **macroNames) {
     printf("check if is macro invoke %s\n", line);
-
-
-    printf("isMacroInvocation");
+    // Extract potential macro name
     sscanf(line, "%s", macroName);
-    return macroName[0] != '\0';
+    printf("here???");
+
+    // Check if the extracted name is not empty and exists in macroNames
+    if (macroName[0] != '\0') {
+        for (int i = 0; i < MAX_MACRO_NAMES && macroNames[i][0] != '\0'; ++i) {
+            if (strcmp(macroName, macroNames[i]) == 0) {
+                printf("macro invocation! %s\n", macroName);
+                return true; // Macro name found in the array
+            }
+        }
+    }
+
+    return false; // Not a macro invocation or name not found
 }
 
 void handleMacroDefinition(FILE *file, MacroTable *macroTable, const char *firstLine) {
@@ -85,17 +110,19 @@ void expandMacro(const Macro *macro, FILE *outputFile) {
 
 void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTable *symbol_table){
     char line[MAX_LINE_LENGTH];
+    char *macroNames[MAX_MACRO_NAMES];  // Array to store pointers to macro names
+
     int line_num = 1;
     MacroTable macroTable;
     initMacroTable(&macroTable);
+    initMacroNameArray(macroNames);
 
-    char macroNames[MAX_MACRO_NAMES][MAX_LABEL_LENGTH];  // Array to store macro names
     int macroCount = 0;  // Keeps track of the number of encountered macros
 
 
     while (fgets(line, MAX_LINE_LENGTH, file) != NULL) {
         if (!ignore_line(line)) {
-            read_line(line, &macroTable, symbol_table, ic, dc);
+            read_line(line, &macroTable, macroNames, symbol_table, ic, dc);
         }
 
         if (isMacroDefinitionStart(line)) {
@@ -120,11 +147,12 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
     }
 }
 
-void read_line(const char *line, MacroTable *macroTable, SymbolTable *symbol_table, int *ic, int *dc) {
+void read_line(const char *line, MacroTable *macroTable, char **macroNames, SymbolTable *symbol_table, int *ic, int *dc) {
     const char *directive;
     char label[MAX_LABEL_LENGTH] = {0};
     bool hasLabel;
     char macroName[MAX_LABEL_LENGTH];
+
 
 //    printf("%s\n", line);
 
@@ -137,11 +165,11 @@ void read_line(const char *line, MacroTable *macroTable, SymbolTable *symbol_tab
         line = strchr(line, ':') + 1;
     }
 
-    if(isMacroInvocation(line, macroName)){
+    if(isMacroInvocation(line, macroName, macroNames)){
 //        printf("yesyes");
-        Macro *macro;
-        if(findMacro(macroTable, macroName, macro)){
-            expandMacro(macro, stdout);
+        Macro macro;
+        if(findMacro(macroTable, macroName, &macro)){
+            expandMacro(&macro, stdout);
         } else {
             fprintf(stderr, "Error: Macro '%s' not defined\n", macroName);
         }
