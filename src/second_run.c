@@ -10,15 +10,19 @@ int second_run(){
     LinesArray *my_line_array;
     printf("Size of LinesArray: %lu\n", sizeof(LinesArray));
     my_line_array = malloc(sizeof(LinesArray));
-    printf("d");
+    fprintf(stderr,"Something went horribly awry!\n");
+    fflush(stderr);
     my_line_array = generate_instruction_line_array(25, my_line_array);
-    printf("d");
+    fprintf(stderr,"Something went horribly awry!\n");
+    fflush(stderr);
+    printf("The number of lines in the struct is %d \n", my_line_array->number_of_line);
     for (int i = 0; i < my_line_array->number_of_line; ++i) {
         my_line_array->lines[i].binary_instruction = return_instruction_line_in_binary(my_line_array->lines[i]);
-        printf("The binary is %s \n", my_line_array->lines[i].binary_instruction);
+        //printf("The binary is %s \n", my_line_array->lines[i].binary_instruction);
+        fprintf(stderr,"Something went horribly awry!\n");
+        fflush(stderr);
     }
 
-    printf("The number of lines in the struct is %d", my_line_array->number_of_line);
     free(my_line_array[0].lines);
     free(my_line_array);
     return 1;
