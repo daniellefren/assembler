@@ -18,7 +18,8 @@ int second_run(){
     printf("The number of lines in the struct is %d \n", my_line_array->number_of_line);
     for (int i = 0; i < my_line_array->number_of_line; ++i) {
         my_line_array->lines[i].binary_instruction = return_instruction_line_in_binary(my_line_array->lines[i]);
-        //printf("The binary is %s \n", my_line_array->lines[i].binary_instruction);
+        if(my_line_array->lines[i].binary_instruction != NULL):
+            printf("The binary is %s \n", my_line_array->lines[i].binary_instruction);
         fprintf(stderr,"Something went horribly awry!\n");
         fflush(stderr);
     }
