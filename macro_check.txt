@@ -1,4 +1,4 @@
-macr_m macr
+macr macr_m
  inc r2
  mov A,r1
 endmacr
