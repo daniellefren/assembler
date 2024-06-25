@@ -25,20 +25,14 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
 
     // Reset file pointer to the beginning before calling pre_run
     rewind(file);
-    int macroCount = pre_run(line, &macroTable, macroNames, symbol_table, file); // Keeps track of the number of encountered macros
+    pre_run(line, &macroTable, macroNames, symbol_table, file); // Keeps track of the number of encountered macros
 
     while (fgets(line, MAX_LINE_LENGTH, file) != NULL) {
         if (!ignore_line(line)) {
             read_line(line, symbol_table, ic, dc, is_in_macro);
-
         }
         printf("Line: %s\n", line);
         line_num++;
-    }
-
-    printf("\nFound %d macros:\n", macroCount);
-    for (int i = 0; i < macroCount; ++i) {
-        printf("%s\n", macroNames[i]);
     }
 
     // Free allocated memory for macro names
@@ -47,7 +41,7 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
     }
 }
 
-int pre_run(const char *line, MacroTable *macroTable, char **macroNames, SymbolTable *symbol_table, FILE *file) {
+void pre_run(const char *line, MacroTable *macroTable, char **macroNames, SymbolTable *symbol_table, FILE *file) {
     // Run and expand all macros in the program.
     // Return number of macros
     int is_in_macro = 0;
@@ -85,7 +79,6 @@ int pre_run(const char *line, MacroTable *macroTable, char **macroNames, SymbolT
             }
         }
     }
-    return macroCount;
 }
 
 void read_line(const char *line, SymbolTable *symbol_table, int *ic, int *dc, int is_in_macro) {

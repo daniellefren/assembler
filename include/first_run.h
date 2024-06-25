@@ -29,7 +29,7 @@ bool is_directive(const char *line);
 bool isDataDirective(const char *line);
 bool isStringDirective(const char *line);
 bool isExternDirective(const char *line);
-int pre_run(const char *line, MacroTable *macroTable, char **macroNames, SymbolTable *symbol_table, FILE *file);
+void pre_run(const char *line, MacroTable *macroTable, char **macroNames, SymbolTable *symbol_table, FILE *file);
 
 bool isEntryDirective(const char *line);
 
