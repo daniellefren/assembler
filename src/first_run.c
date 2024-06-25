@@ -10,6 +10,8 @@
 #include "../include/assembler.h"
 #include "../include/constants.h"
 
+char macroFileName[] = "expanded_macros.txt";
+
 
 void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTable *symbol_table) {
     char line[MAX_LINE_LENGTH];
@@ -17,31 +19,18 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
     int line_num = 1;
     int is_in_macro = 0;
     MacroTable macroTable;
-    int macroCount = 0;  // Keeps track of the number of encountered macros
 
     initMacroTable(&macroTable);
     initMacroNameArray(macroNames);
 
+    // Reset file pointer to the beginning before calling pre_run
+    rewind(file);
+    int macroCount = pre_run(line, &macroTable, macroNames, symbol_table, file); // Keeps track of the number of encountered macros
+
     while (fgets(line, MAX_LINE_LENGTH, file) != NULL) {
         if (!ignore_line(line)) {
-            if (isMacroDefinitionStart(line)) {
-                is_in_macro = 1;
-                printf("Macro definition start\n");
+            read_line(line, symbol_table, ic, dc, is_in_macro);
 
-                char macroName[MAX_LABEL_LENGTH];
-                sscanf(line, "%*s %s", macroName);  // Skip "%macro" and capture the name
-                printf("Macro name: %s\n", macroName);
-
-                if (macroCount < MAX_MACRO_NAMES) {
-                    strcpy(macroNames[macroCount++], macroName);
-                } else {
-                    fprintf(stderr, "Warning: Reached maximum number of macro names (%d)\n", MAX_MACRO_NAMES);
-                }
-                is_in_macro = handleMacroDefinition(file, &macroTable, line);
-                printf("Macro handling done, is_in_macro: %d\n", is_in_macro);
-            } else {
-                read_line(line, &macroTable, macroNames, symbol_table, ic, dc, is_in_macro);
-            }
         }
         printf("Line: %s\n", line);
         line_num++;
@@ -58,32 +47,57 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
     }
 }
 
-void read_line(const char *line, MacroTable *macroTable, char **macroNames, SymbolTable *symbol_table, int *ic, int *dc, int is_in_macro) {
+int pre_run(const char *line, MacroTable *macroTable, char **macroNames, SymbolTable *symbol_table, FILE *file) {
+    // Run and expand all macros in the program.
+    // Return number of macros
+    int is_in_macro = 0;
+    int macroCount = 0;
+
+    while (fgets(line, MAX_LINE_LENGTH, file) != NULL) {
+        char macroName[MAX_LABEL_LENGTH];
+        if (!ignore_line(line)) {
+            if (isMacroDefinitionStart(line)) {
+                is_in_macro = 1;
+                printf("Macro definition start\n");
+
+                sscanf(line, "%*s %s", macroName);  // Skip "%macro" and capture the name
+                printf("Macro name: %s\n", macroName);
+
+                if (macroCount < MAX_MACRO_NAMES) {
+                    strcpy(macroNames[macroCount++], macroName);
+                } else {
+                    fprintf(stderr, "Warning: Reached maximum number of macro names (%d)\n", MAX_MACRO_NAMES);
+                }
+                is_in_macro = handleMacroDefinition(file, macroTable, line); // Pass macroTable directly
+                printf("Macro handling done, is_in_macro: %d\n", is_in_macro);
+            } else if (isMacroInvocation(line, macroName, macroNames)) {
+                printf("Macro invocation: %s\n", macroName);
+                Macro macro;
+                printf("it is a macro");
+                expandMacro(&macro, stdout);
+                writeExpandedMacrosToFile(macroTable);
+
+            } else {
+                printf("Not a macro invocation: %s\n", line);
+                if (!is_in_macro) {
+                    write_line_to_file(line);
+                }
+            }
+        }
+    }
+    return macroCount;
+}
+
+void read_line(const char *line, SymbolTable *symbol_table, int *ic, int *dc, int is_in_macro) {
     const char *directive;
     char label[MAX_LABEL_LENGTH] = {0};
     bool hasLabel;
-    char macroName[MAX_LABEL_LENGTH];
-    char macroFileName[] = "expanded_macros.txt";
 
     line = skip_spaces(line);
 
     hasLabel = find_label(line, label);
     if (hasLabel) {
         line = strchr(line, ':') + 1;
-    }
-
-    if (isMacroInvocation(line, macroName, macroNames)) {
-        printf("Macro invocation: %s\n", macroName);
-        Macro macro;
-        printf("it is a macro");
-        expandMacro(&macro, stdout);
-        writeExpandedMacrosToFile(macroTable, macroFileName);
-
-    } else {
-        printf("Not a macro invocation: %s\n", line);
-        if (!is_in_macro) {
-            write_line_to_file(line, macroFileName);
-        }
     }
 
     if (is_directive(line)) {
@@ -102,10 +116,10 @@ void read_line(const char *line, MacroTable *macroTable, char **macroNames, Symb
     }
 }
 
-int write_line_to_file(const char *line, const char *filename) {
-    FILE *outputFile = fopen(filename, "a"); // Open in append mode
+int write_line_to_file(const char *line) {
+    FILE *outputFile = fopen(macroFileName, "a"); // Open in append mode
     if (!outputFile) {
-        fprintf(stderr, "Error: Could not open file '%s' for writing\n", filename);
+        fprintf(stderr, "Error: Could not open file '%s' for writing\n", macroFileName);
         return 1;  // Indicate failure
     }
 
@@ -117,10 +131,10 @@ int write_line_to_file(const char *line, const char *filename) {
     return 0;  // Indicate success
 }
 
-void writeExpandedMacrosToFile(MacroTable *macroTable, const char *filename) {
-    FILE *outputFile = fopen(filename, "a"); // Open in append mode
+void writeExpandedMacrosToFile(MacroTable *macroTable) {
+    FILE *outputFile = fopen(macroFileName, "a"); // Open in append mode
     if (!outputFile) {
-        fprintf(stderr, "Error: Could not open file '%s' for writing macros\n", filename);
+        fprintf(stderr, "Error: Could not open file '%s' for writing macros\n", macroFileName);
         return;
     }
 
@@ -132,7 +146,7 @@ void writeExpandedMacrosToFile(MacroTable *macroTable, const char *filename) {
     }
 
     fclose(outputFile);
-    printf("Successfully wrote expanded macros to '%s'\n", filename);
+    printf("Successfully wrote expanded macros to '%s'\n", macroFileName);
 }
 
 void initMacroTable(MacroTable *table) {

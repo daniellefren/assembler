@@ -5,6 +5,7 @@
 #define MAX_LABEL_LENGTH 32
 #define BINARY_WORD_LENGTH 15
 
+
 static const char *commands[] = {
         "mov", "cmp", "add", "sub", "not", "clr", "lea", "inc", "dec", "jmp", "bne",
         "red", "prn", "jsr", "rts", "stop"
