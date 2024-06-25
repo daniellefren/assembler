@@ -52,7 +52,6 @@ bool findMacro(const MacroTable *table, const char *name, Macro *macro) {
 }
 
 bool isMacroDefinitionStart(const char *line) {
-//    printf("is macro start %s", line);
     return strstr(line, "macr") != NULL;
 }
 
@@ -66,7 +65,6 @@ bool isMacroInvocation(const char *line, char *macroName, char **macroNames) {
     printf("check if is macro invoke %s\n", line);
     // Extract potential macro name
     sscanf(line, "%s", macroName);
-    printf("here???");
 
     // Check if the extracted name is not empty and exists in macroNames
     if (macroName[0] != '\0') {
@@ -112,13 +110,13 @@ void expandMacro(const Macro *macro, FILE *outputFile) {
 void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTable *symbol_table){
     char line[MAX_LINE_LENGTH];
     char *macroNames[MAX_MACRO_NAMES];  // Array to store pointers to macro names
-
     int line_num = 1;
     MacroTable macroTable;
+    int macroCount = 0;  // Keeps track of the number of encountered macros
+
     initMacroTable(&macroTable);
     initMacroNameArray(macroNames);
 
-    int macroCount = 0;  // Keeps track of the number of encountered macros
 
 
     while (fgets(line, MAX_LINE_LENGTH, file) != NULL) {
@@ -128,10 +126,12 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
 
         if (isMacroDefinitionStart(line)) {
             // Extract macro name on encountering a macro definition
+            printf("is macro start %s", line);
             char macroName[MAX_LABEL_LENGTH];
             sscanf(line, "%*s %s", macroName);  // Skip "%macro" and capture the name
 
             if (macroCount < MAX_MACRO_NAMES) {
+                printf("macroooo %s", line);
                 strcpy(macroNames[macroCount++], macroName);
             } else {
                 fprintf(stderr, "Warning: Reached maximum number of macro names (%d)\n", MAX_MACRO_NAMES);
