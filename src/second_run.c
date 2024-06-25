@@ -5,23 +5,33 @@
 #include "../include/structs.h"
 #include "../include/second_run.h"
 
-int second_run(){
-    printf("enter \n");
+#define BINARY_INSTRUCTION_MAX_LENGTH 46
+
+void second_run(){
+    printf("Starting Second run \n");
     LinesArray *my_line_array;
-    printf("Size of LinesArray: %lu\n", sizeof(LinesArray));
+
+
+    //Allocation
     my_line_array = malloc(sizeof(LinesArray));
-    printf("d");
-    my_line_array = generate_instruction_line_array(25, my_line_array);
-    printf("d");
+
+    my_line_array = generate_instruction_line_array(2, my_line_array);
+
+    printf("Size of LinesArray: %lu\n", sizeof(LinesArray));
+    printf("The number of lines in the struct is %d \n \n", my_line_array->number_of_line);
+
+    printf("Starting to print The lines Binary: \n");
     for (int i = 0; i < my_line_array->number_of_line; ++i) {
+        printf("Line number %d binary -  \n", i);
+        my_line_array->lines[i].binary_instruction = calloc(31, sizeof(char));
         my_line_array->lines[i].binary_instruction = return_instruction_line_in_binary(my_line_array->lines[i]);
-        printf("The binary is %s \n", my_line_array->lines[i].binary_instruction);
+
+        printf("The binary represantion of the line is %s \n", my_line_array->lines[i].binary_instruction );
     }
 
-    printf("The number of lines in the struct is %d", my_line_array->number_of_line);
     free(my_line_array[0].lines);
     free(my_line_array);
-    return 1;
+
 }
 
 bool is_instruction_line_directive(InstructionLine instructionLine){
@@ -74,9 +84,9 @@ char *create_first_part_binary_from_instruction_line_opcode(InstructionLine inst
     return binary_string; // Replace with actual binary string
 }
 
-char *create_second_part_binary_from_instruction_line_opcode(InstructionLine instruction_line) {
+char *create_second_part_binary_from_instruction_line_opcode(InstructionLine instruction_line, char* binary_string) {
     // The second part can be 15 bit or 30 bit it depend on the content of the line
-    return "placeholder_second_word";
+    return "1111111111111111111";
 }
 
 
@@ -96,11 +106,18 @@ char *return_instruction_line_in_binary(InstructionLine instruction_line){
     if (is_instruction_line_opcode_command(instruction_line)){
         char *first_part_binary;
         char *second_part_binary;
-        first_part_binary = calloc(16, sizeof(char));  // Allocate space for max bits + null terminator
+
+        first_part_binary = (char *) calloc(16, sizeof(char));
+        second_part_binary = (char *) calloc(16, sizeof(char));
+
         first_part_binary = create_first_part_binary_from_instruction_line_opcode(instruction_line, first_part_binary);
-        printf("%s", first_part_binary);
+        printf("First part binary - %s \n", first_part_binary);
+
+
+        second_part_binary = create_second_part_binary_from_instruction_line_opcode(instruction_line, second_part_binary);
+        printf("Second part binary - %s \n", second_part_binary);
         free(first_part_binary);
-        second_part_binary = create_second_part_binary_from_instruction_line_opcode(instruction_line);
+        return second_part_binary;
         // if the line doesn't have three word it has to have two words because it's an opcode line
 
     }

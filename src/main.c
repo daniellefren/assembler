@@ -29,8 +29,7 @@ int main(int argc, char *argv[]) {
     // Call the first_run function with the file pointer
     //first_run(file, &ic, &dc, &lines_array, &symbol_table);
     //call the second_run function with the LinesArray table
-    int x = second_run();
-    printf("%d", x);
+    second_run();
 
 
 //    return_value = second_run();

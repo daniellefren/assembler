@@ -65,6 +65,6 @@ void free_lines_array(LinesArray *lines_array_pointer);
 InstructionLine *init_instruction_line(InstructionLine *instruction_line_pointer);
 void free_instruction_line(InstructionLine *instruction_line_pointer);
 LinesArray *generate_instruction_line_array(int max_lines, LinesArray *my_lines_array);
-
+char *get_instruction_line_binary(LinesArray *linesArray, int number_of_line);
 
 #endif
