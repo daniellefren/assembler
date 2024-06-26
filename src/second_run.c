@@ -10,7 +10,7 @@
 void second_run(){
     printf("Starting Second run \n");
     LinesArray *my_line_array;
-
+    char *binary_file;
 
     //Allocation
     my_line_array = malloc(sizeof(LinesArray));
@@ -28,7 +28,7 @@ void second_run(){
 
         printf("The binary represantion of the line is %s \n", my_line_array->lines[i].binary_instruction );
     }
-
+    write_binary_lines_array_to_file(my_line_array, &binary_file);
     free(my_line_array[0].lines);
     free(my_line_array);
 
@@ -79,14 +79,13 @@ char *get_opcode_binary_representation(int opcode, char* binary_string) {
     return binary_string;
 }
 char *create_first_part_binary_from_instruction_line_opcode(InstructionLine instruction_line, char* binary_string) {
-
     binary_string = get_opcode_binary_representation(instruction_line.opcode_command_type, binary_string);
     return binary_string; // Replace with actual binary string
 }
 
 char *create_second_part_binary_from_instruction_line_opcode(InstructionLine instruction_line, char* binary_string) {
     // The second part can be 15 bit or 30 bit it depend on the content of the line
-    return "1111111111111111111";
+    return "1111111111111";
 }
 
 
@@ -126,3 +125,21 @@ char *return_instruction_line_in_binary(InstructionLine instruction_line){
     }
     return 'd';
 }
+
+void write_binary_lines_array_to_file(LinesArray *linesArray, char *binary_file_path){
+    fptr = fopen(binary_file_path, "w");
+    for (int i = 0; i < linesArray->number_of_line; ++i) {
+        fprintf(fptr, linesArray->lines[0].binary_instruction);
+    }
+    fclose(fptr);
+}
+
+/*
+void clear_binary_file(LinesArray *linesArray, char *binary_file_path){
+    fptr = fopen(binary_file_path, "w");
+    for (int i = 0; i < linesArray->number_of_line; ++i) {
+        fprintf(fptr, linesArray->lines[0].binary_instruction);
+    }
+    fclose(fptr);
+}
+ */
