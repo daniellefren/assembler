@@ -7,55 +7,52 @@
 
 #define BINARY_INSTRUCTION_MAX_LENGTH 46
 
-void second_run(){
+void start_second_run(LinesArray *assembly_lines_array){
     printf("Starting Second run \n");
-    LinesArray *my_line_array;
-
-
     //Allocation
-    my_line_array = malloc(sizeof(LinesArray));
+    assembly_lines_array = malloc(sizeof(LinesArray));
 
-    my_line_array = generate_instruction_line_array(2, my_line_array);
+    assembly_lines_array = generate_instruction_line_array(2, assembly_lines_array);
 
-    printf("Size of LinesArray: %lu\n", sizeof(LinesArray));
-    printf("The number of lines in the struct is %d \n \n", my_line_array->number_of_line);
+    printf("The number of lines in the struct is %d \n \n", assembly_lines_array->number_of_line);
 
     printf("Starting to print The lines Binary: \n");
-    for (int i = 0; i < my_line_array->number_of_line; ++i) {
+    for (int i = 0; i < assembly_lines_array->number_of_line; ++i) {
         printf("Line number %d binary -  \n", i);
-        my_line_array->lines[i].binary_instruction = calloc(31, sizeof(char));
-        my_line_array->lines[i].binary_instruction = return_instruction_line_in_binary(my_line_array->lines[i]);
+        assembly_lines_array->lines[i].binary_instruction = calloc(31, sizeof(char));
+        assembly_lines_array->lines[i].binary_instruction = return_instruction_line_in_binary(assembly_lines_array->lines[i]);
 
-        printf("The binary represantion of the line is %s \n", my_line_array->lines[i].binary_instruction );
+        printf("The binary represantion of the line is %s \n", assembly_lines_array->lines[i].binary_instruction );
     }
-
-    free(my_line_array[0].lines);
-    free(my_line_array);
+    free(assembly_lines_array[0].lines);
+    free(assembly_lines_array);
 
 }
 
 bool is_instruction_line_directive(InstructionLine instructionLine){
     return instructionLine.directive_type != NOT_DIRECTIVE;
 }
-bool is_instruction_line_opcode_command(InstructionLine instructionLine){
+
+bool is_instruction_line_opcode(InstructionLine instructionLine){
     return instructionLine.directive_type != NOT_OPCODE;
 }
 
-char *string_append(char *s1, char *s2) {
-    int s1_length = strlen(s1);
-    int s2_length = strlen(s2);
-    int size = s1_length + s2_length + 1;
-    char *s = calloc(size, sizeof(char));  // Allocate enough space for combined string + null terminator
-
-    if (s == NULL) {
-        // Handle memory allocation failure (e.g., return NULL)
-        return NULL;
+void string_append(const char *first_string, const char *second_String, char *appended_string, size_t appended_string_size) {
+    /*
+     In calling function
+    char appended_string[100];  // Pre-allocate memory for combined string
+    string_append(string1, string2, appended_string, sizeof(appended_string_size));
+    */
+    size_t first_string_size = strlen(first_string);
+    size_t second_string_size = strlen(second_String);
+    if (first_string_size + second_string_size + 1 > appended_string_size) {
+        // Handle insufficient space in destination (e.g., return error code)
+        return;
     }
 
-    strcpy(s, s1);
-    strcat(s, s2);
-
-    return s;
+    // Copy s1 and s2 using strcpy and strcat
+    strcpy(appended_string, first_string);
+    strcat(appended_string, second_String);
 }
 
 char *get_opcode_binary_representation(int opcode, char* binary_string) {
@@ -79,7 +76,6 @@ char *get_opcode_binary_representation(int opcode, char* binary_string) {
     return binary_string;
 }
 char *create_first_part_binary_from_instruction_line_opcode(InstructionLine instruction_line, char* binary_string) {
-
     binary_string = get_opcode_binary_representation(instruction_line.opcode_command_type, binary_string);
     return binary_string; // Replace with actual binary string
 }
@@ -103,7 +99,7 @@ char *return_instruction_line_in_binary(InstructionLine instruction_line){
     // append the binary words
     // if it's directive .....
 
-    if (is_instruction_line_opcode_command(instruction_line)){
+    if (is_instruction_line_opcode(instruction_line)){
         char *first_part_binary;
         char *second_part_binary;
 
