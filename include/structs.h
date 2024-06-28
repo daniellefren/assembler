@@ -3,7 +3,7 @@
 #include "constants.h"
 #include "assembler.h"
 
- 
+
 #define INITIAL_IC 100
 #define MAX_MACRO_LENGTH 100
 
