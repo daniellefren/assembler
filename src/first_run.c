@@ -264,13 +264,15 @@ void handleCommand(char *line, int *ic) {
     char *line_content = line; // String containing the assembly instruction (content of the line)
     size_t length = strlen(line);  // Length of the line (excluding null terminator)
     int instruction_type = IS_COMMAND; // is it directive or command
+    enum opcode_command opcode_command_type; // enum containing enum values for opcode command types if it's an opcode
+
     unsigned int operand_number_value; // int containing the operand number
+
     char *first_operand = NULL; // string containing the first operand r0-r7 (can be null)
     enum operand_classification_type first_operand_classification_type; // int containing enum values for first operand classification type
     char *second_operand = NULL; // string containing the second operand r0-r7 (can be null)
     enum operand_classification_type second_operand_classification_type; // int containing enum values for second_operand classification type
 
-    enum opcode_command opcode_command_type; // enum containing enum values for opcode command types if it's an opcode
     enum directives directive_type; // enum containing enum values for directive type if it's a directive
 
     char command_name[MAX_COMMAND_LEN];
@@ -278,10 +280,7 @@ void handleCommand(char *line, int *ic) {
     sscanf(line, "%s", command_name);
 
     // Get the operand number
-    operand_number_value = operand_number(command_name);
-
-    printf("Command: %s\n", command_name);
-    printf("Operand number: %d\n", operand_number_value);
+    opcode_command = operand_number(command_name);
 
     (*ic)++;
 }

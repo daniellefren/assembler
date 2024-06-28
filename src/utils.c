@@ -1,5 +1,9 @@
 #include <ctype.h>
+#include <stdio.h>
+#include <string.h>
+
 #include "../include/utils.h"
+#include "../include/structs.h"
 
 
 void lower_string(char *string){
