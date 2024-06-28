@@ -84,7 +84,7 @@ void pre_run(const char *line, MacroTable *macroTable, char **macroNames, Symbol
 void read_line(const char *line, SymbolTable *symbol_table, int *ic, int *dc, int is_in_macro) {
     const char *directive;
     char label[MAX_LABEL_LENGTH] = {0};
-    bool hasLabel;
+    int hasLabel;
 
     line = skip_spaces(line);
 
@@ -176,14 +176,14 @@ void addMacro(MacroTable *table, Macro macro) {
     table->macros[table->count++] = macro;
 }
 
-bool findMacro(const MacroTable *table, const char *name, Macro *macro) {
+int findMacro(const MacroTable *table, const char *name, Macro *macro) {
     for (int i = 0; i < table->count; ++i) {
         if (strcmp(table->macros[i].name, name) == 0) {
             *macro = table->macros[i];
-            return true;
+            return 1;
         }
     }
-    return false;
+    return 0;
 }
 
 bool isMacroDefinitionStart(const char *line) {
@@ -194,7 +194,7 @@ bool isMacroDefinitionEnd(const char *line) {
     return strstr(line, "endmacr") != NULL;
 }
 
-bool isMacroInvocation(const char *line, char *macroName, char **macroNames) {
+int isMacroInvocation(const char *line, char *macroName, char **macroNames) {
     printf("Check if is macro invoke: %s\n", line);
 
     // Extract potential macro name
@@ -205,12 +205,12 @@ bool isMacroInvocation(const char *line, char *macroName, char **macroNames) {
         for (int i = 0; i < MAX_MACRO_NAMES && macroNames[i][0] != '\0'; ++i) {
             if (strcmp(macroName, macroNames[i]) == 0) {
                 printf("Macro invocation: %s\n", macroName);
-                return true; // Macro name found in the array
+                return 1; // Macro name found in the array
             }
         }
     }
 
-    return false; // Not a macro invocation or name not found
+    return 0; // Not a macro invocation or name not found
 }
 
 // Return 0 if ended, else 1
@@ -283,7 +283,7 @@ const char* skip_spaces(const char *line) {
 }
 
 // Function to check if a line is a label
-bool find_label(const char *line, char *label) {
+int find_label(const char *line, char *label) {
     while (*line && isspace((unsigned char)*line)) {
         line++;
     }
@@ -298,32 +298,32 @@ bool find_label(const char *line, char *label) {
         size_t len = line - start;
         strncpy(label, start, len);
         label[len] = '\0'; // Null-terminate the label
-        return true;
+        return 1;
     }
 
-    return false;
+    return 0;
 }
 
 // Function to check if a line is an instruction
-bool is_instruction(const char *line, int *ic) {
+int is_instruction(const char *line, int *ic) {
     while (*line && isspace((unsigned char)*line)) {
         line++;
     }
     for (int i = 0; i < sizeof(commands) / sizeof(commands[0]); i++) {
         if (strncmp(line, commands[i], strlen(commands[i])) == 0) {
-            return true;
+            return 1;
         }
     }
-    return false;
+    return 0;
 }
 
-bool symbolExists(const SymbolTable *table, const char *label) {
+int symbolExists(const SymbolTable *table, const char *label) {
     for (size_t i = 0; i < table->size; ++i) {
         if (strcmp(table->symbols[i].label, label) == 0) {
-            return true;
+            return 1;
         }
     }
-    return false;
+    return 0;
 }
 
 // Function to check if a line is a directive
