@@ -5,10 +5,12 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
+
 #include "../include/structs.h"
 #include "../include/first_run.h"
 #include "../include/assembler.h"
 #include "../include/constants.h"
+#include "../include/utils.h"
 
 char macroFileName[] = "expanded_macros.txt";
 
@@ -27,13 +29,16 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
     rewind(file);
     pre_run(line, &macroTable, macroNames, symbol_table, file); // Keeps track of the number of encountered macros
 
-    while (fgets(line, MAX_LINE_LENGTH, file) != NULL) {
+    FILE *expanded_macros_file = fopen(macroFileName, "r");
+
+    while (fgets(line, MAX_LINE_LENGTH, expanded_macros_file) != NULL) {
         if (!ignore_line(line)) {
             read_line(line, symbol_table, ic, dc, is_in_macro);
         }
-        printf("Line: %s\n", line);
         line_num++;
     }
+
+    fclose(file);
 
     // Free allocated memory for macro names
     for (int j = 0; j < MAX_MACRO_NAMES; ++j) {
@@ -41,7 +46,7 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
     }
 }
 
-void pre_run(const char *line, MacroTable *macroTable, char **macroNames, SymbolTable *symbol_table, FILE *file) {
+void pre_run(char *line, MacroTable *macroTable, char **macroNames, SymbolTable *symbol_table, FILE *file) {
     // Run and expand all macros in the program.
     // Return number of macros
     int is_in_macro = 0;
@@ -52,10 +57,8 @@ void pre_run(const char *line, MacroTable *macroTable, char **macroNames, Symbol
         if (!ignore_line(line)) {
             if (isMacroDefinitionStart(line)) {
                 is_in_macro = 1;
-                printf("Macro definition start\n");
 
                 sscanf(line, "%*s %s", macroName);  // Skip "%macro" and capture the name
-                printf("Macro name: %s\n", macroName);
 
                 if (macroCount < MAX_MACRO_NAMES) {
                     strcpy(macroNames[macroCount++], macroName);
@@ -63,16 +66,12 @@ void pre_run(const char *line, MacroTable *macroTable, char **macroNames, Symbol
                     fprintf(stderr, "Warning: Reached maximum number of macro names (%d)\n", MAX_MACRO_NAMES);
                 }
                 is_in_macro = handleMacroDefinition(file, macroTable, line); // Pass macroTable directly
-                printf("Macro handling done, is_in_macro: %d\n", is_in_macro);
             } else if (isMacroInvocation(line, macroName, macroNames)) {
-                printf("Macro invocation: %s\n", macroName);
                 Macro macro;
-                printf("it is a macro");
                 expandMacro(&macro, stdout);
                 writeExpandedMacrosToFile(macroTable);
 
             } else {
-                printf("Not a macro invocation: %s\n", line);
                 if (!is_in_macro) {
                     write_line_to_file(line);
                 }
@@ -81,18 +80,20 @@ void pre_run(const char *line, MacroTable *macroTable, char **macroNames, Symbol
     }
 }
 
-void read_line(const char *line, SymbolTable *symbol_table, int *ic, int *dc, int is_in_macro) {
+void read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, int is_in_macro) {
     const char *directive;
     char label[MAX_LABEL_LENGTH] = {0};
     int hasLabel;
 
     line = skip_spaces(line);
 
+    printf("Lineee: %s\n", line);
+
+
     hasLabel = find_label(line, label);
     if (hasLabel) {
         line = strchr(line, ':') + 1;
     }
-
     if (is_directive(line)) {
         if (hasLabel) {
             addSymbol(symbol_table, label, *dc, directive);
@@ -103,22 +104,22 @@ void read_line(const char *line, SymbolTable *symbol_table, int *ic, int *dc, in
         } else if (isStringDirective(line)) {
             printf("String directive: %s\n", directive);
             handleStringDirective(line, dc);
-        } else if (is_instruction(line, ic)) {
-            handleInstruction(line, ic);
         }
+    } else if (is_command(line, ic)) {
+        printf("is_command");
+        handleCommand(line, ic);
     }
 }
 
-int write_line_to_file(const char *line) {
+int write_line_to_file(char *line) {
     FILE *outputFile = fopen(macroFileName, "a"); // Open in append mode
     if (!outputFile) {
         fprintf(stderr, "Error: Could not open file '%s' for writing\n", macroFileName);
         return 1;  // Indicate failure
     }
-
+    lower_string(line);
     // Write the string to the file
     fprintf(outputFile, "%s", line);
-    printf("Wrote: %s", line);
 
     fclose(outputFile);
     return 0;  // Indicate success
@@ -139,7 +140,6 @@ void writeExpandedMacrosToFile(MacroTable *macroTable) {
     }
 
     fclose(outputFile);
-    printf("Successfully wrote expanded macros to '%s'\n", macroFileName);
 }
 
 void initMacroTable(MacroTable *table) {
@@ -186,17 +186,15 @@ int findMacro(const MacroTable *table, const char *name, Macro *macro) {
     return 0;
 }
 
-bool isMacroDefinitionStart(const char *line) {
+bool isMacroDefinitionStart(char *line) {
     return strstr(line, "macr ") != NULL;
 }
 
-bool isMacroDefinitionEnd(const char *line) {
+bool isMacroDefinitionEnd(char *line) {
     return strstr(line, "endmacr") != NULL;
 }
 
-int isMacroInvocation(const char *line, char *macroName, char **macroNames) {
-    printf("Check if is macro invoke: %s\n", line);
-
+int isMacroInvocation(char *line, char *macroName, char **macroNames) {
     // Extract potential macro name
     sscanf(line, "%s", macroName);
 
@@ -204,7 +202,6 @@ int isMacroInvocation(const char *line, char *macroName, char **macroNames) {
     if (macroName[0] != '\0') {
         for (int i = 0; i < MAX_MACRO_NAMES && macroNames[i][0] != '\0'; ++i) {
             if (strcmp(macroName, macroNames[i]) == 0) {
-                printf("Macro invocation: %s\n", macroName);
                 return 1; // Macro name found in the array
             }
         }
@@ -215,7 +212,6 @@ int isMacroInvocation(const char *line, char *macroName, char **macroNames) {
 
 // Return 0 if ended, else 1
 int handleMacroDefinition(FILE *file, MacroTable *macroTable, const char *firstLine) {
-    printf("Handle macro definition\n");
     Macro macro;
     char line[MAX_LINE_LENGTH];
     char macroName[MAX_LABEL_LENGTH];
@@ -227,9 +223,9 @@ int handleMacroDefinition(FILE *file, MacroTable *macroTable, const char *firstL
     while (fgets(line, sizeof(line), file)) {
         if (isMacroDefinitionEnd(line)) {
             addMacro(macroTable, macro);
-            printf("Macro ended successfully\n");
             return 0;
         }
+        lower_string(line);
         strcpy(macro.body[macro.lineCount++], line);
     }
 
@@ -264,17 +260,78 @@ void addSymbol(SymbolTable *table, const char *label, int address, const char *t
     table->size++;
 }
 
-void handleInstruction(const char *line, int *ic) {
-    printf("Instruction: %s\n", line);
+void handleCommand(char *line, int *ic) {
+    char *line_content = line; // String containing the assembly instruction (content of the line)
+    size_t length = strlen(line);  // Length of the line (excluding null terminator)
+    int instruction_type = IS_COMMAND; // is it directive or command
+    unsigned int operand_number_value; // int containing the operand number
+    char *first_operand = NULL; // string containing the first operand r0-r7 (can be null)
+    enum operand_classification_type first_operand_classification_type; // int containing enum values for first operand classification type
+    char *second_operand = NULL; // string containing the second operand r0-r7 (can be null)
+    enum operand_classification_type second_operand_classification_type; // int containing enum values for second_operand classification type
+
+    enum opcode_command opcode_command_type; // enum containing enum values for opcode command types if it's an opcode
+    enum directives directive_type; // enum containing enum values for directive type if it's a directive
+
+    char command_name[MAX_COMMAND_LEN];
+    // Extract instruction name
+    sscanf(line, "%s", command_name);
+
+    // Get the operand number
+    operand_number_value = operand_number(command_name);
+
+    printf("Command: %s\n", command_name);
+    printf("Operand number: %d\n", operand_number_value);
+
     (*ic)++;
 }
 
-int ignore_line(const char *line) {
+
+int operand_number(char *command_name){
+    unsigned int operand_number;
+    if (strcmp(command_name, "mov") == 0) {
+        operand_number = MOV;
+    } else if (strcmp(command_name, "cmp") == 0) {
+        operand_number = CMP;
+    } else if (strcmp(command_name, "add") == 0) {
+        operand_number = ADD;
+    } else if (strcmp(command_name, "sub") == 0) {
+        operand_number = SUB;
+    } else if (strcmp(command_name, "not") == 0) {
+        operand_number = NOT;
+    } else if (strcmp(command_name, "clr") == 0) {
+        operand_number = CLR;
+    } else if (strcmp(command_name, "lea") == 0) {
+        operand_number = LEA;
+    } else if (strcmp(command_name, "inc") == 0) {
+        operand_number = INC;
+    } else if (strcmp(command_name, "dec") == 0) {
+        operand_number = DEC;
+    } else if (strcmp(command_name, "jmp") == 0) {
+        operand_number = JMP;
+    } else if (strcmp(command_name, "bne") == 0) {
+        operand_number = BNE;
+    } else if (strcmp(command_name, "red") == 0) {
+        operand_number = RED;
+    } else if (strcmp(command_name, "prn") == 0) {
+        operand_number = PRN;
+    } else if (strcmp(command_name, "jsr") == 0) {
+        operand_number = JSR;
+    } else if (strcmp(command_name, "rts") == 0) {
+        operand_number = RTS;
+    } else if (strcmp(command_name, "stop") == 0) {
+        operand_number = STOP;
+    }
+
+    return operand_number;
+}
+
+int ignore_line(char *line) {
     line = skip_spaces(line);
     return (*line == ';' || *line == '\0' || *line == '\n');
 }
 
-const char* skip_spaces(const char *line) {
+char* skip_spaces(char *line) {
     if (line == NULL) return NULL;
     while (*line && isspace((unsigned char)*line)) {
         line++;
@@ -283,12 +340,12 @@ const char* skip_spaces(const char *line) {
 }
 
 // Function to check if a line is a label
-int find_label(const char *line, char *label) {
+int find_label(char *line, char *label) {
     while (*line && isspace((unsigned char)*line)) {
         line++;
     }
 
-    const char *start = line;
+    char *start = line;
 
     while (*line && !isspace((unsigned char)*line) && *line != ':') {
         line++;
@@ -305,11 +362,14 @@ int find_label(const char *line, char *label) {
 }
 
 // Function to check if a line is an instruction
-int is_instruction(const char *line, int *ic) {
+int is_command(char *line, int *ic) {
+    lower_string(line);
+    printf("start find command");
     while (*line && isspace((unsigned char)*line)) {
         line++;
     }
     for (int i = 0; i < sizeof(commands) / sizeof(commands[0]); i++) {
+
         if (strncmp(line, commands[i], strlen(commands[i])) == 0) {
             return 1;
         }
@@ -317,7 +377,7 @@ int is_instruction(const char *line, int *ic) {
     return 0;
 }
 
-int symbolExists(const SymbolTable *table, const char *label) {
+int symbolExists(SymbolTable *table, char *label) {
     for (size_t i = 0; i < table->size; ++i) {
         if (strcmp(table->symbols[i].label, label) == 0) {
             return 1;
@@ -327,33 +387,33 @@ int symbolExists(const SymbolTable *table, const char *label) {
 }
 
 // Function to check if a line is a directive
-bool is_directive(const char *line) {
+bool is_directive(char *line) {
     while (*line && isspace((unsigned char)*line)) {
         line++;
     }
     return *line == '.';
 }
 
-bool isDataDirective(const char *line) {
+bool isDataDirective(char *line) {
     return strstr(line, ".data") != NULL;
 }
 
-bool isStringDirective(const char *line) {
+bool isStringDirective(char *line) {
     return strstr(line, ".string") != NULL;
 }
 
-bool isExternDirective(const char *line) {
+bool isExternDirective(char *line) {
     return strstr(line, ".extern") != NULL;
 }
 
-bool isEntryDirective(const char *line) {
+bool isEntryDirective(char *line) {
     return strstr(line, ".entry") != NULL;
 }
 
-void handleDataDirective(const char *line, int *dc) {
+void handleDataDirective(char *line, int *dc) {
     // Implementation here
 }
 
-void handleStringDirective(const char *line, int *dc) {
+void handleStringDirective(char *line, int *dc) {
     // Implementation here
 }
