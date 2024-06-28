@@ -59,11 +59,23 @@ LinesArray *generate_instruction_line_array(int max_lines, LinesArray *my_lines_
     // Add test assembly instructions (assuming you have a function to create InstructionLine)
     InstructionLine instruction;
 
-    instruction.line_content = "MOV fn1";
+    instruction.line_content = "MOV r2 *r2";
+    instruction.first_operand = "r1";
+    instruction.first_operand_classification_type = DIRECT_REGISTER;
+    instruction.second_operand= "*r2";
+    instruction.second_operand_classification_type = INDIRECT_REGISTER;
+    instruction.opcode_command_type = MOV;
+    instruction.operand_number = 2;
+    instruction.instruction_type = IS_COMMAND;
     instruction.length = strlen(instruction.line_content);
     my_lines_array->lines[my_lines_array->number_of_line++] = instruction;
 
-    instruction.line_content = "ADD";
+    instruction.line_content = "INC *r1";
+    instruction.first_operand = "*r1";
+    instruction.first_operand_classification_type = INDIRECT_REGISTER;
+    instruction.operand_number = 1;
+    instruction.opcode_command_type = INC;
+    instruction.instruction_type = IS_COMMAND;
     instruction.length = strlen(instruction.line_content);
     my_lines_array->lines[my_lines_array->number_of_line++] = instruction;
 

@@ -4,9 +4,6 @@
 #define MAX_LINE_LENGTH 80
 #define NO_ERROR 0
 #define ERROR -1
-#define MAX_COMMAND_LEN 10
-
-
 
 
 

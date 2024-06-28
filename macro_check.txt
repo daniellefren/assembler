@@ -1,7 +1,6 @@
-macr aaa
+macr_m macr
  inc r2
  mov A,r1
 endmacr
 mov 2, ir
-aaa
-
+macr_m

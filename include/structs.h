@@ -11,7 +11,7 @@
 typedef struct {
     char *line_content; // String containing the assembly instruction (content of the line)
     size_t length;  // Length of the line (excluding null terminator)
-    int instruction_type; // is it directive or command
+    int instruction_type; //is it directive or command
     unsigned int operand_number; //int containing the operand number
     char *first_operand; // string containing the first operand r0-r7(can be null)
     enum operand_classification_type first_operand_classification_type; // int containing enum values for first operand classification type
