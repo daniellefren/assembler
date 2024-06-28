@@ -6,7 +6,7 @@ char *return_instruction_line_in_binary(InstructionLine instruction_line);
 bool is_instruction_line_directive(InstructionLine instructionLine);
 bool is_instruction_line_opcode_command(InstructionLine instructionLine);
 char *get_opcode_binary_representation(int opcode, char* binary_string);
-char *create_first_part_binary_from_instruction_line_opcode(InstructionLine instruction_line, char* binary_string);
+void *create_first_part_binary_from_instruction_line_opcode(InstructionLine instruction_line, char* binary_string);
 char *create_second_part_binary_from_instruction_line_opcode(InstructionLine instruction_line, char* binary_string);
 bool instruction_line_has_three_binary_words(InstructionLine instructionLine);
 char *return_instruction_line_in_binary(InstructionLine instruction_line);

@@ -275,6 +275,7 @@ bool find_label(const char *line, char *label) {
 }
 
 // Function to check if a line is an operand (simple check)
+
 bool is_instruction(const char *line, int *ic) {
     // An operand line typically starts with an instruction or mnemonic
     while (*line && isspace((unsigned char)*line)) {
@@ -288,6 +289,7 @@ bool is_instruction(const char *line, int *ic) {
     return false;
 }
 
+
 bool symbolExists(const SymbolTable *table, const char *label) {
     for (size_t i = 0; i < table->size; ++i) {
         if (strcmp(table->symbols[i].label, label) == 0) {
@@ -296,6 +298,7 @@ bool symbolExists(const SymbolTable *table, const char *label) {
     }
     return false;
 }
+
 
 // Function to check if a line is a directive
 bool is_directive(const char *line) {
