@@ -1,7 +1,7 @@
 macr aaa
- inc r2
+ INC r2
  mov A,r1
 endmacr
-mov 2, ir
+MOV 2, ir
 aaa
 

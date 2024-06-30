@@ -64,25 +64,6 @@ typedef struct {
 
 } Command;
 
-Command commands[] = {
-        {"mov", MOV, 2},
-        {"cmp", CMP, 2},
-        {"add", ADD, 2},
-        {"sub", SUB, 2},
-        {"not", NOT, 1},
-        {"clr", CLR, 1},
-        {"lea", LEA, 2},
-        {"inc", INC, 1},
-        {"dec", DEC, 1},
-        {"jmp", JMP, 1},
-        {"bne", BNE, 1},
-        {"red", RED, 1},
-        {"prn", PRN, 1},
-        {"jsr", JSR, 1},
-        {"rts", RTS, 0},
-        {"stop", STOP, 0},
-        {"not_opcode", NOT_OPCODE, 0}
-};
 
 LinesArray *init_line_array(LinesArray *lines_array_pointer);
 void free_lines_array(LinesArray *lines_array_pointer);
