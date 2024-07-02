@@ -16,7 +16,7 @@ bool isMacroDefinitionEnd(char *line);
 int isMacroInvocation(char *line, char *macroName, char **macroNames);
 int handleMacroDefinition(FILE *file, MacroTable *macroTable, const char *firstLine);
 void expandMacro(const Macro *macro, FILE *outputFile);
-void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTa  ble *symbol_table);
+void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTable *symbol_table);
 void read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, int is_in_macro);
 void addSymbol(SymbolTable *table, const char *label, int address, const char *type);
 void handleCommand(char *line, int *ic);

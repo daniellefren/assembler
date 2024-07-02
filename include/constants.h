@@ -17,8 +17,6 @@ static const char *directives[] = {
         ".data", ".string", ".struct", ".entry", ".extern"
 };
 
-
-
 /* A/R/E modes ordered by their numerical value */
 enum ARE {ABSOLUTE, EXTERNAL, RELOCATABLE};
 /* Addressing methods ordered by their code */
