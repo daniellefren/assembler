@@ -1,3 +1,4 @@
 cmake-build-debug
 src/second_run.c
 src/second_run.h
+**.o

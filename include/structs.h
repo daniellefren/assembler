@@ -57,6 +57,12 @@ typedef struct {
     int capacity;
 } MacroTable;
 
+typedef struct {
+    char *command_name;
+    int opcode;
+    int num_of_operands;
+
+} Command;
 
 
 LinesArray *init_line_array(LinesArray *lines_array_pointer);
