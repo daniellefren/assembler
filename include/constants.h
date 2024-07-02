@@ -4,6 +4,7 @@
 #define MAX_MACRO_NAMES 150
 #define MAX_LABEL_LENGTH 32
 #define BINARY_WORD_LENGTH 15
+#define MAX_COMMAND_LEN 50
 
 #define IS_COMMAND 0
 #define IS_DIRECTIVE 1
@@ -20,7 +21,7 @@ static const char *directives[] = {
 /* A/R/E modes ordered by their numerical value */
 enum ARE {ABSOLUTE, EXTERNAL, RELOCATABLE};
 /* Addressing methods ordered by their code */
-enum operand_classification_type {METHOD_IMMEDIATE, METHOD_DIRECT, METHOD_STRUCT, METHOD_REGISTER, METHOD_UNKNOWN};
+enum operand_classification_type {IMMEDIATE, DIRECT, INDIRECT_REGISTER, DIRECT_REGISTER, METHOD_UNKNOWN};
 /* Directives types */
 enum directives {DATA, STRING, STRUCT, ENTRY, EXTERN, NOT_DIRECTIVE};
 /* Enum of commands ordered by their opcode */
@@ -44,27 +45,6 @@ enum opcode_command_operands {
     RTS_OPERANDS = 0,    // RTS instruction uses 0 operands
     STOP_OPERANDS = 0,   // STOP instruction uses 0 operands
 };
-
-Command commands[] = {
-        {"mov", MOV, 2},
-        {"cmp", CMP, 2},
-        {"add", ADD, 2},
-        {"sub", SUB, 2},
-        {"not", NOT, 1},
-        {"clr", CLR, 1},
-        {"lea", LEA, 2},
-        {"inc", INC, 1},
-        {"dec", DEC, 1},
-        {"jmp", JMP, 1},
-        {"bne", BNE, 1},
-        {"red", RED, 1},
-        {"prn", PRN, 1},
-        {"jsr", JSR, 1},
-        {"rts", RTS, 0},
-        {"stop", STOP, 0},
-        {"not_opcode", NOT_OPCODE, 0}
-};
-
 
 
 
