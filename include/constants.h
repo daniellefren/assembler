@@ -9,6 +9,8 @@
 #define IS_COMMAND 0
 #define IS_DIRECTIVE 1
 
+#define MAX_OPERAND_SIZE 5
+
 static const char *commands[] = {
         "mov", "cmp", "add", "sub", "not", "clr", "lea", "inc", "dec", "jmp", "bne",
         "red", "prn", "jsr", "rts", "stop"

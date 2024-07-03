@@ -30,7 +30,7 @@ bool isDataDirective(char *line);
 bool isStringDirective(char *line);
 bool isExternDirective(char *line);
 void pre_run(char *line, MacroTable *macroTable, char **macroNames, SymbolTable *symbol_table, FILE *file);
-int operand_number(char *command_name);
+int get_operand_opcode(char *command_name);
 bool isEntryDirective(char *line);
 
 void handleDataDirective(char *line, int *dc);
@@ -39,5 +39,7 @@ void initMacroNameArray(char **macroNames);
 
 void writeExpandedMacrosToFile(MacroTable *table);
 int write_line_to_file(char *line);
+int get_operands_number_for_command(int command_opcode);
+void define_operands_from_line(int operand_number_value, char *first_operand, char *second_operand, char* line);
 
 #endif //ASSEMBLER_FIRST_RUN_H

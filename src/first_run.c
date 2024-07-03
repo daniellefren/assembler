@@ -106,7 +106,7 @@ void read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, int is_i
 
     line = skip_spaces(line);
 
-    printf("Lineee: %s\n", line);
+    printf("Lineee: %s", line);
 
 
     hasLabel = find_label(line, label);
@@ -278,35 +278,94 @@ void addSymbol(SymbolTable *table, const char *label, int address, const char *t
     strcpy(table->symbols[table->size].type, type);
     table->size++;
 }
-
+;;;;;;
 void handleCommand(char *line, int *ic) {
-    char *line_content = line; // String containing the assembly instruction (content of the line)
-    size_t length = strlen(line);  // Length of the line (excluding null terminator)
-    int instruction_type = IS_COMMAND; // is it directive or command
-    unsigned int operand_number_value; // int containing the operand number
-    char *first_operand = NULL; // string containing the first operand r0-r7 (can be null)
-    enum operand_classification_type first_operand_classification_type; // int containing enum values for first operand classification type
-    char *second_operand = NULL; // string containing the second operand r0-r7 (can be null)
-    enum operand_classification_type second_operand_classification_type; // int containing enum values for second_operand classification type
+    InstructionLine instruction_line;
+    instruction_line.line_content = line; // String containing the assembly instruction (content of the line)
+    instruction_line.length = strlen(line);  // Length of the line (excluding null terminator)
+    instruction_line.instruction_type = IS_COMMAND; // is it directive or command
 
-    enum opcode_command opcode_command_type; // enum containing enum values for opcode command types if it's an opcode
-    enum directives directive_type; // enum containing enum values for directive type if it's a directive
+    unsigned int operands_number; // int containing the operand numbers
+    int opcode_command_type; // enum containing enum values for opcode command types if it's an opcode
+
+    char *first_operand = (char *)malloc(MAX_OPERAND_SIZE * sizeof(char));  // Allocating memory for the first operand
+    char *second_operand = (char *)malloc(MAX_OPERAND_SIZE * sizeof(char)); // Allocating memory for the second operand
+
+    int first_operand_classification_type; // int containing enum values for first operand classification type
+    int second_operand_classification_type; // int containing enum values for second_operand classification type
 
     char command_name[MAX_COMMAND_LEN];
-    // Extract instruction name
+    // Extract command name
     sscanf(line, "%s", command_name);
 
     // Get the operand number
-    operand_number_value = operand_number(command_name);
+    opcode_command_type = get_operand_opcode(command_name);
+    operands_number = get_operands_number_for_command(opcode_command_type);
+    instruction_line.opcode_command_type = opcode_command_type;
+    instruction_line.operand_number = operands_number;
 
     printf("Command: %s\n", command_name);
-    printf("Operand number: %d\n", operand_number_value);
+    printf("Operand number: %d\n", opcode_command_type);
+    printf("get_operands_number_for_command: %d\n", operands_number);
+
+    define_operands_from_line(operands_number, first_operand, second_operand, line);
+    printf("First operand: %s\n", first_operand);
+    printf("Second operand: %s\n", second_operand);
+
 
     (*ic)++;
 }
 
+void define_operands_from_line(int operand_number_value, char *first_operand, char *second_operand, char* line){
+    // Skip leading spaces
+    while (*line == ' ' || *line == '\t') {
+        line++;
+    }
 
-int operand_number(char *command_name){
+    // Find the command part and move past it
+    while (*line != ' ' && *line != '\t' && *line != '\0') {
+        line++;
+    }
+
+    // Skip spaces after command
+    while (*line == ' ' || *line == '\t') {
+        line++;
+    }
+
+    switch (operand_number_value) {
+        case 0:
+            return;
+        case 1:
+            // Extract the first operand
+            sscanf(line, "%s", first_operand);
+            return;
+
+        case 2:
+            // Extract the first operand
+            sscanf(line, "%[^,]", first_operand);
+
+            // Move past the first operand and the comma
+            line = strchr(line, ',');
+            if (line != NULL) {
+                line++; // Skip the comma
+            }
+
+            // Skip spaces before second operand
+            while (*line == ' ' || *line == '\t') {
+                line++;
+            }
+
+            // Extract the second operand
+            sscanf(line, "%s", second_operand);
+            return;
+
+        default:
+            fprintf(stderr, "Invalid number of operands: %d\n", operand_number_value);
+            exit(EXIT_FAILURE);
+    }
+}
+
+int get_operand_opcode(char *command_name){
     unsigned int operand_number;
     if (strcmp(command_name, "mov") == 0) {
         operand_number = MOV;
@@ -343,6 +402,20 @@ int operand_number(char *command_name){
     }
 
     return operand_number;
+}
+
+// Get the number of operands should be in the given command
+int get_operands_number_for_command(int command_opcode)
+{
+    int num_commands = sizeof(commands_struct) / sizeof(commands_struct[0]); // Calculate number of instructions
+    for (int i = 0; i < num_commands; i++) {
+        if (commands_struct[i].opcode == command_opcode) {
+            return commands_struct[i].num_of_operands;
+        }
+    }
+    // Handle the case where the opcode is not found
+    printf("Error: Opcode %d not found in the instruction set.\n", command_opcode);
+    return -1; // Or return any error value
 }
 
 int ignore_line(char *line) {
@@ -382,7 +455,6 @@ int find_label(char *line, char *label) {
 
 // Function to check if a line is an instruction
 int is_command(char *line, int *ic) {
-    lower_string(line);
     printf("start find command");
     while (*line && isspace((unsigned char)*line)) {
         line++;
