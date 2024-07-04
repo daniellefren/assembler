@@ -278,7 +278,7 @@ void addSymbol(SymbolTable *table, const char *label, int address, const char *t
     strcpy(table->symbols[table->size].type, type);
     table->size++;
 }
-;;;;;;
+
 void handleCommand(char *line, int *ic) {
     InstructionLine instruction_line;
     instruction_line.line_content = line; // String containing the assembly instruction (content of the line)
@@ -288,11 +288,11 @@ void handleCommand(char *line, int *ic) {
     unsigned int operands_number; // int containing the operand numbers
     int opcode_command_type; // enum containing enum values for opcode command types if it's an opcode
 
-    char *first_operand = (char *)malloc(MAX_OPERAND_SIZE * sizeof(char));  // Allocating memory for the first operand
-    char *second_operand = (char *)malloc(MAX_OPERAND_SIZE * sizeof(char)); // Allocating memory for the second operand
+    char *src_operand = (char *)malloc(MAX_OPERAND_SIZE * sizeof(char));  // Allocating memory for the first operand
+    char *dst_operand = (char *)malloc(MAX_OPERAND_SIZE * sizeof(char)); // Allocating memory for the second operand
 
-    int first_operand_classification_type; // int containing enum values for first operand classification type
-    int second_operand_classification_type; // int containing enum values for second_operand classification type
+    int src_operand_classification_type; // int containing enum values for first operand classification type
+    int dst_operand_classification_type; // int containing enum values for dst_operand classification type
 
     char command_name[MAX_COMMAND_LEN];
     // Extract command name
@@ -304,19 +304,16 @@ void handleCommand(char *line, int *ic) {
     instruction_line.opcode_command_type = opcode_command_type;
     instruction_line.operand_number = operands_number;
 
-    printf("Command: %s\n", command_name);
-    printf("Operand number: %d\n", opcode_command_type);
-    printf("get_operands_number_for_command: %d\n", operands_number);
 
-    define_operands_from_line(operands_number, first_operand, second_operand, line);
-    printf("First operand: %s\n", first_operand);
-    printf("Second operand: %s\n", second_operand);
+    define_operands_from_line(operands_number, src_operand, dst_operand, line);
+    classify_operand(src_operand, &src_operand_classification_type);
+    classify_operand(dst_operand, &dst_operand_classification_type);
 
 
     (*ic)++;
 }
 
-void define_operands_from_line(int operand_number_value, char *first_operand, char *second_operand, char* line){
+void define_operands_from_line(int operand_number_value, char *src_operand, char *dst_operand, char* line){
     // Skip leading spaces
     while (*line == ' ' || *line == '\t') {
         line++;
@@ -337,12 +334,12 @@ void define_operands_from_line(int operand_number_value, char *first_operand, ch
             return;
         case 1:
             // Extract the first operand
-            sscanf(line, "%s", first_operand);
+            sscanf(line, "%s", src_operand);
             return;
 
         case 2:
             // Extract the first operand
-            sscanf(line, "%[^,]", first_operand);
+            sscanf(line, "%[^,]", src_operand);
 
             // Move past the first operand and the comma
             line = strchr(line, ',');
@@ -356,7 +353,7 @@ void define_operands_from_line(int operand_number_value, char *first_operand, ch
             }
 
             // Extract the second operand
-            sscanf(line, "%s", second_operand);
+            sscanf(line, "%s", dst_operand);
             return;
 
         default:
@@ -364,6 +361,47 @@ void define_operands_from_line(int operand_number_value, char *first_operand, ch
             exit(EXIT_FAILURE);
     }
 }
+
+//classify the operand addressing mode
+void classify_operand(const char *operand, int *operand_type) {
+    *operand_type = METHOD_UNKNOWN; // set default
+
+    // Immediate addressing - starts with #
+    if (operand[0] == '#') {
+        // Check if the rest is a valid integer
+        for (int i = 1; operand[i] != '\0'; ++i) {
+            if (!isdigit(operand[i]) && operand[i] != '-') {
+                *operand_type = METHOD_UNKNOWN; // Invalid operand
+            }
+        }
+
+        *operand_type = IMMEDIATE; // Immediate addressing
+    }
+
+    // Register indirect addressing - starts with *
+    if (operand[0] == '*') {
+        if (operand[1] == 'r' && isdigit(operand[2])) {
+            *operand_type = INDIRECT_REGISTER; // Register indirect addressing
+        }
+        *operand_type = METHOD_UNKNOWN; // Invalid operand
+    }
+
+    // Register addressing - starts with r followed by a digit
+    if (operand[0] == 'r' && isdigit(operand[1])) {
+        *operand_type = DIRECT_REGISTER; // Register addressing
+    }
+
+    // Direct addressing - assume any other valid identifier is a label
+    // TODO
+//    *operand_type = DIRECT; // Direct addressing
+
+
+//    *operand_type = METHOD_UNKNOWN; // Invalid operand
+}
+
+
+
+
 
 int get_operand_opcode(char *command_name){
     unsigned int operand_number;
