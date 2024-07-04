@@ -77,11 +77,11 @@ void set_binary_string_operand_representation(int first_operand_classification_t
 
     printf("First classification type is %d \n", first_operand_classification_type);
     printf("second classification type is %d \n", second_operand_classification_type);
-    if (first_operand_classification_type != METHOD_UNKNOWN) {
+    if ((first_operand_classification_type < DIRECT_REGISTER) && (first_operand_classification_type > IMMEDIATE)) {
         //bit 5 = method 3, bit 6 method 2, bit 7 method 1, bit 8 method 0
         binary_string[first_classification_offset + operand_binary_classification_size - first_operand_classification_type] = '1';
     }
-    if (second_operand_classification_type != METHOD_UNKNOWN) {
+    if ((second_operand_classification_type < DIRECT_REGISTER) && (second_operand_classification_type > IMMEDIATE)) {
         //bit 9 = method 3, bit 10 method 2, bit 11 method 1, bit 12 method 0
         binary_string[second_classification_offset + operand_binary_classification_size - second_operand_classification_type] = '1';
     }
