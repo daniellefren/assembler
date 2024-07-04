@@ -8,7 +8,7 @@
 
 #define IS_COMMAND 0
 #define IS_DIRECTIVE 1
-
+#define OPCODE_SIZE 4
 #define MAX_OPERAND_SIZE 5
 
 static const char *commands[] = {
