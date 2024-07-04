@@ -1,0 +1,29 @@
+mov #-1, r2
+inc *r1
+mov *r1, *r2
+clr r1
+mov r1, *r2mov #-1, r2
+inc *r1
+mov *r1, *r2
+clr r1
+mov r1, *r2mov #-1, r2
+inc *r1
+mov *r1, *r2
+clr r1
+mov r1, *r2mov #-1, r2
+inc *r1
+mov *r1, *r2
+clr r1
+mov r1, *r2mov #-1, r2
+inc *r1
+mov *r1, *r2
+clr r1
+mov r1, *r2mov #-1, r2
+inc *r1
+mov *r1, *r2
+clr r1
+mov r1, *r2mov #-1, r2
+inc *r1
+mov *r1, *r2
+clr r1
+mov r1, *r2
