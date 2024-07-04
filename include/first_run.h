@@ -41,5 +41,6 @@ void writeExpandedMacrosToFile(MacroTable *table);
 int write_line_to_file(char *line);
 int get_operands_number_for_command(int command_opcode);
 void define_operands_from_line(int operand_number_value, char *first_operand, char *second_operand, char* line);
+void classify_operand(const char *operand, int *operand_type);
 
 #endif //ASSEMBLER_FIRST_RUN_H
