@@ -14,6 +14,6 @@ void write_binary_lines_array_to_file(LinesArray *linesArray, FILE *fptr);
 void fill_the_binary_representation_with_zero(char *binary_string, size_t length);
 void set_binary_string_operand_representation(int first_operand_classification_type, int second_operand_classification_type, char *binary_string);
 void string_append(const char *first_string, const char *second_String, char *appended_string, size_t appended_string_size);
-
+void set_binary_string_ARE_representation(char *binary_string, int number_of_binary_string);
 
 #endif //ASSEMBLER_SECOND_RUN_H

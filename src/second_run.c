@@ -61,13 +61,15 @@ void create_first_part_binary_from_instruction_line_opcode(InstructionLine instr
     // Convert the opcode value to binary opcode - 0 1 2 3, first_classification - 4 5 6 7, second_classification - 8 9 10 11, ARE - 12 13 14
     int first_operand_classification = instruction_line.first_operand_classification_type;
     int second_operand_classification = instruction_line.second_operand_classification_type;
+    int binary_string_number = 1; //first part binary
+
 
     fill_the_binary_representation_with_zero(binary_string, size_of_binary);
     printf("The binary string is: %s \n", binary_string);
     set_binary_string_opcode_representation(instruction_line.opcode_command_type, binary_string);
     printf("The opcode binary string is: %c \n", binary_string[6]);
     set_binary_string_operand_representation(first_operand_classification, second_operand_classification, binary_string);
-
+    set_binary_string_ARE_representation(binary_string,binary_string_number);
 }
 void set_binary_string_operand_representation(int first_operand_classification_type, int second_operand_classification_type, char *binary_string) {
 
@@ -85,17 +87,22 @@ void set_binary_string_operand_representation(int first_operand_classification_t
         //bit 9 = method 3, bit 10 method 2, bit 11 method 1, bit 12 method 0
         binary_string[second_classification_offset + operand_binary_classification_size - second_operand_classification_type] = '1';
     }
-    // Convert each bit to a character ('0' or '1')
-
     printf("The binary string with operand is: %s \n", binary_string);
+}
 
+void set_binary_string_ARE_representation(char *binary_string, int number_of_binary_string){
+    //number of binary string - is it the first binary string, second or third
+    if (number_of_binary_string == 1){
+        binary_string[12] = '1';
+    }
+    return;
 }
 
 
 void fill_the_binary_representation_with_zero(char *binary_string, size_t length) {
     // Check if length is valid (avoid buffer overflow)
     if (length <= 0) {
-        return;  // Handle invalid length (e.g., print an error message)
+        return;
     }
 
     // Fill the array with '0' characters using a loop
@@ -108,12 +115,8 @@ void fill_the_binary_representation_with_zero(char *binary_string, size_t length
 
 }
 void set_binary_string_opcode_representation(int opcode_number, char *binary_string) {
-
-
     printf("The opcode is %d \n", opcode_number);
     int binary_value = opcode_number & ((1 << OPCODE_SIZE) - 1);  // Mask with all bits set for the desired size
-
-
 
     // Convert each bit to a character ('0' or '1')
     for (int i = 0; i < OPCODE_SIZE; i++) {
@@ -122,7 +125,6 @@ void set_binary_string_opcode_representation(int opcode_number, char *binary_str
         }
     }
     printf("The opcode binary string is: %s \n", binary_string);
-
 }
 
 bool is_instruction_line_directive(InstructionLine instructionLine){
