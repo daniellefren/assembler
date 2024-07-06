@@ -52,7 +52,7 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
 
     while (fgets(line, MAX_LINE_LENGTH, expanded_macros_file) != NULL) {
         if (!ignore_line(line)) {
-            read_line(line, symbol_table, ic, dc, is_in_macro);
+            read_line(line, symbol_table, ic, dc, is_in_macro, lines_array);
         }
         line_num++;
     }
@@ -99,7 +99,7 @@ void pre_run(char *line, MacroTable *macroTable, char **macroNames, SymbolTable 
     }
 }
 
-void read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, int is_in_macro) {
+void read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, int is_in_macro, LinesArray *lines_array) {
     const char *directive;
     char label[MAX_LABEL_LENGTH] = {0};
     int hasLabel;
@@ -114,20 +114,17 @@ void read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, int is_i
         line = strchr(line, ':') + 1;
     }
     if (is_directive(line)) {
-        if (hasLabel) {
-            addSymbol(symbol_table, label, *dc, directive);
-        }
-        if (isDataDirective(line)) {
-            printf("Data directive: %s\n", directive);
-            handleDataDirective(line, dc);
-        } else if (isStringDirective(line)) {
-            printf("String directive: %s\n", directive);
-            handleStringDirective(line, dc);
-        }
+        printf("directiveee");
+//        if (hasLabel) {
+//            addSymbol(symbol_table, label, *dc, directive);
+//        }
+        handleDirective(line, dc, lines_array);
+
     } else if (is_command(line, ic)) {
         printf("is_command");
-        handleCommand(line, ic);
+        handleCommand(line, ic, lines_array);
     }
+
 }
 
 int write_line_to_file(char *line) {
@@ -279,39 +276,56 @@ void addSymbol(SymbolTable *table, const char *label, int address, const char *t
     table->size++;
 }
 
-void handleCommand(char *line, int *ic) {
-    InstructionLine instruction_line;
-    instruction_line.line_content = line; // String containing the assembly instruction (content of the line)
-    instruction_line.length = strlen(line);  // Length of the line (excluding null terminator)
-    instruction_line.instruction_type = IS_COMMAND; // is it directive or command
+void handleCommand(char *line, int *ic, LinesArray *lines_array) {
+    InstructionLine *instruction_line = (InstructionLine *)malloc(sizeof(InstructionLine));
+    if (instruction_line == NULL) {
+        fprintf(stderr, "Memory allocation error\n");
+        exit(EXIT_FAILURE);
+    }
 
-    unsigned int operands_number; // int containing the operand numbers
-    int opcode_command_type; // enum containing enum values for opcode command types if it's an opcode
+    instruction_line->line_content = strdup(line); // Duplicate the line content
+    instruction_line->length = strlen(line);
+    instruction_line->instruction_type = IS_COMMAND;
 
-    char *src_operand = (char *)malloc(MAX_OPERAND_SIZE * sizeof(char));  // Allocating memory for the first operand
-    char *dst_operand = (char *)malloc(MAX_OPERAND_SIZE * sizeof(char)); // Allocating memory for the second operand
+    // Initialize other members as needed
+    instruction_line->first_operand = NULL;
+    instruction_line->second_operand = NULL;
+    instruction_line->data_values = NULL;
+    instruction_line->data_values_count = 0;
 
-    int src_operand_classification_type; // int containing enum values for first operand classification type
-    int dst_operand_classification_type; // int containing enum values for dst_operand classification type
+    unsigned int operands_number;
+    int opcode_command_type;
+
+    char *src_operand = (char *)malloc(MAX_OPERAND_SIZE * sizeof(char));
+    char *dst_operand = (char *)malloc(MAX_OPERAND_SIZE * sizeof(char));
+    if (!src_operand || !dst_operand) {
+        fprintf(stderr, "Memory allocation error for operands\n");
+        exit(EXIT_FAILURE);
+    }
+
+    int src_operand_classification_type;
+    int dst_operand_classification_type;
 
     char command_name[MAX_COMMAND_LEN];
-    // Extract command name
     sscanf(line, "%s", command_name);
 
-    // Get the operand number
     opcode_command_type = get_operand_opcode(command_name);
     operands_number = get_operands_number_for_command(opcode_command_type);
-    instruction_line.opcode_command_type = opcode_command_type;
-    instruction_line.operand_number = operands_number;
-
+    instruction_line->opcode_command_type = opcode_command_type;
+    instruction_line->operand_number = operands_number;
 
     define_operands_from_line(operands_number, src_operand, dst_operand, line);
     classify_operand(src_operand, &src_operand_classification_type);
     classify_operand(dst_operand, &dst_operand_classification_type);
 
+    addInstructionLine(lines_array, instruction_line);
+
+    free(src_operand);
+    free(dst_operand);
 
     (*ic)++;
 }
+
 
 void define_operands_from_line(int operand_number_value, char *src_operand, char *dst_operand, char* line){
     // Skip leading spaces
@@ -523,13 +537,68 @@ bool is_directive(char *line) {
     return *line == '.';
 }
 
-bool isDataDirective(char *line) {
-    return strstr(line, ".data") != NULL;
+void handleDirective(char *line, int *dc, LinesArray *lines_array) {
+    InstructionLine *instruction_line = (InstructionLine *)malloc(sizeof(InstructionLine));
+    if (instruction_line == NULL) {
+        fprintf(stderr, "Memory allocation error\n");
+        exit(EXIT_FAILURE);
+    }
+
+    char directive[MAX_LINE_LENGTH];
+    char *token;
+    int values[MAX_LINE_LENGTH]; // Temporary array to hold values
+    size_t values_count = 0;
+
+    sscanf(line, "%s", directive);
+
+    instruction_line->line_content = strdup(line); // Duplicate the line content
+    instruction_line->length = strlen(line);
+    instruction_line->data_values = NULL;
+    instruction_line->data_values_count = 0;
+
+    if (strcmp(directive, ".data") == 0) {
+        instruction_line->directive_type = DATA;
+        token = strtok(line + strlen(directive), " ,\t");
+        while (token != NULL) {
+            if (isdigit(token[0]) || (token[0] == '-' && isdigit(token[1]))) {
+                values[values_count++] = atoi(token);
+                (*dc)++;
+            }
+            token = strtok(NULL, " ,\t");
+        }
+    } else if (strcmp(directive, ".string") == 0) {
+        instruction_line->directive_type = STRING;
+        token = strtok(line + strlen(directive), "\"");
+        if (token != NULL) {
+            for (int i = 0; i < strlen(token); i++) {
+                values[values_count++] = token[i];
+                (*dc)++;
+            }
+            values[values_count++] = '\0';
+            (*dc)++;
+        }
+    } else {
+        instruction_line->directive_type = NOT_DIRECTIVE;
+        fprintf(stderr, "Error: Unknown directive %s\n", directive);
+    }
+
+    instruction_line->data_values = malloc(values_count * sizeof(int));
+    if (instruction_line->data_values != NULL) {
+        memcpy(instruction_line->data_values, values, values_count * sizeof(int));
+        instruction_line->data_values_count = values_count;
+    } else {
+        fprintf(stderr, "Error: Unable to allocate memory for data values\n");
+    }
+
+    addInstructionLine(lines_array, instruction_line);
+    // Print the instruction line content for testing
+    printf("Instruction line content: %s\n", instruction_line->line_content);
+    printf("Instruction line length: %zu\n", instruction_line->length);
+    printf("Directive type: %d\n", instruction_line->directive_type);
+    printf("Data values count: %zu\n", instruction_line->data_values_count);
+    printf("Data values: ");
 }
 
-bool isStringDirective(char *line) {
-    return strstr(line, ".string") != NULL;
-}
 
 bool isExternDirective(char *line) {
     return strstr(line, ".extern") != NULL;
@@ -539,10 +608,26 @@ bool isEntryDirective(char *line) {
     return strstr(line, ".entry") != NULL;
 }
 
-void handleDataDirective(char *line, int *dc) {
-    // Implementation here
-}
 
 void handleStringDirective(char *line, int *dc) {
     // Implementation here
+}
+
+void addInstructionLine(LinesArray *lines_array, InstructionLine *instruction_line) {
+    // Check if the array needs to be resized
+    if (lines_array->number_of_line >= lines_array->capacity) {
+        // Double the capacity or set an initial capacity if it's zero
+        size_t new_capacity = (lines_array->capacity == 0) ? 1 : lines_array->capacity * 2;
+        InstructionLine *new_lines = realloc(lines_array->lines, new_capacity * sizeof(InstructionLine));
+        if (!new_lines) {
+            fprintf(stderr, "Error: Unable to allocate memory for lines array\n");
+            return;
+        }
+        lines_array->lines = new_lines;
+        lines_array->capacity = new_capacity;
+    }
+
+    // Add the new instruction line to the array
+    lines_array->lines[lines_array->number_of_line] = *instruction_line;
+    lines_array->number_of_line++;
 }

@@ -20,6 +20,9 @@ typedef struct {
 
     enum opcode_command opcode_command_type; // enum containing enum values for opcode command types if it's an opcode
     enum directives directive_type; // enum containing enum values for directive type if it's a directive
+    int *data_values; // array of data values from the directive
+    size_t data_values_count; // count of data values
+
 
     char *binary_instruction; //the line in binary instruction
 } InstructionLine;
