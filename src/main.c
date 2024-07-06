@@ -7,8 +7,13 @@ int main(int argc, char *argv[]) {
     FILE *file;
     int ic, dc = 0;
     int return_value;
-    LinesArray *assembly_lines_array;
+    LinesArray assembly_lines_array;
     SymbolTable symbol_table;
+
+
+    assembly_lines_array.lines = NULL;
+    assembly_lines_array.number_of_line = 0;
+    assembly_lines_array.capacity = 0;
 
 
     // Check if the correct number of arguments is provided
@@ -25,17 +30,18 @@ int main(int argc, char *argv[]) {
     }
 
 
-
     // Call the first_run function with the file pointer
-    //first_run(file, &ic, &dc, &assembly_lines_array, &symbol_table);
+    first_run(file, &ic, &dc, &assembly_lines_array, &symbol_table);
     //call the second_run function with the LinesArray table
-    start_second_run(assembly_lines_array);
+//    start_second_run(assembly_lines_array);
 
 
 //    return_value = second_run();
 //    printf("the value is %d", return_value);
     // Close the file
     fclose(file);
+
+
 
     return EXIT_SUCCESS;
 }
