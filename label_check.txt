@@ -1,5 +1,4 @@
-XYZ: .data 7, –57, +17, 9
+XYZ: .data 7, -57, +17, 9
 mov XYZ, r1
-lea XYZ, r1
 
-STR: .string "abcdef"
+

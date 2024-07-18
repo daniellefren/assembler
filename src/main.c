@@ -2,6 +2,7 @@
 #include "../include/first_run.h"
 #include "../include/second_run.h"
 
+//TODO - now the labels are not case sensitive
 
 int main(int argc, char *argv[]) {
     FILE *file;
@@ -15,11 +16,6 @@ int main(int argc, char *argv[]) {
 
     init_symbol_table(&symbol_table, 10);
     init_lines_array(&assembly_lines_array, 10);
-
-
-
-
-    //TODO - init lines array each time by capacity
 
 
     // Check if the correct number of arguments is provided
@@ -40,8 +36,11 @@ int main(int argc, char *argv[]) {
     //call the second_run function with the LinesArray table
 //    start_second_run(assembly_lines_array);
 
-    for(int i=0; i<2;i++){
-        printf("hey %s\n", assembly_lines_array.lines[i].line_content);
+    for(int i=0; i<3;i++){
+        printf("label - %s, data :\n", symbol_table.symbols[i].label);
+        for (size_t j = 0; j < symbol_table.symbols[i].data_values_count; j++) {
+            printf("%s ", ((char **)symbol_table.symbols[i].value)[j]);
+        }
     }
 
 
