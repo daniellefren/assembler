@@ -575,16 +575,23 @@ void handleData(char *line, int *dc, SymbolTable *symbol_table, Symbol *new_symb
         }
     } else if (strcmp(directive, ".string") == 0) {
         new_symbol->type = STRING;
-        token = strtok(line + strlen(directive), "\"");
-        if (token != NULL) {
-            for (int i = 0; i < strlen(token); i++) {
-                char buffer[2] = {token[i], '\0'};
-                values[values_count] = strdup(buffer);
-                values_count++;
+        // Find the first quote
+        char *start = strchr(line, '\"');
+        if (start) {
+            // Find the closing quote
+            char *end = strchr(start + 1, '\"');
+            if (end) {
+                // Copy the string contents excluding quotes
+                for (char *p = start + 1; p < end; p++) {
+                    char buffer[2] = {*p, '\0'};
+                    values[values_count] = strdup(buffer);
+                    values_count++;
+                    (*dc)++;
+                }
+                // Add the null terminator to the end of the string
+                values[values_count++] = strdup("\0");
                 (*dc)++;
             }
-            values[values_count++] = strdup("\0");
-            (*dc)++;
         }
     } else {
         new_symbol->type = NOT_DIRECTIVE;
