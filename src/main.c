@@ -7,13 +7,19 @@ int main(int argc, char *argv[]) {
     FILE *file;
     int ic, dc = 0;
     int return_value;
-    LinesArray assembly_lines_array;
+
+
+    LinesArray assembly_lines_array; // Use struct, not a pointer
     SymbolTable symbol_table;
 
 
-    assembly_lines_array.lines = NULL;
-    assembly_lines_array.number_of_line = 0;
-    assembly_lines_array.capacity = 0;
+    init_symbol_table(&symbol_table, 10);
+    init_lines_array(&assembly_lines_array, 10);
+
+
+
+
+    //TODO - init lines array each time by capacity
 
 
     // Check if the correct number of arguments is provided
@@ -21,7 +27,6 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "Usage: %s <file_path>\n", argv[0]);
         return EXIT_FAILURE;
     }
-
     // Open the file in read mode
     file = fopen(argv[1], "r");
     if (file == NULL) {
@@ -34,6 +39,10 @@ int main(int argc, char *argv[]) {
     first_run(file, &ic, &dc, &assembly_lines_array, &symbol_table);
     //call the second_run function with the LinesArray table
 //    start_second_run(assembly_lines_array);
+
+    for(int i=0; i<2;i++){
+        printf("hey %s\n", assembly_lines_array.lines[i].line_content);
+    }
 
 
 //    return_value = second_run();
