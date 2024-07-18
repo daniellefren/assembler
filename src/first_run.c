@@ -101,7 +101,7 @@ void pre_run(char *line, MacroTable *macroTable, char **macroNames, SymbolTable 
 
 void read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, int is_in_macro, LinesArray *lines_array) {
     const char *directive;
-    char label[MAX_LABEL_LENGTH] = {0};
+    char label[MAX_LABEL_LENGTH] = "";
     int hasLabel;
 
     line = skip_spaces(line);
@@ -110,20 +110,35 @@ void read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, int is_i
 
 
     hasLabel = find_label(line, label);
+
+//    printf("label %s\n", label);
+
     if (hasLabel) {
         line = strchr(line, ':') + 1;
     }
-    if (is_directive(line)) {
-        printf("directiveee");
-//        if (hasLabel) {
-//            addSymbol(symbol_table, label, *dc, directive);
-//        }
-        handleDirective(line, dc, lines_array);
+    printf("before\n");
+    bool idb = isDataDirective(line);
+    bool icb = is_command(line, ic);
+    printf("after %d\n", idb);
 
-    } else if (is_command(line, ic)) {
+    if (idb) {
+        printf("directiveee");
+        Symbol *new_symbol = (Symbol *)malloc(10 * sizeof(Symbol));
+        if (new_symbol == NULL) {
+            fprintf(stderr, "Memory allocation error\n");
+            exit(EXIT_FAILURE);
+        }
+        printf("labelll %s", label);
+//        new_symbol-> label = label;
+        handleData(line, dc, symbol_table, new_symbol);
+
+    }
+    else if (icb) {
         printf("is_command");
         handleCommand(line, ic, lines_array);
     }
+    printf("??\n");
+
 
 }
 
@@ -255,28 +270,9 @@ void expandMacro(const Macro *macro, FILE *outputFile) {
     }
 }
 
-void addSymbol(SymbolTable *table, const char *label, int address, const char *type) {
-    if (symbolExists(table, label)) {
-        fprintf(stderr, "Error: Symbol '%s' already exists\n", label);
-        return;
-    }
-
-    if (table->size >= table->capacity) {
-        table->capacity *= 2;
-        table->symbols = realloc(table->symbols, table->capacity * sizeof(Symbol));
-        if (!table->symbols) {
-            fprintf(stderr, "Memory allocation error\n");
-            exit(EXIT_FAILURE);
-        }
-    }
-
-    strcpy(table->symbols[table->size].label, label);
-    table->symbols[table->size].address = address;
-    strcpy(table->symbols[table->size].type, type);
-    table->size++;
-}
-
 void handleCommand(char *line, int *ic, LinesArray *lines_array) {
+    printf("handleCommand1");
+
     InstructionLine *instruction_line = (InstructionLine *)malloc(sizeof(InstructionLine));
     if (instruction_line == NULL) {
         fprintf(stderr, "Memory allocation error\n");
@@ -318,6 +314,7 @@ void handleCommand(char *line, int *ic, LinesArray *lines_array) {
     classify_operand(src_operand, &src_operand_classification_type);
     classify_operand(dst_operand, &dst_operand_classification_type);
 
+    printf("handleCommand2");
     addInstructionLine(lines_array, instruction_line);
 
     free(src_operand);
@@ -414,10 +411,8 @@ void classify_operand(const char *operand, int *operand_type) {
 }
 
 
-
-
-
 int get_operand_opcode(char *command_name){
+    //TODO - take from command_struct
     unsigned int operand_number;
     if (strcmp(command_name, "mov") == 0) {
         operand_number = MOV;
@@ -491,23 +486,24 @@ int find_label(char *line, char *label) {
 
     char *start = line;
 
-    while (*line && !isspace((unsigned char)*line) && *line != ':') {
-        line++;
+    while (*start && !isspace((unsigned char)*start) && *start != ':') {
+        start++;
     }
 
-    if (*line == ':') {
-        size_t len = line - start;
-        strncpy(label, start, len);
+    if (*start == ':') {
+        size_t len = start - line;
+        strncpy(label, line, len);
         label[len] = '\0'; // Null-terminate the label
+        line += len;
+
         return 1;
     }
-
     return 0;
 }
 
 // Function to check if a line is an instruction
 int is_command(char *line, int *ic) {
-    printf("start find command");
+    printf("is_command\n");
     while (*line && isspace((unsigned char)*line)) {
         line++;
     }
@@ -529,35 +525,36 @@ int symbolExists(SymbolTable *table, char *label) {
     return 0;
 }
 
-// Function to check if a line is a directive
-bool is_directive(char *line) {
+// Function to check if a line is a data or string directive
+bool isDataDirective(char *line) {
+    printf("isDataDirective\n");
+    // Skip leading spaces
     while (*line && isspace((unsigned char)*line)) {
         line++;
     }
-    return *line == '.';
+
+    // Check if the line starts with a dot and followed by "data" or "string"
+    if (*line == '.') {
+        line++;
+        if (strncmp(line, "data", 4) == 0 && isspace((unsigned char)line[4])) {
+            return true;
+        }
+        if (strncmp(line, "string", 6) == 0 && isspace((unsigned char)line[6])) {
+            return true;
+        }
+    }
+    return false;
 }
 
-void handleDirective(char *line, int *dc, LinesArray *lines_array) {
-    InstructionLine *instruction_line = (InstructionLine *)malloc(sizeof(InstructionLine));
-    if (instruction_line == NULL) {
-        fprintf(stderr, "Memory allocation error\n");
-        exit(EXIT_FAILURE);
-    }
-
+void handleData(char *line, int *dc, SymbolTable *symbol_table, Symbol *new_symbol) {
     char directive[MAX_LINE_LENGTH];
     char *token;
     int values[MAX_LINE_LENGTH]; // Temporary array to hold values
     size_t values_count = 0;
-
     sscanf(line, "%s", directive);
 
-    instruction_line->line_content = strdup(line); // Duplicate the line content
-    instruction_line->length = strlen(line);
-    instruction_line->data_values = NULL;
-    instruction_line->data_values_count = 0;
-
     if (strcmp(directive, ".data") == 0) {
-        instruction_line->directive_type = DATA;
+        new_symbol->type = DATA;
         token = strtok(line + strlen(directive), " ,\t");
         while (token != NULL) {
             if (isdigit(token[0]) || (token[0] == '-' && isdigit(token[1]))) {
@@ -567,7 +564,7 @@ void handleDirective(char *line, int *dc, LinesArray *lines_array) {
             token = strtok(NULL, " ,\t");
         }
     } else if (strcmp(directive, ".string") == 0) {
-        instruction_line->directive_type = STRING;
+        new_symbol->type = STRING;
         token = strtok(line + strlen(directive), "\"");
         if (token != NULL) {
             for (int i = 0; i < strlen(token); i++) {
@@ -578,25 +575,17 @@ void handleDirective(char *line, int *dc, LinesArray *lines_array) {
             (*dc)++;
         }
     } else {
-        instruction_line->directive_type = NOT_DIRECTIVE;
+        new_symbol->type = NOT_DIRECTIVE;
         fprintf(stderr, "Error: Unknown directive %s\n", directive);
     }
 
-    instruction_line->data_values = malloc(values_count * sizeof(int));
-    if (instruction_line->data_values != NULL) {
-        memcpy(instruction_line->data_values, values, values_count * sizeof(int));
-        instruction_line->data_values_count = values_count;
+    new_symbol->value = malloc(values_count * sizeof(int));
+    if (new_symbol->value != NULL) {
+        memcpy(new_symbol->value, values, values_count * sizeof(int));
     } else {
         fprintf(stderr, "Error: Unable to allocate memory for data values\n");
     }
-
-    addInstructionLine(lines_array, instruction_line);
-    // Print the instruction line content for testing
-    printf("Instruction line content: %s\n", instruction_line->line_content);
-    printf("Instruction line length: %zu\n", instruction_line->length);
-    printf("Directive type: %d\n", instruction_line->directive_type);
-    printf("Data values count: %zu\n", instruction_line->data_values_count);
-    printf("Data values: ");
+    addNewSymbol(symbol_table, new_symbol);
 }
 
 
@@ -611,23 +600,4 @@ bool isEntryDirective(char *line) {
 
 void handleStringDirective(char *line, int *dc) {
     // Implementation here
-}
-
-void addInstructionLine(LinesArray *lines_array, InstructionLine *instruction_line) {
-    // Check if the array needs to be resized
-    if (lines_array->number_of_line >= lines_array->capacity) {
-        // Double the capacity or set an initial capacity if it's zero
-        size_t new_capacity = (lines_array->capacity == 0) ? 1 : lines_array->capacity * 2;
-        InstructionLine *new_lines = realloc(lines_array->lines, new_capacity * sizeof(InstructionLine));
-        if (!new_lines) {
-            fprintf(stderr, "Error: Unable to allocate memory for lines array\n");
-            return;
-        }
-        lines_array->lines = new_lines;
-        lines_array->capacity = new_capacity;
-    }
-
-    // Add the new instruction line to the array
-    lines_array->lines[lines_array->number_of_line] = *instruction_line;
-    lines_array->number_of_line++;
 }

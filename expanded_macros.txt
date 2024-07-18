@@ -1,13 +1,9 @@
-mov #-1, r2
+da: mov #-1, r2
 inc *r1
-.data 1, 2, -1, 5mov #-1, r2
+.data 1, 2, -1, 5da: mov #-1, r2
 inc *r1
-.data 1, 2, -1, 5mov #-1, r2
+.data 1, 2, -1, 5da: mov #-1, r2
 inc *r1
-.data 1, 2, -1, 5mov #-1, r2
-inc *r1
-.data 1, 2, -1, 5mov #-1, r2
-inc *r1
-.data 1, 2, -1, 5mov #-1, r2
+.data 1, 2, -1, 5da: mov #-1, r2
 inc *r1
 .data 1, 2, -1, 5
