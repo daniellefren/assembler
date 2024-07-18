@@ -12,3 +12,23 @@ void lower_string(char *string){
         string[i] = tolower(string[i]);
     }
 }
+
+// Function to trim leading and trailing spaces
+char *trim_spaces(char *str) {
+    char *end;
+
+    // Trim leading space
+    while (isspace((unsigned char)*str)) str++;
+
+    if (*str == 0)  // All spaces?
+        return str;
+
+    // Trim trailing space
+    end = str + strlen(str) - 1;
+    while (end > str && isspace((unsigned char)*end)) end--;
+
+    // Write new null terminator character
+    end[1] = '\0';
+
+    return str;
+}

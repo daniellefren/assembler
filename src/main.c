@@ -17,11 +17,6 @@ int main(int argc, char *argv[]) {
     init_lines_array(&assembly_lines_array, 10);
 
 
-
-
-    //TODO - init lines array each time by capacity
-
-
     // Check if the correct number of arguments is provided
     if (argc != 2) {
         fprintf(stderr, "Usage: %s <file_path>\n", argv[0]);
@@ -40,8 +35,12 @@ int main(int argc, char *argv[]) {
     //call the second_run function with the LinesArray table
 //    start_second_run(assembly_lines_array);
 
-    for(int i=0; i<2;i++){
-        printf("hey %s\n", assembly_lines_array.lines[i].line_content);
+    for(int i=0; i<3;i++){
+        printf("label - %s, data -\n", symbol_table.symbols[i].label);
+        for(int j = 0;i<symbol_table.size;i++){
+            printf("%d ", symbol_table.symbols[j].value[0]);
+            printf("%d ", symbol_table.symbols[j].value[1]);
+        }
     }
 
 

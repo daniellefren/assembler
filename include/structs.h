@@ -35,7 +35,7 @@ typedef struct {
 typedef struct {
     char label[MAX_LABEL_LENGTH];
     int type; //.data or .string
-    char *value;
+    int *value;
     size_t data_values_count; // count of data values
 } Symbol;
 

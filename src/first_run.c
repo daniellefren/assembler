@@ -111,34 +111,30 @@ void read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, int is_i
 
     hasLabel = find_label(line, label);
 
-//    printf("label %s\n", label);
+    printf("label %s\n", label);
 
     if (hasLabel) {
         line = strchr(line, ':') + 1;
+        // Skip spaces after .data directive
+        while (*line && isspace((unsigned char)*line)) {
+            line++;
+        }
     }
-    printf("before\n");
-    bool idb = isDataDirective(line);
-    bool icb = is_command(line, ic);
-    printf("after %d\n", idb);
 
-    if (idb) {
-        printf("directiveee");
+    if (isDataDirective(line)) {
+        printf("isDataDirective");
         Symbol *new_symbol = (Symbol *)malloc(10 * sizeof(Symbol));
         if (new_symbol == NULL) {
             fprintf(stderr, "Memory allocation error\n");
             exit(EXIT_FAILURE);
         }
-        printf("labelll %s", label);
-//        new_symbol-> label = label;
+        strcpy(new_symbol->label, label);
         handleData(line, dc, symbol_table, new_symbol);
 
     }
-    else if (icb) {
-        printf("is_command");
+    else if (is_command(line, ic)) {
         handleCommand(line, ic, lines_array);
     }
-    printf("??\n");
-
 
 }
 
@@ -271,8 +267,6 @@ void expandMacro(const Macro *macro, FILE *outputFile) {
 }
 
 void handleCommand(char *line, int *ic, LinesArray *lines_array) {
-    printf("handleCommand1");
-
     InstructionLine *instruction_line = (InstructionLine *)malloc(sizeof(InstructionLine));
     if (instruction_line == NULL) {
         fprintf(stderr, "Memory allocation error\n");
@@ -314,7 +308,6 @@ void handleCommand(char *line, int *ic, LinesArray *lines_array) {
     classify_operand(src_operand, &src_operand_classification_type);
     classify_operand(dst_operand, &dst_operand_classification_type);
 
-    printf("handleCommand2");
     addInstructionLine(lines_array, instruction_line);
 
     free(src_operand);
@@ -503,7 +496,6 @@ int find_label(char *line, char *label) {
 
 // Function to check if a line is an instruction
 int is_command(char *line, int *ic) {
-    printf("is_command\n");
     while (*line && isspace((unsigned char)*line)) {
         line++;
     }
@@ -527,7 +519,6 @@ int symbolExists(SymbolTable *table, char *label) {
 
 // Function to check if a line is a data or string directive
 bool isDataDirective(char *line) {
-    printf("isDataDirective\n");
     // Skip leading spaces
     while (*line && isspace((unsigned char)*line)) {
         line++;
@@ -547,28 +538,43 @@ bool isDataDirective(char *line) {
 }
 
 void handleData(char *line, int *dc, SymbolTable *symbol_table, Symbol *new_symbol) {
+    printf("handleData\n");
     char directive[MAX_LINE_LENGTH];
-    char *token;
+    char *ptr = line;
     int values[MAX_LINE_LENGTH]; // Temporary array to hold values
     size_t values_count = 0;
+
     sscanf(line, "%s", directive);
 
     if (strcmp(directive, ".data") == 0) {
+        printf(".data\n");
         new_symbol->type = DATA;
-        token = strtok(line + strlen(directive), " ,\t");
-        while (token != NULL) {
-            if (isdigit(token[0]) || (token[0] == '-' && isdigit(token[1]))) {
-                values[values_count++] = atoi(token);
-                (*dc)++;
+        ptr += strlen(directive);
+
+        while (*ptr != '\0') {
+            while (*ptr == ' ' || *ptr == '\t' || *ptr == ',') {
+                ptr++;
             }
-            token = strtok(NULL, " ,\t");
+            printf("before %c\n", *ptr);
+            if (isdigit(*ptr) || (*ptr == '-' && isdigit(*(ptr + 1))) || (*ptr == '+' && isdigit(*(ptr + 1)))) {
+                printf("ptr %c\n", *ptr);
+                printf("ptr+1 %c\n", *(ptr+1));
+
+                values[values_count++] = strtol(ptr, &ptr, 10);
+                printf("!!! %d\n", values[values_count-1]);
+                (*dc)++;
+            } else {
+                ptr++;
+            }
         }
+
     } else if (strcmp(directive, ".string") == 0) {
         new_symbol->type = STRING;
-        token = strtok(line + strlen(directive), "\"");
-        if (token != NULL) {
-            for (int i = 0; i < strlen(token); i++) {
-                values[values_count++] = token[i];
+        ptr += strlen(directive);
+        ptr = strtok(ptr, "\"");
+        if (ptr != NULL) {
+            for (int i = 0; i < strlen(ptr); i++) {
+                values[values_count++] = ptr[i];
                 (*dc)++;
             }
             values[values_count++] = '\0';
@@ -579,12 +585,28 @@ void handleData(char *line, int *dc, SymbolTable *symbol_table, Symbol *new_symb
         fprintf(stderr, "Error: Unknown directive %s\n", directive);
     }
 
-    new_symbol->value = malloc(values_count * sizeof(int));
-    if (new_symbol->value != NULL) {
-        memcpy(new_symbol->value, values, values_count * sizeof(int));
-    } else {
-        fprintf(stderr, "Error: Unable to allocate memory for data values\n");
+    // Allocate memory for the values in the symbol
+    new_symbol->value = (int *)malloc(values_count * sizeof(int));
+    if (new_symbol->value == NULL) {
+        fprintf(stderr, "Memory allocation error\n");
+        exit(EXIT_FAILURE);
     }
+    // Copy the values to the symbol
+    memcpy(new_symbol->value, values, values_count * sizeof(int));
+    new_symbol->data_values_count = values_count;
+
+    printf("???\n");
+    // Print for debugging
+    printf("Label: %s\n", new_symbol->label);
+    printf("Type: %d\n", new_symbol->type);
+    printf("Values count: %zu\n", new_symbol->data_values_count);
+    printf("Values: ");
+    for (size_t i = 0; i < new_symbol->data_values_count; i++) {
+        printf("%d ", new_symbol->value[i]);
+    }
+    printf("\n");
+    printf("???\n");
+
     addNewSymbol(symbol_table, new_symbol);
 }
 
