@@ -1,5 +1,4 @@
 #define _STD_C99 1
-
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
@@ -541,7 +540,8 @@ void handleData(char *line, int *dc, SymbolTable *symbol_table, Symbol *new_symb
     printf("handleData\n");
     char directive[MAX_LINE_LENGTH];
     char *ptr = line;
-    int values[MAX_LINE_LENGTH]; // Temporary array to hold values
+    char *token;
+    char *values[MAX_LINE_LENGTH]; // Temporary array to hold values as strings
     size_t values_count = 0;
 
     sscanf(line, "%s", directive);
@@ -555,29 +555,35 @@ void handleData(char *line, int *dc, SymbolTable *symbol_table, Symbol *new_symb
             while (*ptr == ' ' || *ptr == '\t' || *ptr == ',') {
                 ptr++;
             }
-            printf("before %c\n", *ptr);
             if (isdigit(*ptr) || (*ptr == '-' && isdigit(*(ptr + 1))) || (*ptr == '+' && isdigit(*(ptr + 1)))) {
-                printf("ptr %c\n", *ptr);
-                printf("ptr+1 %c\n", *(ptr+1));
+                char *end;
+                int number = strtol(ptr, &end, 10);
+                ptr = end; // Move ptr to the end of the parsed number
 
-                values[values_count++] = strtol(ptr, &ptr, 10);
-                printf("!!! %d\n", values[values_count-1]);
+                // Convert number to string and store in values
+                char buffer[12]; // Buffer to hold the string representation of the number
+                snprintf(buffer, sizeof(buffer), "%d", number);
+
+                values[values_count] = strdup(buffer);
+                values_count++;
+
+                printf("!!! %s\n", values[values_count - 1]);
                 (*dc)++;
             } else {
                 ptr++;
             }
         }
-
     } else if (strcmp(directive, ".string") == 0) {
         new_symbol->type = STRING;
-        ptr += strlen(directive);
-        ptr = strtok(ptr, "\"");
-        if (ptr != NULL) {
-            for (int i = 0; i < strlen(ptr); i++) {
-                values[values_count++] = ptr[i];
+        token = strtok(line + strlen(directive), "\"");
+        if (token != NULL) {
+            for (int i = 0; i < strlen(token); i++) {
+                char buffer[2] = {token[i], '\0'};
+                values[values_count] = strdup(buffer);
+                values_count++;
                 (*dc)++;
             }
-            values[values_count++] = '\0';
+            values[values_count++] = strdup("\0");
             (*dc)++;
         }
     } else {
@@ -586,13 +592,15 @@ void handleData(char *line, int *dc, SymbolTable *symbol_table, Symbol *new_symb
     }
 
     // Allocate memory for the values in the symbol
-    new_symbol->value = (int *)malloc(values_count * sizeof(int));
+    new_symbol->value = (char **)malloc(values_count * sizeof(char *));
     if (new_symbol->value == NULL) {
         fprintf(stderr, "Memory allocation error\n");
         exit(EXIT_FAILURE);
     }
     // Copy the values to the symbol
-    memcpy(new_symbol->value, values, values_count * sizeof(int));
+    for (size_t i = 0; i < values_count; i++) {
+        new_symbol->value[i] = values[i];
+    }
     new_symbol->data_values_count = values_count;
 
     printf("???\n");
@@ -601,8 +609,8 @@ void handleData(char *line, int *dc, SymbolTable *symbol_table, Symbol *new_symb
     printf("Type: %d\n", new_symbol->type);
     printf("Values count: %zu\n", new_symbol->data_values_count);
     printf("Values: ");
-    for (size_t i = 0; i < new_symbol->data_values_count; i++) {
-        printf("%d ", new_symbol->value[i]);
+    for (size_t j = 0; j < new_symbol->data_values_count; j++) {
+        printf("%s ", ((char **)new_symbol->value)[j]);
     }
     printf("\n");
     printf("???\n");
