@@ -1,3 +1,24 @@
 xyz: .data 7, -57, +17, 9
 mov xyz, r1
 abc: .string "danielle"
+xyz: .data 7, -57, +17, 9
+mov xyz, r1
+abc: .string "danielle"
+xyz: .data 7, -57, +17, 9
+mov xyz, r1
+abc: .string "danielle"
+xyz: .data 7, -57, +17, 9
+mov xyz, r1
+abc: .string "danielle"
+xyz: .data 7, -57, +17, 9
+mov xyz, r1
+abc: .string "danielle"
+xyz: .data 7, -57, +17, 9
+mov xyz, r1
+abc: .string "danielle"
+xyz: .data 7, -57, +17, 9
+mov xyz, r1
+abc: .string "danielle"
+xyz: .data 7, -57, +17, 9
+mov xyz, r1
+abc: .string "danielle"

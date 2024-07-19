@@ -36,11 +36,23 @@ int main(int argc, char *argv[]) {
     //call the second_run function with the LinesArray table
 //    start_second_run(assembly_lines_array);
 
-    for(int i=0; i<3;i++){
+    printf("get all labels:\n");
+    for(int i=0; i<symbol_table.size;i++){
         printf("label - %s, data :\n", symbol_table.symbols[i].label);
         for (size_t j = 0; j < symbol_table.symbols[i].data_values_count; j++) {
             printf("%s ", ((char **)symbol_table.symbols[i].value)[j]);
         }
+    }
+    printf("Get all instructions:\n");
+    for(int k=0; k<2;k++){
+        printf("line - \n");
+
+        printf("%s \n", assembly_lines_array.lines[k].line_content);
+        printf("first_operand - \n");
+        printf("%s \n", assembly_lines_array.lines[k].first_operand);
+        printf("second_operand - \n");
+        printf("%s \n", assembly_lines_array.lines[k].second_operand);
+
     }
 
 

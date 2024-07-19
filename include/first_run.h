@@ -18,7 +18,7 @@ int handleMacroDefinition(FILE *file, MacroTable *macroTable, const char *firstL
 void expandMacro(const Macro *macro, FILE *outputFile);
 void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTable *symbol_table);
 void read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, int is_in_macro, LinesArray *lines_array);
-void handleCommand(char *line, int *ic, LinesArray *lines_array);
+void handleCommand(char *line, int *ic, LinesArray *lines_array, SymbolTable *symbol_table);
 int ignore_line(char *line);
 char* skip_spaces(char *line);
 int find_label(char *line, char *label);
@@ -30,14 +30,16 @@ void pre_run(char *line, MacroTable *macroTable, char **macroNames, SymbolTable 
 int get_operand_opcode(char *command_name);
 bool isEntryDirective(char *line);
 
-void handleDataDirective(char *line, int *dc);
-void handleStringDirective(char *line, int *dc);
+void handleDataDirective();
+void handleStringDirective();
 void initMacroNameArray(char **macroNames);
 
 void writeExpandedMacrosToFile(MacroTable *table);
 int write_line_to_file(char *line);
-int get_operands_number_for_command(int command_opcode);
-void define_operands_from_line(int operand_number_value, char *first_operand, char *second_operand, char* line);
+void getOperandData(char* command_name, InstructionLine *instruction_line);
+void defineOperandsFromLine(int operand_number_value, char *first_operand, char *second_operand, char* line);
 void classify_operand(const char *operand, int *operand_type);
-void handleData(char *line, int *dc, SymbolTable *symbol_table, Symbol *new_symbol);
+void handleDirectives(char *line, int *dc, SymbolTable *symbol_table, Symbol *new_symbol);
+int checkIfOperandLabel(char *operand, SymbolTable *symbol_table);
+void debuggingData(Symbol *new_symbol);
 #endif //ASSEMBLER_FIRST_RUN_H
