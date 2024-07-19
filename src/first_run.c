@@ -319,19 +319,19 @@ void handleCommand(char *line, int *ic, LinesArray *lines_array, SymbolTable *sy
 
 
     // Check if operands are labels and handle them accordingly
-    int label_index_a = checkIfOperandLabel(src_operand, symbol_table);
-    if (label_index_a != -1) {
-        printf("src operand is label!\n");
-        // Handle label properly - assume some appropriate handling, e.g., converting to a string representation
-        snprintf(src_operand, MAX_OPERAND_SIZE, "%d", label_index_a);
-    }
-
-    int label_index_b = checkIfOperandLabel(dst_operand, symbol_table);
-    if (label_index_b != -1) {
-        printf("dst operand is label!\n");
-        // Handle label properly - assume some appropriate handling, e.g., converting to a string representation
-        snprintf(dst_operand, MAX_OPERAND_SIZE, "%d", label_index_b);
-    }
+//    int label_index_a = checkIfOperandLabel(src_operand, symbol_table);
+//    if (label_index_a != -1) {
+//        printf("src operand is label!\n");
+//        // Handle label properly - assume some appropriate handling, e.g., converting to a string representation
+//        snprintf(src_operand, MAX_OPERAND_SIZE, "%d", &(symbol_table->symbols[label_index_a].value));
+//    }
+//
+//    int label_index_b = checkIfOperandLabel(dst_operand, symbol_table);
+//    if (label_index_b != -1) {
+//        printf("dst operand is label!\n");
+//        // Handle label properly - assume some appropriate handling, e.g., converting to a string representation
+//        snprintf(dst_operand, MAX_OPERAND_SIZE, "%d", label_index_b);
+//    }
 
     classify_operand(src_operand, &src_operand_classification_type);
     classify_operand(dst_operand, &dst_operand_classification_type);
