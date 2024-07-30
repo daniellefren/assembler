@@ -1,3 +1,34 @@
-xyz: .data 7, -57, +17, 9
-mov xyz, r1
-abc: .string "danielle"
+mov #-1, r2
+inc *r1
+.data 1, 2, -1, 5mov #-1, r2
+inc *r1
+.data 1, 2, -1, 5mov #-1, r2
+inc *r1
+.data 1, 2, -1, 5mov #-1, r2
+inc *r1
+.data 1, 2, -1, 5mov #-1, r2
+inc *r1
+.data 1, 2, -1, 5mov #-1, r2
+inc *r1
+.data 1, 2, -1, 5.entry list
+.extern fn1
+main: add r3, list
+jsr fn1
+loop: prn #48
+lea str, r6
+inc r6
+mov *r6, l3
+sub r1, r4
+cmp r3, #-6
+bne end
+add r7, *r6
+clr k
+sub l3, l3
+.entry main
+jmp loop
+end: stop
+str: .string “abcd”
+list: .data 6, -9
+.data -100
+k: .data 31
+.extern l3
