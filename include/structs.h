@@ -7,20 +7,57 @@
 #define INITIAL_IC 100
 #define MAX_MACRO_LENGTH 100
 
+typedef struct {
+    char label[MAX_LABEL_LENGTH];
+    int type; //.data or .string
+    char **value;
+    size_t data_values_count; // count of data values
+} Directive
+//} Symbol;
+
+typedef struct {
+    char name[MAX_LABEL_LENGTH];
+    int type; //command or data directive
+    int address;
+} Label
+
+typedef struct {
+    Symbol *labels;
+    size_t size;
+    size_t capacity;
+} LabelTable
+
+typedef struct {
+    char *value;
+    int type; // Label or register or number TODO - change to enum
+    enum operand_classification_type classification_type; // int containing enum values for first operand classification type
+    Symbol symbol;
+} Operand;
+
+typedef struct {
+    char *command_name;
+    enum opcode_command opcode_command_type; // enum containing enum values for opcode command types if it's an opcode
+    unsigned int operand_number; //int containing the operand number
+    Operand first_operand; // TODO - change so it will work
+    Operand second_operand;
+} Command;
 
 typedef struct {
     char *line_content; // String containing the assembly instruction (content of the line)
     size_t length;  // Length of the line (excluding null terminator)
-    int instruction_type; //is it directive or command
-    unsigned int operand_number; //int containing the operand number
-    char *first_operand; // string containing the first operand r0-r7(can be null)
-    enum operand_classification_type first_operand_classification_type; // int containing enum values for first operand classification type
-    char *second_operand; // string containing the second operand r0-r7(can be null)
-    enum operand_classification_type second_operand_classification_type; // int containing enum values for second_operand classification type
-    enum opcode_command opcode_command_type; // enum containing enum values for opcode command types if it's an opcode
-    enum directives directive_type; // enum containing enum values for directive type if it's a directive
-    int *data_values; // array of data values from the directive
-    size_t data_values_count; // count of data values
+    int instruction_type; //is it data directive or command
+    int is_label; // is there a label with the command
+//    unsigned int operand_number; //int containing the operand number
+    Command command;
+    Directive directive;
+    Label label;
+//    char *first_operand; // string containing the first operand r0-r7(can be null)
+//    int first_operand_type; // Label or register or number
+//    enum operand_classification_type first_operand_classification_type; // int containing enum values for first operand classification type
+//    char *second_operand; // string containing the second operand r0-r7(can be null)
+//    int second_operand_type; // Label or register or number
+//    enum operand_classification_type second_operand_classification_type; // int containing enum values for second_operand classification type
+//    enum opcode_command opcode_command_type; // enum containing enum values for opcode command types if it's an opcode
     char *binary_instruction; //the line in binary instruction
 } InstructionLine;
 
@@ -32,18 +69,9 @@ typedef struct {
     size_t capacity;  // Maximum capacity of the lines array
 } LinesArray;
 
-typedef struct {
-    char label[MAX_LABEL_LENGTH];
-    int type; //.data or .string
-    char **value;
-    size_t data_values_count; // count of data values
-} Symbol;
 
-typedef struct {
-    Symbol *symbols;
-    size_t size;
-    size_t capacity;
-} SymbolTable;
+
+
 
 typedef struct {
     char* label;
@@ -69,13 +97,6 @@ typedef struct {
     int count;
     int capacity;
 } MacroTable;
-
-typedef struct {
-    char *command_name;
-    int opcode;
-    int num_of_operands;
-
-} Command;
 
 
 void free_lines_array(LinesArray *lines_array_pointer);

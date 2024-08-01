@@ -3,8 +3,10 @@
 #include "../include/second_run.h"
 
 //TODO - now the labels are not case sensitive
-
+//TODO - handle ic and dc
+// TODO - Add function that defines how many lines there is in an assembly command
 int main(int argc, char *argv[]) {
+    //TODO - add operand type
     FILE *file;
     int ic, dc = 0;
     int return_value;

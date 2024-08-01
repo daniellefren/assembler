@@ -11,7 +11,7 @@
 #include "../include/constants.h"
 #include "../include/utils.h"
 
-char macroFileName[] = "expanded_macros.txt";
+char macroFileName[] = "expanded_macros.am";
 
 Command commands_struct[] = {
         {"mov", MOV, 2},
@@ -126,8 +126,14 @@ void read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, int is_i
             fprintf(stderr, "Memory allocation error\n");
             exit(EXIT_FAILURE);
         }
-        strcpy(new_symbol->label, label);
-        handleDirectives(line, dc, symbol_table, new_symbol);
+        if(hasLabel) {
+            strcpy(new_symbol->label, label);
+            handleDirectives(line, dc, symbol_table, new_symbol);
+        }
+        else{
+            printf("TODO");
+            //TODO - this part
+        }
         printf("End isDataDirective");
     }
     else if (is_command(line, ic)) {
