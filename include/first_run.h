@@ -36,7 +36,7 @@ void initMacroNameArray(char **macroNames);
 
 void writeExpandedMacrosToFile(MacroTable *table);
 int write_line_to_file(char *line);
-void getOperandData(char* command_name, InstructionLine *instruction_line);
+void getCommandData(char* command_name, InstructionLine *instruction_line);
 void defineOperandsFromLine(int operand_number_value, char *first_operand, char *second_operand, char* line);
 void classify_operand(const char *operand, int *operand_type);
 void handleDirectives(char *line, int *dc, SymbolTable *symbol_table, Symbol *new_symbol);

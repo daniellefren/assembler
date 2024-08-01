@@ -120,7 +120,7 @@ void read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, int is_i
     printf("here?");
 
     if (isDataDirective(line)) {
-        printf("isDataDirective");
+        printf("starting isDataDirective");
         Symbol *new_symbol = (Symbol *)malloc(10 * sizeof(Symbol));
         if (new_symbol == NULL) {
             fprintf(stderr, "Memory allocation error\n");
@@ -128,7 +128,7 @@ void read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, int is_i
         }
         strcpy(new_symbol->label, label);
         handleDirectives(line, dc, symbol_table, new_symbol);
-
+        printf("End isDataDirective");
     }
     else if (is_command(line, ic)) {
         printf("is command");
@@ -287,6 +287,7 @@ void handleCommand(char *line, int *ic, LinesArray *lines_array, SymbolTable *sy
     instruction_line->length = strlen(line);
     instruction_line->instruction_type = IS_COMMAND;
 
+    //TODO: insert to init function
     // Initialize other members
     instruction_line->first_operand = NULL;
     instruction_line->second_operand = NULL;
@@ -312,8 +313,8 @@ void handleCommand(char *line, int *ic, LinesArray *lines_array, SymbolTable *sy
 
     char command_name[MAX_COMMAND_LEN];
     sscanf(line, "%s", command_name);
-    // Ensure getOperandData and defineOperandsFromLine handle their parameters correctly
-    getOperandData(command_name, instruction_line);
+    // Ensure getCommandData and defineOperandsFromLine handle their parameters correctly
+    getCommandData(command_name, instruction_line);
 
     defineOperandsFromLine(instruction_line->operand_number, src_operand, dst_operand, line);
 
@@ -332,7 +333,7 @@ void handleCommand(char *line, int *ic, LinesArray *lines_array, SymbolTable *sy
 //        // Handle label properly - assume some appropriate handling, e.g., converting to a string representation
 //        snprintf(dst_operand, MAX_OPERAND_SIZE, "%d", label_index_b);
 //    }
-
+    //TODO - check if label already set if label
     classify_operand(src_operand, &src_operand_classification_type);
     classify_operand(dst_operand, &dst_operand_classification_type);
 
@@ -445,50 +446,9 @@ void classify_operand(const char *operand, int *operand_type) {
 //    *operand_type = METHOD_UNKNOWN; // Invalid operand
 }
 
-
-int get_operand_opcode(char *command_name){
-    //TODO - take from command_struct
-    unsigned int operand_number;
-    if (strcmp(command_name, "mov") == 0) {
-        operand_number = MOV;
-    } else if (strcmp(command_name, "cmp") == 0) {
-        operand_number = CMP;
-    } else if (strcmp(command_name, "add") == 0) {
-        operand_number = ADD;
-    } else if (strcmp(command_name, "sub") == 0) {
-        operand_number = SUB;
-    } else if (strcmp(command_name, "not") == 0) {
-        operand_number = NOT;
-    } else if (strcmp(command_name, "clr") == 0) {
-        operand_number = CLR;
-    } else if (strcmp(command_name, "lea") == 0) {
-        operand_number = LEA;
-    } else if (strcmp(command_name, "inc") == 0) {
-        operand_number = INC;
-    } else if (strcmp(command_name, "dec") == 0) {
-        operand_number = DEC;
-    } else if (strcmp(command_name, "jmp") == 0) {
-        operand_number = JMP;
-    } else if (strcmp(command_name, "bne") == 0) {
-        operand_number = BNE;
-    } else if (strcmp(command_name, "red") == 0) {
-        operand_number = RED;
-    } else if (strcmp(command_name, "prn") == 0) {
-        operand_number = PRN;
-    } else if (strcmp(command_name, "jsr") == 0) {
-        operand_number = JSR;
-    } else if (strcmp(command_name, "rts") == 0) {
-        operand_number = RTS;
-    } else if (strcmp(command_name, "stop") == 0) {
-        operand_number = STOP;
-    }
-
-    return operand_number;
-}
-
 // Get the number of operands should be in the given command
-void getOperandData(char* command_name, InstructionLine *instruction_line){
-    printf("getOperandData");
+void getCommandData(char* command_name, InstructionLine *instruction_line){
+    printf("getCommandData");
     int num_commands = sizeof(commands_struct) / sizeof(commands_struct[0]); // Calculate number of instructions
     int command_opcode;
     for (int i = 0; i < num_commands; i++) {
@@ -544,7 +504,7 @@ int is_command(char *line, int *ic) {
     while (*line && isspace((unsigned char)*line)) {
         line++;
     }
-    for (int i = 0; i < sizeof(commands) / sizeof(commands[0]); i++) {
+    for (int i = 0; i < sizeof(commands); i++) {
 
         if (strncmp(line, commands[i], strlen(commands[i])) == 0) {
             return 1;
