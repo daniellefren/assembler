@@ -71,7 +71,6 @@ void create_first_part_binary_from_instruction_line_opcode(InstructionLine instr
     set_binary_string_operand_representation(first_operand_classification, second_operand_classification, binary_string);
     set_binary_string_ARE_representation(binary_string,binary_string_number);
 }
-
 void set_binary_string_operand_representation(int first_operand_classification_type, int second_operand_classification_type, char *binary_string) {
 
     int operand_binary_classification_size = 4;
