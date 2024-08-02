@@ -105,9 +105,10 @@ void read_line(char *line, LabelTable *label_table, int *ic, int *dc, int is_in_
     line = skip_spaces(line);
 
     InstructionLine *new_instruction_line;
+
     init_instruction_line(new_instruction_line, line);
     printf("Get instruction line %s", new_instruction_line->line_content);
-
+    Label *new_label;
     hasLabel = find_label(line, label);
 
     if (hasLabel) {
@@ -117,7 +118,12 @@ void read_line(char *line, LabelTable *label_table, int *ic, int *dc, int is_in_
         while (*line && isspace((unsigned char)*line)) {
             line++;
         }
-        Label new_label = (Label *)malloc(10 * sizeof(Label));
+        new_label = (Label *)malloc(10 * sizeof(Label));
+        if (new_label == NULL) {
+            fprintf(stderr, "Memory allocation error for directive\n");
+            exit(EXIT_FAILURE);
+        }
+
         strcpy(new_label->name, label);
         new_instruction_line->is_label=1;
         new_instruction_line->label = *new_label;
@@ -127,7 +133,7 @@ void read_line(char *line, LabelTable *label_table, int *ic, int *dc, int is_in_
 
     if (isDataDirective(line)) { // If .data or .String
         printf("starting isDataDirective");
-        new_instruction_line->instruction_type=DIRECTIVE
+        new_instruction_line->instruction_type=DATA_DIRECTIVE;
         if(hasLabel){
             new_label->type = DATA_DIRECTIVE;
         }
@@ -152,13 +158,13 @@ void read_line(char *line, LabelTable *label_table, int *ic, int *dc, int is_in_
             new_label->type = COMMAND;
         }
 
-        Command new_command = (Command *)malloc(10 * sizeof(Command));
+        Command *new_command = (Command *)malloc(10 * sizeof(Command));
         if (new_command == NULL) {
             fprintf(stderr, "Memory allocation error for directive\n");
             exit(EXIT_FAILURE);
         }
 
-        handleCommand(line, ic, lines_array, new_command, new_instruction_line);
+        handleCommand(line, ic, new_command);
 
         new_instruction_line->command = *new_command;
     }
@@ -314,7 +320,7 @@ void expandMacro(const Macro *macro, FILE *outputFile) {
     }
 }
 
-void handleCommand(char *line, int *ic, LinesArray *lines_array, Command *new_command, InstructionLine new_instruction_line) {
+void handleCommand(char *line, int *ic, Command *new_command) {
     printf("handleCommand\n");
 
     new_command->src_operand = (Operand *)malloc(sizeof(Operand));
@@ -324,15 +330,13 @@ void handleCommand(char *line, int *ic, LinesArray *lines_array, Command *new_co
     int opcode_command_type;
 
     // Allocate memory for operands
-    char *(new_command->src_operand->value) = (char *)malloc(MAX_OPERAND_SIZE * sizeof(char));
-    char *(new_command->dst_operand->value) = (char *)malloc(MAX_OPERAND_SIZE * sizeof(char));
+    *(new_command->src_operand->value) = (char *)malloc(MAX_OPERAND_SIZE * sizeof(char));
+    *(new_command->dst_operand->value) = (char *)malloc(MAX_OPERAND_SIZE * sizeof(char));
 
     if (!(new_command->src_operand->value) || !(new_command->dst_operand->value)) {
         fprintf(stderr, "Memory allocation error for operands\n");
-        free(new_instruction_line->line_content);
-        free(new_instruction_line);
-        free(new_command->src_operand);
-        free(new_command->src_operand);
+        free(new_command->src_operand->value);
+        free(new_command->dst_operand->value);
         exit(EXIT_FAILURE);
     }
 
@@ -340,23 +344,15 @@ void handleCommand(char *line, int *ic, LinesArray *lines_array, Command *new_co
 
     getCommandData(new_command->command_name, new_command);
 
-
-
     defineOperandsFromLine(new_command, line);
     //TODO- Define operand type - label/number/address/register
-
 
     classify_operand(new_command->src_operand);
     classify_operand(new_command->dst_operand);
 
-    // Add instruction line to lines array
-
-
     // Free allocated memory
-    free(src_operand);
-    free(dst_operand);
-    free(new_instruction_line->line_content); // Ensure this is freed after it's no longer needed
-    free(new_instruction_line);
+    free(new_command->src_operand);
+    free(new_command->dst_operand);
 
     (*ic)++;
 }
@@ -423,13 +419,13 @@ void defineOperandsFromLine(Command *new_command, char* line){
 
 //classify the operand addressing mode
 void classify_operand(Operand *new_operand) {
-    *new_operand->classification_type = METHOD_UNKNOWN; // set default
+    new_operand->classification_type = METHOD_UNKNOWN; // set default
 
     // Immediate addressing - starts with #
     if (new_operand->value[0] == '#') {
         // Check if the rest is a valid integer
         for (int i = 1; new_operand->value[i] != '\0'; ++i) {
-            if (!isdigit(new_operand->value[i]) && operand[i] != '-') {
+            if (!isdigit(new_operand->value[i]) && new_operand->value[i] != '-') {
                 *new_operand->classification_type = METHOD_UNKNOWN; // Invalid operand
             }
         }

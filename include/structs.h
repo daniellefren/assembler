@@ -94,12 +94,12 @@ typedef struct {
 
 void free_lines_array(LinesArray *lines_array_pointer);
 
-InstructionLine *init_instruction_line(InstructionLine *instruction_line_pointer);
+void *init_instruction_line(InstructionLine *instruction_line_pointer, char* line);
 void free_instruction_line(InstructionLine *instruction_line_pointer);
 LinesArray *generate_instruction_line_array(int max_lines, LinesArray *my_lines_array);
 char *get_instruction_line_binary(LinesArray *linesArray, int number_of_line);
 void addInstructionLine(LinesArray *lines_array, InstructionLine *instruction_line);
-//void addNewSymbol(SymbolTable *symbol_table, Symbol *symbol);
-//void init_lines_array(LinesArray *lines_array, int initial_capacity);
-//void init_label_table(SymbolTable *symbol_table, int initial_capacity);
+void addNewLabel(LabelTable *label_table, Label *new_label);
+void init_lines_array(LinesArray *lines_array, int initial_capacity);
+void init_label_table(LabelTable *label_table, int initial_capacity);
 #endif
