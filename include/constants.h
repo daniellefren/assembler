@@ -55,10 +55,9 @@ enum instruction_types {
 
 enum operand_types {
     REGISTER = 0,
-    ADDRESS = 1,
-    INTEGER = 2,
-    LABEL = 3,
-    UNKNOWN = 4
+    INTEGER = 1,
+    LABEL = 2,
+    INVALID = 3
 };
 
 

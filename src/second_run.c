@@ -8,7 +8,7 @@
 
 #define BINARY_INSTRUCTION_MAX_LENGTH 46
 #define BINARY_LINE_LENGTH 15
-
+/*
 void start_second_run(LinesArray *assembly_lines_array){
     printf("Starting Second run \n");
     //Allocation
@@ -158,3 +158,4 @@ bool instruction_line_has_three_binary_words(InstructionLine instructionLine) {
     return false;
 }
 
+*/

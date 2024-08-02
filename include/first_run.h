@@ -18,7 +18,7 @@ int handleMacroDefinition(FILE *file, MacroTable *macroTable, const char *firstL
 void expandMacro(const Macro *macro, FILE *outputFile);
 void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, LabelTable *label_table);
 void read_line(char *line, LabelTable *label_table, int *ic, int *dc, int is_in_macro, LinesArray *lines_array);
-void handleCommand(char *line, int *ic, Command *new_command);
+void handleCommand(char *line, int *ic, Command *new_command, LabelTable *label_table);
 int ignore_line(char *line);
 char* skip_spaces(char *line);
 int find_label(char *line, char *label);
@@ -43,6 +43,6 @@ void handleDirectives(char *line, int *dc, Directive *new_directive);
 int checkIfOperandLabel(char *operand, LabelTable *label_table);
 void debuggingData(Directive *new_directive);
 void init_instruction_line(InstructionLine *new_instruction_line, char* line);
-void defineOperandTypes(Command *new_command);
+void defineOperandTypes(Operand *operand, LabelTable *label_table);
 
 #endif //ASSEMBLER_FIRST_RUN_H

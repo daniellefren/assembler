@@ -162,7 +162,7 @@ void read_line(char *line, LabelTable *label_table, int *ic, int *dc, int is_in_
             exit(EXIT_FAILURE);
         }
 
-        handleCommand(line, ic, new_command);
+        handleCommand(line, ic, new_command, label_table);
 
         new_instruction_line->command = new_command;
 
@@ -325,7 +325,7 @@ void expandMacro(const Macro *macro, FILE *outputFile) {
     }
 }
 
-void handleCommand(char *line, int *ic, Command *new_command) {
+void handleCommand(char *line, int *ic, Command *new_command, LabelTable *label_table) {
     printf("handleCommand\n");
 
     new_command->src_operand = (Operand *)malloc(sizeof(Operand));
@@ -350,8 +350,9 @@ void handleCommand(char *line, int *ic, Command *new_command) {
     getCommandData(new_command->command_name, new_command);
 
     defineOperandsFromLine(new_command, line);
-    defindOperandTypes(new_command);
-    //TODO- Define operand type - label/number/address/register
+    defineOperandTypes(new_command->src_operand, label_table);
+    defineOperandTypes(new_command->dst_operand, label_table);
+
 
     classify_operand(new_command->src_operand);
     classify_operand(new_command->dst_operand);
@@ -420,23 +421,33 @@ void defineOperandsFromLine(Command *new_command, char* line){
     }
 }
 
-void defineOperandTypes(Command *new_command){
-    int operand_type;
+void defineOperandTypes(Operand *operand, LabelTable *label_table){
+    operand->type = INVALID;
     int is_valid = 1;
     if (new_operand->value[0] == '#') {
         // Check if the rest is a valid integer
         for (int i = 1; new_operand->value[i] != '\0'; ++i) {
             if (!isdigit(new_operand->value[i]) && new_operand->value[i] != '-') {
-                operand_type = UNKNOWN;
                 is_valid = 0;
             }
         }
         if(is_valid){
-            operand_type = ADDRESS;
+            operand->type = INTEGER;
+        }
+    }
+    else if (new_operand->value[0] == '*') {
+        if (new_operand->value[1] == 'r' && isdigit(new_operand->value[2])){
+                operand->type = REGISTER;
         }
     }
 
+    else if (new_operand->value[0] == 'r' && isdigit(new_operand->value[1])){
+            operand->type = REGISTER;
+    }
 
+    else if(labelExists(label_table, new_operand->value)){
+        operand->type = LABEL
+    }
 }
 
 //classify the operand addressing mode
@@ -444,36 +455,24 @@ void classify_operand(Operand *new_operand) {
     new_operand->classification_type = METHOD_UNKNOWN; // set default
 
     // Immediate addressing - starts with #
-    if (new_operand->value[0] == '#') {
-        // Check if the rest is a valid integer
-        for (int i = 1; new_operand->value[i] != '\0'; ++i) {
-            if (!isdigit(new_operand->value[i]) && new_operand->value[i] != '-') {
-                new_operand->classification_type = METHOD_UNKNOWN; // Invalid operand
-            }
-        }
-
+    if (new_operand->type == INTEGER) {
         new_operand->classification_type = IMMEDIATE; // Immediate addressing
+    }
+    else if(new_operand->type == LABEL){
+        //TODO - what if the label is defined after
+        new_operand->classification_type = DIRECT; // Direct addressing
     }
 
     // Register indirect addressing - starts with *
-    if (new_operand->value[0] == '*') {
-        if (new_operand->value[1] == 'r' && isdigit(new_operand->value[2])) {
-            new_operand->classification_type = INDIRECT_REGISTER; // Register indirect addressing
-        }
-        new_operand->classification_type = METHOD_UNKNOWN; // Invalid operand
+    else if (new_operand->value[0] == '*' && new_operand->type == REGISTER) {
+            new_operand->classification_type = INDIRECT_REGISTER; // Indirect Register addressing
     }
 
     // Register addressing - starts with r followed by a digit
-    if (new_operand->value[0] == 'r' && isdigit(new_operand->value[1])) {
-        new_operand->classification_type = DIRECT_REGISTER; // Register addressing
+    else if (new_operand->type == REGISTER) {
+        new_operand->classification_type = DIRECT_REGISTER; // Direct Register addressing
     }
 
-    // Direct addressing - assume any other valid identifier is a label
-    // TODO
-//    *operand_type = DIRECT; // Direct addressing
-
-
-//    *operand_type = METHOD_UNKNOWN; // Invalid operand
 }
 
 // Get the number of operands should be in the given command
