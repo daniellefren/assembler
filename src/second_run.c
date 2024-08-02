@@ -20,10 +20,10 @@ void start_second_run(LinesArray *assembly_lines_array){
 
     printf("Starting to print The lines Binary: \n");
     for (int i = 0; i < assembly_lines_array->number_of_line; ++i) {
-        InstructionLine *p_line = &assembly_lines_array.lines[i];
+        InstructionLine *p_line = assembly_lines_array.lines[i];
         allocate_binary_instruction(p_line, p_line->binary_line_count, BINARY_LINE_LENGTH);
         printf("Line number %d binary -  \n", i);
-        return_instruction_line_in_binary(&p_line);
+        fill_instruction_line_binary(p_line);
         printf("The binary representation of the line is %s \n", assembly_lines_array->lines[i].binary_instruction );
     }
 
@@ -37,7 +37,7 @@ void start_second_run(LinesArray *assembly_lines_array){
 }
 
 
-void *return_instruction_line_in_binary(InstructionLine *instruction_line){
+void fill_instruction_line_binary(InstructionLine *instruction_line){
     // check if it's an opcode or directive if it's an opcode
     // create first word binary (15)
     // check how many word needed
@@ -46,8 +46,11 @@ void *return_instruction_line_in_binary(InstructionLine *instruction_line){
     // if it's directive .....
 
     if (is_instruction_line_opcode(instruction_line)){
-        char first_part_binary[16];
-        char second_part_binary[31];
+        char binary_line[(instruction_line->binary_line_count * BINARY_LINE_LENGTH) + 1];
+        if (instruction_line->binary_line_count == 2){
+            char binary_line[];
+        }
+
         create_first_part_binary_from_instruction_line_opcode(instruction_line, first_part_binary, sizeof(first_part_binary));
         printf("First part binary - %s \n", first_part_binary);
 
@@ -61,7 +64,6 @@ void *return_instruction_line_in_binary(InstructionLine *instruction_line){
     else if(is_instruction_line_directive(instruction_line)){
 
     }
-    return 'd';
 }
 
 void create_first_part_binary_from_instruction_line_opcode(InstructionLine instruction_line, char *binary_string, int size_of_binary) {

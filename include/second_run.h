@@ -2,7 +2,7 @@
 #define ASSEMBLER_SECOND_RUN_H
 
 void start_second_run(LinesArray *assembly_lines_array);
-char *return_instruction_line_in_binary(InstructionLine instruction_line);
+void fill_instruction_line_binary(InstructionLine *instruction_line);
 bool is_instruction_line_directive(InstructionLine instructionLine);
 bool is_instruction_line_opcode(InstructionLine instructionLine);
 void set_binary_string_opcode_representation(int opcode, char* binary_string);
