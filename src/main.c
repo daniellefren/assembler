@@ -13,10 +13,10 @@ int main(int argc, char *argv[]) {
 
 
     LinesArray assembly_lines_array; // Use struct, not a pointer
-    SymbolTable symbol_table;
+    LabelTable label_table;
 
 
-    init_symbol_table(&symbol_table, 10);
+    init_label_table(&label_table, 10);
     init_lines_array(&assembly_lines_array, 10);
 
 
@@ -34,17 +34,10 @@ int main(int argc, char *argv[]) {
 
 
     // Call the first_run function with the file pointer
-    first_run(file, &ic, &dc, &assembly_lines_array, &symbol_table);
+    first_run(file, &ic, &dc, &assembly_lines_array, &label_table);
     //call the second_run function with the LinesArray table
 //    start_second_run(assembly_lines_array);
 
-    printf("get all labels:\n");
-    for(int i=0; i<symbol_table.size;i++){
-        printf("label - %s, data :\n", symbol_table.symbols[i].label);
-        for (size_t j = 0; j < symbol_table.symbols[i].data_values_count; j++) {
-            printf("%s ", ((char **)symbol_table.symbols[i].value)[j]);
-        }
-    }
     printf("Get all instructions:\n");
     for(int k=0; k<2;k++){
         printf("line - \n");

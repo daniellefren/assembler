@@ -21,18 +21,18 @@ void init_lines_array(LinesArray *lines_array, int initial_capacity) {
     lines_array->capacity = initial_capacity;
 }
 
-void init_symbol_table(SymbolTable *symbol_table, int initial_capacity) {
-    if (!symbol_table) {
+void init_label_table(LabelTable *label_table, int initial_capacity) {
+    if (!label_table) {
         fprintf(stderr, "Error: SymbolTable pointer is NULL\n");
         exit(EXIT_FAILURE);
     }
-    symbol_table->symbols = (Symbol *)malloc(initial_capacity * sizeof(Symbol));
-    if (!symbol_table->symbols) {
+    label_table->labels = (Label *)malloc(initial_capacity * sizeof(Label));
+    if (!label_table->labels) {
         fprintf(stderr, "Memory allocation failed for symbols array\n");
         exit(EXIT_FAILURE);
     }
-    symbol_table->size = 0;
-    symbol_table->capacity = initial_capacity;
+    label_table->size = 0;
+    label_table->capacity = initial_capacity;
 }
 
 void free_lines_array(LinesArray *lines_array) {
@@ -45,13 +45,6 @@ void free_lines_array(LinesArray *lines_array) {
     }
 
     free(lines_array);  // Free the memory allocated for LinesArray struct itself
-}
-
-
-
-/* Instruction lines functions*/
-InstructionLine *init_instruction_line(InstructionLine *instruction_line_pointer){
-    return NULL;
 }
 
 
@@ -153,3 +146,4 @@ void addNewSymbol(SymbolTable *symbol_table, Symbol *symbol) {
     symbol_table->symbols[symbol_table->size] = *symbol;
     symbol_table->size++;
 }
+

@@ -48,6 +48,11 @@ enum opcode_command_operands {
     STOP_OPERANDS = 0,   // STOP instruction uses 0 operands
 };
 
+enum instruction_types {
+    COMMAND = 1,
+    DATA_DIRECTIVE = 2
+};
+
 
 
 
