@@ -34,9 +34,9 @@ int main(int argc, char *argv[]) {
 
 
     // Call the first_run function with the file pointer
-    //first_run(file, &ic, &dc, &assembly_lines_array, &label_table);
+    first_run(file, &ic, &dc, &assembly_lines_array, &label_table);
     //call the second_run function with the LinesArray table
-    start_second_run(assembly_lines_array);
+//    start_second_run(assembly_lines_array);
 
    // printf("Get all instructions:\n");
     //for(int k=0; k<2;k++){
@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
         //printf("second_operand - \n");
         //printf("%s \n", assembly_lines_array.lines[k].second_operand);
 
-    }
+
 
 //    return_value = second_run();
 //    printf("the value is %d", return_value);

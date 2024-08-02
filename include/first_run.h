@@ -41,5 +41,7 @@ void defineOperandsFromLine(Command *new_command, char* line);
 void classify_operand(Operand *new_operand);
 void handleDirectives(char *line, int *dc, Directive *new_directive);
 int checkIfOperandLabel(char *operand, LabelTable *label_table);
-void debuggingData(Label *new_label);
+void debuggingData(Directive *new_directive);
+void init_instruction_line(InstructionLine *new_instruction_line, char* line);
+
 #endif //ASSEMBLER_FIRST_RUN_H
