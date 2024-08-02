@@ -10,7 +10,7 @@
 #include "../include/assembler.h"
 #include "../include/constants.h"
 #include "../include/utils.h"
-/*
+
 char macroFileName[] = "expanded_macros.am";
 
 Command commands_struct[] = {
@@ -106,7 +106,6 @@ void read_line(char *line, LabelTable *label_table, int *ic, int *dc, int is_in_
 
     InstructionLine *new_instruction_line;
 
-    init_instruction_line(new_instruction_line, line);
     printf("Get instruction line %s", new_instruction_line->line_content);
     Label *new_label;
     hasLabel = find_label(line, label);
@@ -126,7 +125,7 @@ void read_line(char *line, LabelTable *label_table, int *ic, int *dc, int is_in_
 
         strcpy(new_label->name, label);
         new_instruction_line->is_label=1;
-        new_instruction_line->label = *new_label;
+        new_instruction_line->label = new_label;
         //TODO - add label to label_table
     }
 
@@ -146,8 +145,9 @@ void read_line(char *line, LabelTable *label_table, int *ic, int *dc, int is_in_
 
         handleDirectives(line, dc, new_directive);
 
-        new_instruction_line->directive = *new_directive;
+        new_instruction_line->directive = new_directive;
 
+        free(new_directive);
         printf("End isDataDirective");
     }
     else if (is_command(line, ic)) {
@@ -166,8 +166,16 @@ void read_line(char *line, LabelTable *label_table, int *ic, int *dc, int is_in_
 
         handleCommand(line, ic, new_command);
 
-        new_instruction_line->command = *new_command;
+        new_instruction_line->command = new_command;
+
+        free(new_command);
     }
+
+    if(hasLabel){
+        new_instruction_line->label = new_label;
+        free(new_label);
+    }
+
     addInstructionLine(lines_array, new_instruction_line);
 
 }
@@ -350,17 +358,13 @@ void handleCommand(char *line, int *ic, Command *new_command) {
     classify_operand(new_command->src_operand);
     classify_operand(new_command->dst_operand);
 
-    // Free allocated memory
-    free(new_command->src_operand);
-    free(new_command->dst_operand);
-
     (*ic)++;
 }
 
 int checkIfOperandLabel(char *operand, LabelTable *label_table) {
     // Check if operand is a label and return the index in the labels array
     for (int i = 0; i < label_table->size; i++) {
-        if (strcmp(operand, label_table->labels[i].value) == 0) {
+        if (strcmp(operand, label_table->labels[i].name) == 0) {
             return i;
         }
     }
@@ -426,24 +430,24 @@ void classify_operand(Operand *new_operand) {
         // Check if the rest is a valid integer
         for (int i = 1; new_operand->value[i] != '\0'; ++i) {
             if (!isdigit(new_operand->value[i]) && new_operand->value[i] != '-') {
-                *new_operand->classification_type = METHOD_UNKNOWN; // Invalid operand
+                new_operand->classification_type = METHOD_UNKNOWN; // Invalid operand
             }
         }
 
-        *new_operand->classification_type = IMMEDIATE; // Immediate addressing
+        new_operand->classification_type = IMMEDIATE; // Immediate addressing
     }
 
     // Register indirect addressing - starts with *
     if (new_operand->value[0] == '*') {
-        if (new_operand->value[1] == 'r' && isdigit(operand[2])) {
-            *new_operand->classification_type = INDIRECT_REGISTER; // Register indirect addressing
+        if (new_operand->value[1] == 'r' && isdigit(new_operand->value[2])) {
+            new_operand->classification_type = INDIRECT_REGISTER; // Register indirect addressing
         }
-        *new_operand->classification_type = METHOD_UNKNOWN; // Invalid operand
+        new_operand->classification_type = METHOD_UNKNOWN; // Invalid operand
     }
 
     // Register addressing - starts with r followed by a digit
     if (new_operand->value[0] == 'r' && isdigit(new_operand->value[1])) {
-        *new_operand->classification_type = DIRECT_REGISTER; // Register addressing
+        new_operand->classification_type = DIRECT_REGISTER; // Register addressing
     }
 
     // Direct addressing - assume any other valid identifier is a label
@@ -461,8 +465,8 @@ void getCommandData(char* command_name, Command *new_command){
     int command_opcode;
     for (int i = 0; i < num_commands; i++) {
         if (strcmp(commands_struct[i].command_name, command_name) == 0) {
-            new_command->opcode_command_type = commands_struct[i].opcode;
-            new_command->operand_number=commands_struct[i].num_of_operands;
+            new_command->opcode_command_type = commands_struct[i].opcode_command_type;
+            new_command->operand_number=commands_struct[i].operand_number;
             return;
         }
     }
@@ -522,8 +526,8 @@ int is_command(char *line, int *ic) {
 }
 
 int labelExists(LabelTable *label_table, char *label) {
-    for (size_t i = 0; i < table->size; ++i) {
-        if (strcmp(label_table->labels[i]->value, label) == 0) {
+    for (size_t i = 0; i < label_table->size; ++i) {
+        if (strcmp(label_table->labels[i].name, label) == 0) {
             return 1;
         }
     }
@@ -658,4 +662,3 @@ void handleStringDirective() {
     // Implementation here
 }
 
-*/

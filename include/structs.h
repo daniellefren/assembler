@@ -31,15 +31,15 @@ typedef struct {
     char *value;
     int type; // Label or register or number TODO - change to enum
     enum operand_classification_type classification_type; // int containing enum values for first operand classification type
-    Label label;
+    Label *label;
 } Operand;
 
 typedef struct {
     char *command_name;
     enum opcode_command opcode_command_type; // enum containing enum values for opcode command types if it's an opcode
     unsigned int operand_number; //int containing the operand number
-    Operand src_operand; // TODO - change so it will work
-    Operand dst_operand;
+    Operand *src_operand; // TODO - change so it will work
+    Operand *dst_operand;
 } Command;
 
 typedef struct {
@@ -47,9 +47,9 @@ typedef struct {
     size_t length;  // Length of the line (excluding null terminator)
     int instruction_type; //is it data directive or command
     int is_label; // is there a label with the command
-    Command command;
-    Directive directive;
-    Label label;
+    Command *command;
+    Directive *directive;
+    Label *label;
     int binary_line_count; // the number of binary lines
     char *binary_instruction; //the line in binary instruction
 } InstructionLine;
@@ -94,7 +94,6 @@ typedef struct {
 
 void free_lines_array(LinesArray *lines_array_pointer);
 
-void *init_instruction_line(InstructionLine *instruction_line_pointer, char* line);
 void free_instruction_line(InstructionLine *instruction_line_pointer);
 LinesArray *generate_instruction_line_array(int max_lines, LinesArray *my_lines_array);
 char *get_instruction_line_binary(LinesArray *linesArray, int number_of_line);

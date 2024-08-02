@@ -55,49 +55,49 @@ void free_instruction_line(InstructionLine *instruction_line_pointer){
 #include <stdlib.h>
 #include <string.h>  // for strlen
 
-LinesArray *generate_instruction_line_array(int max_lines, LinesArray *my_lines_array) {
-    if (my_lines_array == NULL) {
-        printf("Memory allocation failed for LinesArray!\n");
-        return NULL;
-    }
-
-    my_lines_array->lines = (InstructionLine *) malloc(max_lines * sizeof(InstructionLine));
-
-    if (my_lines_array->lines == NULL) {
-        free(my_lines_array);  // Free previously allocated memory for LinesArray
-        printf("Memory allocation failed for InstructionLine array!\n");
-        return NULL;
-    }
-
-    // Initialize other members of LinesArray
-    my_lines_array->number_of_line = 0;
-    my_lines_array->capacity = max_lines;
-
-    // Add test assembly instructions (assuming you have a function to create InstructionLine)
-    InstructionLine instruction;
-
-    instruction.line_content = "MOV r2 *r2";
-    instruction.first_operand = "r1";
-    instruction.first_operand_classification_type = DIRECT_REGISTER;
-    instruction.second_operand= "*r2";
-    instruction.second_operand_classification_type = INDIRECT_REGISTER;
-    instruction.opcode_command_type = MOV;
-    instruction.operand_number = 2;
-    instruction.instruction_type = IS_COMMAND;
-    instruction.length = strlen(instruction.line_content);
-    my_lines_array->lines[my_lines_array->number_of_line++] = instruction;
-
-    instruction.line_content = "INC *r1";
-    instruction.first_operand = "*r1";
-    instruction.first_operand_classification_type = INDIRECT_REGISTER;
-    instruction.operand_number = 1;
-    instruction.opcode_command_type = INC;
-    instruction.instruction_type = IS_COMMAND;
-    instruction.length = strlen(instruction.line_content);
-    my_lines_array->lines[my_lines_array->number_of_line++] = instruction;
-
-    return my_lines_array;
-}
+//LinesArray *generate_instruction_line_array(int max_lines, LinesArray *my_lines_array) {
+//    if (my_lines_array == NULL) {
+//        printf("Memory allocation failed for LinesArray!\n");
+//        return NULL;
+//    }
+//
+//    my_lines_array->lines = (InstructionLine *) malloc(max_lines * sizeof(InstructionLine));
+//
+//    if (my_lines_array->lines == NULL) {
+//        free(my_lines_array);  // Free previously allocated memory for LinesArray
+//        printf("Memory allocation failed for InstructionLine array!\n");
+//        return NULL;
+//    }
+//
+//    // Initialize other members of LinesArray
+//    my_lines_array->number_of_line = 0;
+//    my_lines_array->capacity = max_lines;
+//
+//    // Add test assembly instructions (assuming you have a function to create InstructionLine)
+//    InstructionLine instruction;
+//
+//    instruction.line_content = "MOV r2 *r2";
+//    instruction.first_operand = "r1";
+//    instruction.first_operand_classification_type = DIRECT_REGISTER;
+//    instruction.second_operand= "*r2";
+//    instruction.second_operand_classification_type = INDIRECT_REGISTER;
+//    instruction.opcode_command_type = MOV;
+//    instruction.operand_number = 2;
+//    instruction.instruction_type = IS_COMMAND;
+//    instruction.length = strlen(instruction.line_content);
+//    my_lines_array->lines[my_lines_array->number_of_line++] = instruction;
+//
+//    instruction.line_content = "INC *r1";
+//    instruction.first_operand = "*r1";
+//    instruction.first_operand_classification_type = INDIRECT_REGISTER;
+//    instruction.operand_number = 1;
+//    instruction.opcode_command_type = INC;
+//    instruction.instruction_type = IS_COMMAND;
+//    instruction.length = strlen(instruction.line_content);
+//    my_lines_array->lines[my_lines_array->number_of_line++] = instruction;
+//
+//    return my_lines_array;
+//}
 
 char *get_instruction_line_binary(LinesArray *linesArray, int number_of_line){
     return linesArray->lines[number_of_line].binary_instruction;
@@ -132,7 +132,7 @@ void addNewLabel(LabelTable *label_table, Label *label) {
     if (label_table->size >= label_table->capacity) {
         // Double the capacity or set an initial capacity if it's zero
         size_t new_capacity = (label_table->capacity == 0) ? 10 : label_table->capacity * 2;
-        Symbol *new_labels = realloc(label_table->labels, new_capacity * sizeof(Label));
+        Label *new_labels = realloc(label_table->labels, new_capacity * sizeof(Label));
         if (!new_labels) {
             fprintf(stderr, "Error: Unable to allocate memory for lines array\n");
             exit(EXIT_FAILURE);
