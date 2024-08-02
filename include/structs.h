@@ -12,26 +12,26 @@ typedef struct {
     enum directives type; //.data or .string
     char **value;
     size_t data_values_count; // count of data values
-} Directive
+} Directive;
 //} Symbol;
 
 typedef struct {
     char name[MAX_LABEL_LENGTH];
     enum instruction_types type; //command or data directive
     int address;
-} Label
+} Label;
 
 typedef struct {
-    Symbol *labels;
+    Label *labels;
     size_t size;
     size_t capacity;
-} LabelTable
+} LabelTable;
 
 typedef struct {
     char *value;
     int type; // Label or register or number TODO - change to enum
     enum operand_classification_type classification_type; // int containing enum values for first operand classification type
-    Symbol symbol;
+    Label label;
 } Operand;
 
 typedef struct {
@@ -50,6 +50,7 @@ typedef struct {
     Command command;
     Directive directive;
     Label label;
+    int binary_line_count; // the number of binary lines
     char *binary_instruction; //the line in binary instruction
 } InstructionLine;
 
@@ -69,7 +70,7 @@ typedef struct {
     char* label;
     int type;
     char *value;
-    size_t data_values_count; // count of data values
+    size_t data_values_count; // count of data values TODO why not int?
 } Data;
 
 typedef struct {
@@ -98,7 +99,7 @@ void free_instruction_line(InstructionLine *instruction_line_pointer);
 LinesArray *generate_instruction_line_array(int max_lines, LinesArray *my_lines_array);
 char *get_instruction_line_binary(LinesArray *linesArray, int number_of_line);
 void addInstructionLine(LinesArray *lines_array, InstructionLine *instruction_line);
-void addNewSymbol(SymbolTable *symbol_table, Symbol *symbol);
-void init_lines_array(LinesArray *lines_array, int initial_capacity);
-void init_label_table(SymbolTable *symbol_table, int initial_capacity);
+//void addNewSymbol(SymbolTable *symbol_table, Symbol *symbol);
+//void init_lines_array(LinesArray *lines_array, int initial_capacity);
+//void init_label_table(SymbolTable *symbol_table, int initial_capacity);
 #endif

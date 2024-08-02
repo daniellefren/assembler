@@ -4,8 +4,10 @@
 #include <stdbool.h>
 #include "../include/structs.h"
 #include "../include/second_run.h"
+#include "../include/utils.h"
 
 #define BINARY_INSTRUCTION_MAX_LENGTH 46
+#define BINARY_LINE_LENGTH 15
 
 void start_second_run(LinesArray *assembly_lines_array){
     printf("Starting Second run \n");
@@ -18,19 +20,24 @@ void start_second_run(LinesArray *assembly_lines_array){
 
     printf("Starting to print The lines Binary: \n");
     for (int i = 0; i < assembly_lines_array->number_of_line; ++i) {
+        InstructionLine *p_line = &assembly_lines_array.lines[i];
+        allocate_binary_instruction(p_line, p_line->binary_line_count, BINARY_LINE_LENGTH);
         printf("Line number %d binary -  \n", i);
-        assembly_lines_array->lines[i].binary_instruction = calloc(31, sizeof(char));
-        assembly_lines_array->lines[i].binary_instruction = return_instruction_line_in_binary(assembly_lines_array->lines[i]);
-
+        return_instruction_line_in_binary(&p_line);
         printf("The binary representation of the line is %s \n", assembly_lines_array->lines[i].binary_instruction );
     }
+
+    for (int i = 0; i < assembly_lines_array->number_of_line; ++i) {
+        free_binary_instruction(p_line);
+    }
+
     free(assembly_lines_array[0].lines);
     free(assembly_lines_array);
 
 }
 
 
-char *return_instruction_line_in_binary(InstructionLine instruction_line){
+void *return_instruction_line_in_binary(InstructionLine *instruction_line){
     // check if it's an opcode or directive if it's an opcode
     // create first word binary (15)
     // check how many word needed
@@ -135,23 +142,6 @@ bool is_instruction_line_opcode(InstructionLine instructionLine){
     return instructionLine.directive_type != NOT_OPCODE;
 }
 
-void string_append(const char *first_string, const char *second_String, char *appended_string, size_t appended_string_size) {
-    /*
-     In calling function
-    char appended_string[100];  // Pre-allocate memory for combined string
-    string_append(string1, string2, appended_string, sizeof(appended_string_size));
-    */
-    size_t first_string_size = strlen(first_string);
-    size_t second_string_size = strlen(second_String);
-    if (first_string_size + second_string_size + 1 > appended_string_size) {
-        // Handle insufficient space in destination (e.g., return error code)
-        return;
-    }
-
-    // Copy s1 and s2 using strcpy and strcat
-    strcpy(appended_string, first_string);
-    strcat(appended_string, second_String);
-}
 
 
 
