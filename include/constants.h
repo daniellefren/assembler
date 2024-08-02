@@ -53,6 +53,14 @@ enum instruction_types {
     DATA_DIRECTIVE = 2
 };
 
+enum operand_types {
+    REGISTER = 0,
+    ADDRESS = 1,
+    INTEGER = 2,
+    LABEL = 3,
+    UNKNOWN = 4
+};
+
 
 
 

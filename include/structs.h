@@ -29,7 +29,7 @@ typedef struct {
 
 typedef struct {
     char *value;
-    int type; // Label or register or number TODO - change to enum
+    enum operand_types type; // Label or register or number TODO - change to enum
     enum operand_classification_type classification_type; // int containing enum values for first operand classification type
     Label *label;
 } Operand;

@@ -126,9 +126,8 @@ void read_line(char *line, LabelTable *label_table, int *ic, int *dc, int is_in_
         strcpy(new_label->name, label);
         new_instruction_line->is_label=1;
         new_instruction_line->label = new_label;
-        //TODO - add label to label_table
-    }
 
+    }
 
     if (isDataDirective(line)) { // If .data or .String
         printf("starting isDataDirective");
@@ -147,7 +146,6 @@ void read_line(char *line, LabelTable *label_table, int *ic, int *dc, int is_in_
 
         new_instruction_line->directive = new_directive;
 
-        free(new_directive);
         printf("End isDataDirective");
     }
     else if (is_command(line, ic)) {
@@ -168,12 +166,11 @@ void read_line(char *line, LabelTable *label_table, int *ic, int *dc, int is_in_
 
         new_instruction_line->command = new_command;
 
-        free(new_command);
     }
 
     if(hasLabel){
         new_instruction_line->label = new_label;
-        free(new_label);
+        addNewLabel(label_table, new_label);
     }
 
     addInstructionLine(lines_array, new_instruction_line);
@@ -353,11 +350,13 @@ void handleCommand(char *line, int *ic, Command *new_command) {
     getCommandData(new_command->command_name, new_command);
 
     defineOperandsFromLine(new_command, line);
+    defindOperandTypes(new_command);
     //TODO- Define operand type - label/number/address/register
 
     classify_operand(new_command->src_operand);
     classify_operand(new_command->dst_operand);
 
+    //TODO - find the number that the ic should ascend
     (*ic)++;
 }
 
@@ -419,6 +418,25 @@ void defineOperandsFromLine(Command *new_command, char* line){
             fprintf(stderr, "Invalid number of operands: %d\n", new_command->operand_number);
             exit(EXIT_FAILURE);
     }
+}
+
+void defineOperandTypes(Command *new_command){
+    int operand_type;
+    int is_valid = 1;
+    if (new_operand->value[0] == '#') {
+        // Check if the rest is a valid integer
+        for (int i = 1; new_operand->value[i] != '\0'; ++i) {
+            if (!isdigit(new_operand->value[i]) && new_operand->value[i] != '-') {
+                operand_type = UNKNOWN;
+                is_valid = 0;
+            }
+        }
+        if(is_valid){
+            operand_type = ADDRESS;
+        }
+    }
+
+
 }
 
 //classify the operand addressing mode
