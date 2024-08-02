@@ -12,26 +12,26 @@ typedef struct {
     enum directives type; //.data or .string
     char **value;
     size_t data_values_count; // count of data values
-} Directive
+} Directive;
 //} Symbol;
 
 typedef struct {
     char name[MAX_LABEL_LENGTH];
     enum instruction_types type; //command or data directive
     int address;
-} Label
+} Label;
 
 typedef struct {
-    Symbol *labels;
+    Label *labels;
     size_t size;
     size_t capacity;
-} LabelTable
+} LabelTable;
 
 typedef struct {
     char *value;
     int type; // Label or register or number TODO - change to enum
     enum operand_classification_type classification_type; // int containing enum values for first operand classification type
-    Symbol symbol;
+    Label label;
 } Operand;
 
 typedef struct {
@@ -70,7 +70,7 @@ typedef struct {
     char* label;
     int type;
     char *value;
-    size_t data_values_count; // count of data values
+    size_t data_values_count; // count of data values TODO why not int?
 } Data;
 
 typedef struct {

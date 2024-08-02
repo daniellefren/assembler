@@ -10,7 +10,7 @@
 #include "../include/assembler.h"
 #include "../include/constants.h"
 #include "../include/utils.h"
-
+/*
 char macroFileName[] = "expanded_macros.am";
 
 Command commands_struct[] = {
@@ -658,3 +658,4 @@ void handleStringDirective() {
     // Implementation here
 }
 
+*/
