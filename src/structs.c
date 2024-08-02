@@ -127,23 +127,23 @@ void addInstructionLine(LinesArray *lines_array, InstructionLine *instruction_li
     lines_array->number_of_line++;
 }
 
-void addNewSymbol(SymbolTable *symbol_table, Symbol *symbol) {
+void addNewLabel(LabelTable *label_table, Label *label) {
     // Check if the array needs to be resized
-    if (symbol_table->size >= symbol_table->capacity) {
+    if (label_table->size >= label_table->capacity) {
         // Double the capacity or set an initial capacity if it's zero
-        size_t new_capacity = (symbol_table->capacity == 0) ? 10 : symbol_table->capacity * 2;
-        Symbol *new_symbols = realloc(symbol_table->symbols, new_capacity * sizeof(Symbol));
-        if (!new_symbols) {
+        size_t new_capacity = (label_table->capacity == 0) ? 10 : label_table->capacity * 2;
+        Symbol *new_labels = realloc(label_table->labels, new_capacity * sizeof(Label));
+        if (!new_labels) {
             fprintf(stderr, "Error: Unable to allocate memory for lines array\n");
             exit(EXIT_FAILURE);
         }
 
-        symbol_table->symbols = new_symbols;
-        symbol_table->capacity = new_capacity;
+        label_table->labels = new_labels;
+        label_table->capacity = new_capacity;
     }
 
     // Add the new instruction line to the array
-    symbol_table->symbols[symbol_table->size] = *symbol;
-    symbol_table->size++;
+    label_table->labels[label_table->size] = *label;
+    label_table->size++;
 }
 
