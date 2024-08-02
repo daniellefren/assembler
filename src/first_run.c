@@ -51,7 +51,7 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, LabelTable
 
     while (fgets(line, MAX_LINE_LENGTH, expanded_macros_file) != NULL) {
         if (!ignore_line(line)) {
-            read_line(line, label_table, ic, dc, is_in_macro, lines_array);
+            read_line(line, label_table, ic, dc, lines_array);
         }
         line_num++;
     }
@@ -98,22 +98,22 @@ void pre_run(char *line, MacroTable *macroTable, char **macroNames, FILE *file) 
     }
 }
 
-void read_line(char *line, LabelTable *label_table, int *ic, int *dc, int is_in_macro, LinesArray *lines_array) {
+void read_line(char *line, LabelTable *label_table, int *ic, int *dc, LinesArray *lines_array) {
     char label[MAX_LABEL_LENGTH] = "";
     int hasLabel;
 
     line = skip_spaces(line);
 
-    InstructionLine *new_instruction_line;
+    InstructionLine *new_instruction_line = init_instruction_line(line);
 
-    printf("Get instruction line %s", new_instruction_line->line_content);
     Label *new_label;
     hasLabel = find_label(line, label);
 
+//
     if (hasLabel) {
-        // TODO - check if label is not a known word in assembly
+//         TODO - check if label is not a known word in assembly
         line = strchr(line, ':') + 1;
-        // Skip spaces after .data directive
+//         Skip spaces after .data directive
         while (*line && isspace((unsigned char)*line)) {
             line++;
         }
@@ -122,13 +122,14 @@ void read_line(char *line, LabelTable *label_table, int *ic, int *dc, int is_in_
             fprintf(stderr, "Memory allocation error for directive\n");
             exit(EXIT_FAILURE);
         }
-
+//
         strcpy(new_label->name, label);
         new_instruction_line->is_label=1;
         new_instruction_line->label = new_label;
-        //TODO - add label to label_table
-    }
 
+        new_label->address = ic;
+
+    }
 
     if (isDataDirective(line)) { // If .data or .String
         printf("starting isDataDirective");
@@ -143,11 +144,12 @@ void read_line(char *line, LabelTable *label_table, int *ic, int *dc, int is_in_
             exit(EXIT_FAILURE);
         }
 
+        printf("before handleDirectives");
         handleDirectives(line, dc, new_directive);
+        printf("after handleDirectives");
 
         new_instruction_line->directive = new_directive;
 
-        free(new_directive);
         printf("End isDataDirective");
     }
     else if (is_command(line, ic)) {
@@ -158,31 +160,51 @@ void read_line(char *line, LabelTable *label_table, int *ic, int *dc, int is_in_
             new_label->type = COMMAND;
         }
 
-        Command *new_command = (Command *)malloc(10 * sizeof(Command));
-        if (new_command == NULL) {
-            fprintf(stderr, "Memory allocation error for directive\n");
-            exit(EXIT_FAILURE);
-        }
+        Command *new_command = init_command();
 
-        handleCommand(line, ic, new_command);
+        handleCommand(line, ic, new_command, label_table);
 
         new_instruction_line->command = new_command;
 
-        free(new_command);
     }
 
     if(hasLabel){
         new_instruction_line->label = new_label;
-        free(new_label);
+        addNewLabel(label_table, new_label);
     }
 
     addInstructionLine(lines_array, new_instruction_line);
-
 }
 
-void init_instruction_line(InstructionLine *new_instruction_line, char* line){
+Command *init_command(){
+    Command *new_command = (Command *)malloc(10 * sizeof(Command));
+    if (new_command == NULL) {
+        fprintf(stderr, "Memory allocation error for directive\n");
+        exit(EXIT_FAILURE);
+    }
+    // Allocate memory for operands
+    new_command->src_operand = (Operand *)malloc(sizeof(Operand));
+    new_command->dst_operand = (Operand *)malloc(sizeof(Operand));
+    if (!(new_command->src_operand->value) || !(new_command->dst_operand->value)) {
+        fprintf(stderr, "Memory allocation error for operands\n");
+        free(new_command->src_operand->value);
+        free(new_command->dst_operand->value);
+        exit(EXIT_FAILURE);
+    }
+
+    //Allocate memory for command name
+    new_command->command_name = malloc(MAX_COMMAND_LEN * sizeof(char));
+    if (new_command->command_name == NULL) {
+        fprintf(stderr, "Memory allocation error for directive\n");
+        exit(EXIT_FAILURE);
+    }
+
+    return new_command;
+}
+
+InstructionLine *init_instruction_line(char* line){
     // Allocate memory for instruction line
-    new_instruction_line = (InstructionLine *)malloc(sizeof(InstructionLine));
+    InstructionLine *new_instruction_line = (InstructionLine *)malloc(sizeof(InstructionLine));
     if (new_instruction_line == NULL) {
         fprintf(stderr, "Memory allocation error for InstructionLine\n");
         exit(EXIT_FAILURE);
@@ -197,6 +219,8 @@ void init_instruction_line(InstructionLine *new_instruction_line, char* line){
     }
 
     new_instruction_line->length = strlen(line);
+
+    return new_instruction_line;
 }
 
 int write_line_to_file(char *line) {
@@ -328,36 +352,24 @@ void expandMacro(const Macro *macro, FILE *outputFile) {
     }
 }
 
-void handleCommand(char *line, int *ic, Command *new_command) {
+void handleCommand(char *line, int *ic, Command *new_command, LabelTable *label_table) {
     printf("handleCommand\n");
-
-    new_command->src_operand = (Operand *)malloc(sizeof(Operand));
-    new_command->dst_operand = (Operand *)malloc(sizeof(Operand));;
-
-    unsigned int operands_number;
-    int opcode_command_type;
-
-    // Allocate memory for operands
-    *(new_command->src_operand->value) = (char *)malloc(MAX_OPERAND_SIZE * sizeof(char));
-    *(new_command->dst_operand->value) = (char *)malloc(MAX_OPERAND_SIZE * sizeof(char));
-
-    if (!(new_command->src_operand->value) || !(new_command->dst_operand->value)) {
-        fprintf(stderr, "Memory allocation error for operands\n");
-        free(new_command->src_operand->value);
-        free(new_command->dst_operand->value);
-        exit(EXIT_FAILURE);
-    }
 
     sscanf(line, "%s", new_command->command_name);
 
     getCommandData(new_command->command_name, new_command);
 
     defineOperandsFromLine(new_command, line);
-    //TODO- Define operand type - label/number/address/register
+    defineOperandTypes(new_command->src_operand, label_table);
+    defineOperandTypes(new_command->dst_operand, label_table);
+
 
     classify_operand(new_command->src_operand);
     classify_operand(new_command->dst_operand);
 
+    int binary_lines_number = find_number_of_lines_in_binary(new_command);
+
+    //TODO - find the number that the ic should ascend
     (*ic)++;
 }
 
@@ -421,41 +433,62 @@ void defineOperandsFromLine(Command *new_command, char* line){
     }
 }
 
+void defineOperandTypes(Operand *operand, LabelTable *label_table){
+    operand->type = INVALID;
+    int is_valid = 1;
+    if (operand->value[0] == '#') {
+        // Check if the rest is a valid integer
+        for (int i = 1; operand->value[i] != '\0'; ++i) {
+            if (!isdigit(operand->value[i]) && operand->value[i] != '-') {
+                is_valid = 0;
+            }
+        }
+        if(is_valid){
+            operand->type = INTEGER;
+        }
+    }
+    else if (operand->value[0] == '*') {
+        if (operand->value[1] == 'r' && isdigit(operand->value[2])){
+            operand->type = REGISTER;
+        }
+    }
+
+    else if (operand->value[0] == 'r' && isdigit(operand->value[1])){
+            operand->type = REGISTER;
+    }
+
+    else if(labelExists(label_table, operand->value)){
+        operand->type = LABEL;
+    }
+}
+
+int find_number_of_lines_in_binary(Command *new_command){
+    return 0;
+}
+
 //classify the operand addressing mode
 void classify_operand(Operand *new_operand) {
     new_operand->classification_type = METHOD_UNKNOWN; // set default
 
     // Immediate addressing - starts with #
-    if (new_operand->value[0] == '#') {
-        // Check if the rest is a valid integer
-        for (int i = 1; new_operand->value[i] != '\0'; ++i) {
-            if (!isdigit(new_operand->value[i]) && new_operand->value[i] != '-') {
-                new_operand->classification_type = METHOD_UNKNOWN; // Invalid operand
-            }
-        }
-
+    if (new_operand->type == INTEGER) {
         new_operand->classification_type = IMMEDIATE; // Immediate addressing
+    }
+    else if(new_operand->type == LABEL){
+        //TODO - what if the label is defined after
+        new_operand->classification_type = DIRECT; // Direct addressing
     }
 
     // Register indirect addressing - starts with *
-    if (new_operand->value[0] == '*') {
-        if (new_operand->value[1] == 'r' && isdigit(new_operand->value[2])) {
-            new_operand->classification_type = INDIRECT_REGISTER; // Register indirect addressing
-        }
-        new_operand->classification_type = METHOD_UNKNOWN; // Invalid operand
+    else if (new_operand->value[0] == '*' && new_operand->type == REGISTER) {
+            new_operand->classification_type = INDIRECT_REGISTER; // Indirect Register addressing
     }
 
     // Register addressing - starts with r followed by a digit
-    if (new_operand->value[0] == 'r' && isdigit(new_operand->value[1])) {
-        new_operand->classification_type = DIRECT_REGISTER; // Register addressing
+    else if (new_operand->type == REGISTER) {
+        new_operand->classification_type = DIRECT_REGISTER; // Direct Register addressing
     }
 
-    // Direct addressing - assume any other valid identifier is a label
-    // TODO
-//    *operand_type = DIRECT; // Direct addressing
-
-
-//    *operand_type = METHOD_UNKNOWN; // Invalid operand
 }
 
 // Get the number of operands should be in the given command
@@ -489,7 +522,6 @@ char* skip_spaces(char *line) {
 
 // Function to check if a line is a label
 int find_label(char *line, char *label) {
-    printf("find_label");
     while (*line && isspace((unsigned char)*line)) {
         line++;
     }
@@ -555,6 +587,7 @@ bool isDataDirective(char *line) {
 }
 
 void handleDirectives(char *line, int *dc, Directive *new_directive) {
+    printf("\nstart handleDirectives\n");
     //TODO - handle .extern
 
     char directive_type[MAX_LINE_LENGTH];
@@ -562,7 +595,12 @@ void handleDirectives(char *line, int *dc, Directive *new_directive) {
     char *values[MAX_LINE_LENGTH]; // Temporary array to hold values as strings
     size_t values_count = 0;
 
-    sscanf(line, "%s", directive_type);
+    // Read the directive type from the line
+    if (sscanf(line, "%s", directive_type) != 1) {
+        fprintf(stderr, "Error: Failed to read directive type\n");
+        new_directive->type = NOT_DIRECTIVE;
+        return;
+    }
 
     if (strcmp(directive_type, ".data") == 0) {
         printf(".data\n");
@@ -623,20 +661,22 @@ void handleDirectives(char *line, int *dc, Directive *new_directive) {
         fprintf(stderr, "Memory allocation error\n");
         exit(EXIT_FAILURE);
     }
+    printf("here?");
+
     // Copy the values to the symbol
     for (size_t i = 0; i < values_count; i++) {
         new_directive->value[i] = values[i];
     }
     new_directive->data_values_count = values_count;
-
-
+    printf("\nbefore\n");
     debuggingData(new_directive);
+    printf("afterrrr\n");
 }
 
 
 void debuggingData(Directive *new_directive){
     //TODO - erase this function
-    printf("???\n");
+    printf("enter debuggingData\n");
     // Print for debugging
     printf("Type: %d\n", new_directive->type);
     printf("Values count: %zu\n", new_directive->data_values_count);
@@ -645,7 +685,7 @@ void debuggingData(Directive *new_directive){
         printf("%s ", ((char **)new_directive->value)[j]);
     }
     printf("\n");
-    printf("???\n");
+    printf("finish debuggingData\n");
 }
 
 

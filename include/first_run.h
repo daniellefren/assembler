@@ -17,8 +17,8 @@ int isMacroInvocation(char *line, char *macroName, char **macroNames);
 int handleMacroDefinition(FILE *file, MacroTable *macroTable, const char *firstLine);
 void expandMacro(const Macro *macro, FILE *outputFile);
 void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, LabelTable *label_table);
-void read_line(char *line, LabelTable *label_table, int *ic, int *dc, int is_in_macro, LinesArray *lines_array);
-void handleCommand(char *line, int *ic, Command *new_command);
+void read_line(char *line, LabelTable *label_table, int *ic, int *dc, LinesArray *lines_array);
+void handleCommand(char *line, int *ic, Command *new_command, LabelTable *label_table);
 int ignore_line(char *line);
 char* skip_spaces(char *line);
 int find_label(char *line, char *label);
@@ -42,6 +42,9 @@ void classify_operand(Operand *new_operand);
 void handleDirectives(char *line, int *dc, Directive *new_directive);
 int checkIfOperandLabel(char *operand, LabelTable *label_table);
 void debuggingData(Directive *new_directive);
-void init_instruction_line(InstructionLine *new_instruction_line, char* line);
+InstructionLine *init_instruction_line(char* line);
+void defineOperandTypes(Operand *operand, LabelTable *label_table);
+Command *init_command();
+int find_number_of_lines_in_binary(Command *new_command);
 
 #endif //ASSEMBLER_FIRST_RUN_H

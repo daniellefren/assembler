@@ -4,12 +4,13 @@
 #define MAX_MACRO_NAMES 150
 #define MAX_LABEL_LENGTH 32
 #define BINARY_WORD_LENGTH 15
-#define MAX_COMMAND_LEN 50
+#define MAX_COMMAND_LEN 10
 
 #define IS_COMMAND 0
 #define IS_DIRECTIVE 1
 #define OPCODE_SIZE 4
 #define MAX_OPERAND_SIZE 10
+
 
 static const char *commands[] = {
         "mov", "cmp", "add", "sub", "not", "clr", "lea", "inc", "dec", "jmp", "bne",
@@ -51,6 +52,13 @@ enum opcode_command_operands {
 enum instruction_types {
     COMMAND = 1,
     DATA_DIRECTIVE = 2
+};
+
+enum operand_types {
+    REGISTER = 0,
+    INTEGER = 1,
+    LABEL = 2,
+    INVALID = 3
 };
 
 
