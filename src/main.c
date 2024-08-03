@@ -1,15 +1,14 @@
 #include <stdlib.h>
 #include "../include/first_run.h"
 #include "../include/second_run.h"
+#include "../include/test_first_run.h"
 
-//TODO - now the labels are not case sensitive
 //TODO - handle ic and dc
 // TODO - Add function that defines how many lines there is in an assembly command
 int main(int argc, char *argv[]) {
-    //TODO - add operand type
     FILE *file;
     int ic, dc = 0;
-    int return_value;
+    int return_value = 0;
 
 
     LinesArray *assembly_lines_array = init_lines_array(10);
@@ -30,7 +29,11 @@ int main(int argc, char *argv[]) {
 
 
     // Call the first_run function with the file pointer
-    first_run(file, &ic, &dc, assembly_lines_array, label_table);
+    return_value = first_run(file, &ic, &dc, assembly_lines_array, label_table);
+    if(return_value){
+        printf("noooooo");
+        return -1  ;
+    }
     //call the second_run function with the LinesArray table
 //    start_second_run(assembly_lines_array);
 
@@ -50,6 +53,10 @@ int main(int argc, char *argv[]) {
 //    printf("the value is %d", return_value);
     // Close the file
     fclose(file);
+
+    test_all_run(assembly_lines_array);
+
+
 
 
 

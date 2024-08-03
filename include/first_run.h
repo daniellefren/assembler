@@ -15,17 +15,17 @@ bool isMacroDefinitionEnd(char *line);
 int isMacroInvocation(char *line, char *macroName, char **macroNames);
 int handleMacroDefinition(FILE *file, MacroTable *macroTable, const char *firstLine);
 void expandMacro(const Macro *macro, FILE *outputFile);
-void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, LabelTable *label_table);
-void read_line(char *line, LabelTable *label_table, int *ic, int *dc, LinesArray *lines_array);
+int first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, LabelTable *label_table);
+int read_line(char *line, LabelTable *label_table, int *ic, int *dc, LinesArray *lines_array);
 void handleCommand(char *line, int *ic, Command *new_command, LabelTable *label_table);
 int ignore_line(char *line);
 char* skip_spaces(char *line);
-int find_label(char *line, char *label);
+int find_label(char *line, char *label, int* return_value);
 int is_command(char *line, int *ic);
 int labelExists(LabelTable *label_table, char *label);
 bool isDataDirective(char *line);
 bool isExternDirective(char *line);
-void pre_run(char *line, MacroTable *macroTable, char **macroNames, FILE *file);
+void pre_run(char *line, MacroTable *macroTable, char **macroNames, FILE *file, int *return_value);
 int get_operand_opcode(char *command_name);
 bool isEntryDirective(char *line);
 
@@ -44,5 +44,6 @@ void debuggingData(Directive *new_directive);
 void defineOperandTypes(Operand *operand, LabelTable *label_table);
 
 int find_number_of_lines_in_binary(Command *new_command);
+int is_known_assembly_keyword(const char *label);
 
 #endif //ASSEMBLER_FIRST_RUN_H
