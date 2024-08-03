@@ -22,6 +22,10 @@ static const char *directives[] = {
         ".data", ".string", ".struct", ".entry", ".extern"
 };
 
+#define COMMANDS_COUNT (sizeof(commands) / sizeof(commands[0]))
+#define DIRECTIVES_COUNT (sizeof(directives) / sizeof(directives[0]))
+#define TOTAL_ASSEMBLY_KEYWORDS_COUNT (COMMANDS_COUNT + DIRECTIVES_COUNT)
+
 /* A/R/E modes ordered by their numerical value */
 enum ARE {ABSOLUTE, EXTERNAL, RELOCATABLE};
 /* Addressing methods ordered by their code */
@@ -30,6 +34,7 @@ enum operand_classification_type {IMMEDIATE = 0, DIRECT = 1, INDIRECT_REGISTER =
 enum directives {DATA, STRING, STRUCT, ENTRY, EXTERN, NOT_DIRECTIVE};
 /* Enum of commands ordered by their opcode */
 enum opcode_command {MOV, CMP, ADD, SUB, NOT, CLR, LEA, INC, DEC, JMP, BNE, RED, PRN, JSR, RTS, STOP, NOT_OPCODE};
+
 
 enum opcode_command_operands {
     MOV_OPERANDS = 2,    // MOV instruction uses 2 operands
