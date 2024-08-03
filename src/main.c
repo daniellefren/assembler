@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
         return -1  ;
     }
     //call the second_run function with the LinesArray table
-//    start_second_run(assembly_lines_array);
+    //start_second_run(assembly_lines_array);
 
    // printf("Get all instructions:\n");
     //for(int k=0; k<2;k++){
