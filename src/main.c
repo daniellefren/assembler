@@ -12,12 +12,8 @@ int main(int argc, char *argv[]) {
     int return_value;
 
 
-    LinesArray assembly_lines_array; // Use struct, not a pointer
-    LabelTable label_table;
-
-
-    init_label_table(&label_table, 10);
-    init_lines_array(&assembly_lines_array, 10);
+    LinesArray *assembly_lines_array = init_lines_array(10);
+    LabelTable *label_table = init_label_table(10);
 
 
     // Check if the correct number of arguments is provided
@@ -34,7 +30,7 @@ int main(int argc, char *argv[]) {
 
 
     // Call the first_run function with the file pointer
-    first_run(file, &ic, &dc, &assembly_lines_array, &label_table);
+    first_run(file, &ic, &dc, assembly_lines_array, label_table);
     //call the second_run function with the LinesArray table
 //    start_second_run(assembly_lines_array);
 
@@ -48,7 +44,7 @@ int main(int argc, char *argv[]) {
         //printf("second_operand - \n");
         //printf("%s \n", assembly_lines_array.lines[k].second_operand);
 
-
+//    }
 
 //    return_value = second_run();
 //    printf("the value is %d", return_value);
