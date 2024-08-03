@@ -2,13 +2,13 @@
 #include <string.h>
 #include "stdlib.h"
 #include <stdbool.h>
-#include "../include/structs.h"
 #include "../include/second_run.h"
-#include "../include/utils.h"
+
+
 
 #define BINARY_INSTRUCTION_MAX_LENGTH 46
 #define BINARY_LINE_LENGTH 15
-/*
+
 void start_second_run(LinesArray *assembly_lines_array){
     printf("Starting Second run \n");
     //Allocation
@@ -20,15 +20,15 @@ void start_second_run(LinesArray *assembly_lines_array){
 
     printf("Starting to print The lines Binary: \n");
     for (int i = 0; i < assembly_lines_array->number_of_line; ++i) {
-        InstructionLine *p_line = assembly_lines_array.lines[i];
+        InstructionLine *p_line = &assembly_lines_array->lines[i];
         allocate_binary_instruction(p_line, p_line->binary_line_count, BINARY_LINE_LENGTH);
         printf("Line number %d binary -  \n", i);
         fill_instruction_line_binary(p_line);
         printf("The binary representation of the line is %s \n", assembly_lines_array->lines[i].binary_instruction );
     }
 
-    for (int i = 0; i < assembly_lines_array->number_of_line; ++i) {
-        free_binary_instruction(p_line);
+    for (int j = 0; j < assembly_lines_array->number_of_line; ++j) {
+        free_binary_instruction(&assembly_lines_array->lines[j]);
     }
 
     free(assembly_lines_array[0].lines);
@@ -44,41 +44,45 @@ void fill_instruction_line_binary(InstructionLine *instruction_line){
     // create second word and third word if needed binary (15 + 15)
     // append the binary words
     // if it's directive .....
-
-    if (is_instruction_line_opcode(instruction_line)){
+    char first_part_binary[15];
+    char second_part_binary[15];
+    if (is_instruction_line_opcode(*instruction_line)){
         char binary_line[(instruction_line->binary_line_count * BINARY_LINE_LENGTH) + 1];
         if (instruction_line->binary_line_count == 2){
-            char binary_line[];
+
+        }
+        else{
+
         }
 
-        create_first_part_binary_from_instruction_line_opcode(instruction_line, first_part_binary, sizeof(first_part_binary));
+        create_first_part_binary_from_instruction_line_opcode(instruction_line, *first_part_binary, sizeof(first_part_binary));
         printf("First part binary - %s \n", first_part_binary);
 
 
-        create_second_part_binary_from_instruction_line_opcode(instruction_line, second_part_binary, sizeof(second_part_binary));
+        create_second_part_binary_from_instruction_line_opcode(instruction_line, *second_part_binary, sizeof(second_part_binary));
         printf("Second part binary - %s \n", second_part_binary);
-        return second_part_binary;
+
         // if the line doesn't have three word it has to have two words because it's an opcode line
 
     }
-    else if(is_instruction_line_directive(instruction_line)){
+    else if(is_instruction_line_directive(*instruction_line)){
 
     }
 }
 
-void create_first_part_binary_from_instruction_line_opcode(InstructionLine instruction_line, char *binary_string, int size_of_binary) {
+void create_first_part_binary_from_instruction_line_opcode(InstructionLine *instruction_line, char *binary_string, int size_of_binary) {
     // Convert the opcode value to binary opcode - 0 1 2 3, first_classification - 4 5 6 7, second_classification - 8 9 10 11, ARE - 12 13 14
-    int first_operand_classification = instruction_line.first_operand_classification_type;
-    int second_operand_classification = instruction_line.second_operand_classification_type;
+    int first_operand_classification = instruction_line->command->src_operand->classification_type;
+    int second_operand_classification = instruction_line->command->dst_operand->classification_type;
     int binary_string_number = 1; //first part binary
 
 
-    fill_the_binary_representation_with_zero(binary_string, size_of_binary);
+    fill_the_binary_representation_with_zero(*binary_string, size_of_binary);
     printf("The binary string is: %s \n", binary_string);
-    set_binary_string_opcode_representation(instruction_line.opcode_command_type, binary_string);
+    set_binary_string_opcode_representation(instruction_line->command->opcode_command_type, *binary_string);
     printf("The opcode binary string is: %c \n", binary_string[6]);
-    set_binary_string_operand_representation(first_operand_classification, second_operand_classification, binary_string);
-    set_binary_string_ARE_representation(binary_string,binary_string_number);
+    set_binary_string_operand_representation(first_operand_classification, second_operand_classification, *binary_string);
+    set_binary_string_ARE_representation(*binary_string,binary_string_number);
 }
 void set_binary_string_operand_representation(int first_operand_classification_type, int second_operand_classification_type, char *binary_string) {
 
@@ -137,18 +141,20 @@ void set_binary_string_opcode_representation(int opcode_number, char *binary_str
 }
 
 bool is_instruction_line_directive(InstructionLine instructionLine){
-    return instructionLine.directive_type != NOT_DIRECTIVE;
+    return false;
+    //return instructionLine.directive_type != NOT_DIRECTIVE;
 }
 
 bool is_instruction_line_opcode(InstructionLine instructionLine){
-    return instructionLine.directive_type != NOT_OPCODE;
+    return true;
+    //return instructionLine.directive_type != NOT_OPCODE;
 }
 
 
 
 
 
-void create_second_part_binary_from_instruction_line_opcode(InstructionLine instruction_line, char* binary_string, int size_of_binary) {
+void create_second_part_binary_from_instruction_line_opcode(InstructionLine *instruction_line, char* binary_string, int size_of_binary) {
     // The second part can be 15 bit or 30 bit it depend on the content of the line
     binary_string = "1111111111111111111 \n";
 }
@@ -158,4 +164,3 @@ bool instruction_line_has_three_binary_words(InstructionLine instructionLine) {
     return false;
 }
 
-*/
