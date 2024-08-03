@@ -8,7 +8,6 @@
 #include "structs.h"
 
 
-void initMacroTable(MacroTable *table);
 void addMacro(MacroTable *table, Macro macro);
 int findMacro(const MacroTable *table, const char *name, Macro *macro);
 bool isMacroDefinitionStart(char *line);
@@ -42,9 +41,8 @@ void classify_operand(Operand *new_operand);
 void handleDirectives(char *line, int *dc, Directive *new_directive);
 int checkIfOperandLabel(char *operand, LabelTable *label_table);
 void debuggingData(Directive *new_directive);
-InstructionLine *init_instruction_line(char* line);
 void defineOperandTypes(Operand *operand, LabelTable *label_table);
-Command *init_command();
+
 int find_number_of_lines_in_binary(Command *new_command);
 
 #endif //ASSEMBLER_FIRST_RUN_H

@@ -5,6 +5,7 @@
 #define MAX_LABEL_LENGTH 32
 #define BINARY_WORD_LENGTH 15
 #define MAX_COMMAND_LEN 10
+#define MAX_OPERAND_LEN 20
 
 #define IS_COMMAND 0
 #define IS_DIRECTIVE 1

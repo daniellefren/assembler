@@ -99,6 +99,12 @@ LinesArray *generate_instruction_line_array(int max_lines, LinesArray *my_lines_
 char *get_instruction_line_binary(LinesArray *linesArray, int number_of_line);
 void addInstructionLine(LinesArray *lines_array, InstructionLine *instruction_line);
 void addNewLabel(LabelTable *label_table, Label *new_label);
-void init_lines_array(LinesArray *lines_array, int initial_capacity);
-void init_label_table(LabelTable *label_table, int initial_capacity);
+LinesArray *init_lines_array(int initial_capacity);
+LabelTable * init_label_table(int initial_capacity);
+void init_macro_table(MacroTable *table);
+InstructionLine *init_instruction_line(char* line);
+Command *init_command();
+Operand *init_operand();
+Directive *init_directive();
+
 #endif

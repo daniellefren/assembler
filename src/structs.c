@@ -7,7 +7,8 @@
 
 /* Lines array functions*/
 
-void init_lines_array(LinesArray *lines_array, int initial_capacity) {
+LinesArray *init_lines_array(int initial_capacity) {
+    LinesArray *lines_array = (LinesArray *)malloc(sizeof(LinesArray));
     if (!lines_array) {
         fprintf(stderr, "Error: LinesArray pointer is NULL\n");
         exit(EXIT_FAILURE);
@@ -19,9 +20,12 @@ void init_lines_array(LinesArray *lines_array, int initial_capacity) {
     }
     lines_array->number_of_line = 0;
     lines_array->capacity = initial_capacity;
+
+    return lines_array;
 }
 
-void init_label_table(LabelTable *label_table, int initial_capacity) {
+LabelTable *init_label_table(int initial_capacity) {
+    LabelTable *label_table = (LabelTable *)malloc(sizeof(LabelTable));
     if (!label_table) {
         fprintf(stderr, "Error: SymbolTable pointer is NULL\n");
         exit(EXIT_FAILURE);
@@ -33,6 +37,8 @@ void init_label_table(LabelTable *label_table, int initial_capacity) {
     }
     label_table->size = 0;
     label_table->capacity = initial_capacity;
+
+    return label_table;
 }
 
 void free_lines_array(LinesArray *lines_array) {
@@ -146,4 +152,80 @@ void addNewLabel(LabelTable *label_table, Label *label) {
     label_table->labels[label_table->size] = *label;
     label_table->size++;
 }
+
+void init_macro_table(MacroTable *table) {
+    table->macros = (Macro *)malloc(10 * sizeof(Macro));
+    if (!table->macros) {
+        fprintf(stderr, "Error: Memory allocation failed for macro table\n");
+        exit(EXIT_FAILURE);
+    }
+    table->count = 0;
+    table->capacity = 10;
+}
+
+InstructionLine *init_instruction_line(char* line){
+    // Allocate memory for instruction line
+    InstructionLine *new_instruction_line = (InstructionLine *)malloc(sizeof(InstructionLine));
+    if (new_instruction_line == NULL) {
+        fprintf(stderr, "Memory allocation error for InstructionLine\n");
+        exit(EXIT_FAILURE);
+    }
+
+    new_instruction_line->line_content = strdup(line);
+
+    if (new_instruction_line->line_content == NULL) {
+        fprintf(stderr, "Memory allocation error for line content\n");
+        free(new_instruction_line);
+        exit(EXIT_FAILURE);
+    }
+
+    new_instruction_line->length = strlen(line);
+
+    return new_instruction_line;
+}
+
+Command *init_command(){
+    Command *new_command = (Command *)malloc(10 * sizeof(Command));
+    if (new_command == NULL) {
+        fprintf(stderr, "Memory allocation error for directive\n");
+        exit(EXIT_FAILURE);
+    }
+    // Allocate memory for operands
+    new_command->src_operand = init_operand();
+    new_command->dst_operand = init_operand();
+
+
+    //Allocate memory for command name
+    new_command->command_name = malloc(MAX_COMMAND_LEN * sizeof(char));
+    if (new_command->command_name == NULL) {
+        fprintf(stderr, "Memory allocation error for directive\n");
+        exit(EXIT_FAILURE);
+    }
+
+    return new_command;
+}
+
+Operand *init_operand(){
+    Operand *operand = (Operand *)malloc(sizeof(Operand));
+    if (operand == NULL) {
+        fprintf(stderr, "Memory allocation error for operands\n");
+        free(operand);
+        exit(EXIT_FAILURE);
+    }
+
+    operand->value = (char *)malloc(MAX_OPERAND_LEN * sizeof(char));
+    operand->label = (Label*)malloc(sizeof(Label));
+
+    return operand;
+}
+
+Directive *init_directive(){
+    Directive *new_directive = (Directive *)malloc(10 * sizeof(Directive));
+    if (new_directive == NULL) {
+        fprintf(stderr, "Memory allocation error for directive\n");
+        exit(EXIT_FAILURE);
+    }
+    return new_directive;
+}
+
 

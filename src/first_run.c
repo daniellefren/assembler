@@ -40,7 +40,7 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, LabelTable
     int is_in_macro = 0;
     MacroTable macroTable;
 
-    initMacroTable(&macroTable);
+    init_macro_table(&macroTable);
     initMacroNameArray(macroNames);
 
     // Reset file pointer to the beginning before calling pre_run
@@ -138,11 +138,8 @@ void read_line(char *line, LabelTable *label_table, int *ic, int *dc, LinesArray
             new_label->type = DATA_DIRECTIVE;
         }
 
-        Directive *new_directive = (Directive *)malloc(10 * sizeof(Directive));
-        if (new_directive == NULL) {
-            fprintf(stderr, "Memory allocation error for directive\n");
-            exit(EXIT_FAILURE);
-        }
+
+        Directive *new_directive = init_directive();
 
         printf("before handleDirectives");
         handleDirectives(line, dc, new_directive);
@@ -161,10 +158,8 @@ void read_line(char *line, LabelTable *label_table, int *ic, int *dc, LinesArray
         }
 
         Command *new_command = init_command();
-
         handleCommand(line, ic, new_command, label_table);
-
-        new_instruction_line->command = new_command;
+//        new_instruction_line->command = new_command;
 
     }
 
@@ -176,52 +171,6 @@ void read_line(char *line, LabelTable *label_table, int *ic, int *dc, LinesArray
     addInstructionLine(lines_array, new_instruction_line);
 }
 
-Command *init_command(){
-    Command *new_command = (Command *)malloc(10 * sizeof(Command));
-    if (new_command == NULL) {
-        fprintf(stderr, "Memory allocation error for directive\n");
-        exit(EXIT_FAILURE);
-    }
-    // Allocate memory for operands
-    new_command->src_operand = (Operand *)malloc(sizeof(Operand));
-    new_command->dst_operand = (Operand *)malloc(sizeof(Operand));
-    if (!(new_command->src_operand->value) || !(new_command->dst_operand->value)) {
-        fprintf(stderr, "Memory allocation error for operands\n");
-        free(new_command->src_operand->value);
-        free(new_command->dst_operand->value);
-        exit(EXIT_FAILURE);
-    }
-
-    //Allocate memory for command name
-    new_command->command_name = malloc(MAX_COMMAND_LEN * sizeof(char));
-    if (new_command->command_name == NULL) {
-        fprintf(stderr, "Memory allocation error for directive\n");
-        exit(EXIT_FAILURE);
-    }
-
-    return new_command;
-}
-
-InstructionLine *init_instruction_line(char* line){
-    // Allocate memory for instruction line
-    InstructionLine *new_instruction_line = (InstructionLine *)malloc(sizeof(InstructionLine));
-    if (new_instruction_line == NULL) {
-        fprintf(stderr, "Memory allocation error for InstructionLine\n");
-        exit(EXIT_FAILURE);
-    }
-
-    new_instruction_line->line_content = strdup(line);
-
-    if (new_instruction_line->line_content == NULL) {
-        fprintf(stderr, "Memory allocation error for line content\n");
-        free(new_instruction_line);
-        exit(EXIT_FAILURE);
-    }
-
-    new_instruction_line->length = strlen(line);
-
-    return new_instruction_line;
-}
 
 int write_line_to_file(char *line) {
     FILE *outputFile = fopen(macroFileName, "a"); // Open in append mode
@@ -252,16 +201,6 @@ void writeExpandedMacrosToFile(MacroTable *macroTable) {
     }
 
     fclose(outputFile);
-}
-
-void initMacroTable(MacroTable *table) {
-    table->macros = (Macro *)malloc(10 * sizeof(Macro));
-    if (!table->macros) {
-        fprintf(stderr, "Error: Memory allocation failed for macro table\n");
-        exit(EXIT_FAILURE);
-    }
-    table->count = 0;
-    table->capacity = 10;
 }
 
 // Initialize macro name array
