@@ -55,29 +55,28 @@ void fill_instruction_line_binary(InstructionLine *instruction_line){
 
         }
 
-        create_first_part_binary_from_instruction_line_opcode(instruction_line, *first_part_binary, sizeof(first_part_binary));
+        fill_first_part_binary_opcode(instruction_line, instruction_line->binary_instruction);
         printf("First part binary - %s \n", first_part_binary);
 
-
-        create_second_part_binary_from_instruction_line_opcode(instruction_line, *second_part_binary, sizeof(second_part_binary));
+        fill_second_part_binary_opcode(instruction_line, instruction_line->binary_instruction);
         printf("Second part binary - %s \n", second_part_binary);
 
         // if the line doesn't have three word it has to have two words because it's an opcode line
 
     }
     else if(is_instruction_line_directive(*instruction_line)){
-
+        fill_binary_directive(instruction_line, instruction_line->binary_instruction);
     }
 }
 
-void create_first_part_binary_from_instruction_line_opcode(InstructionLine *instruction_line, char *binary_string, int size_of_binary) {
+void fill_first_part_binary_opcode(InstructionLine *instruction_line, char *binary_string) {
     // Convert the opcode value to binary opcode - 0 1 2 3, first_classification - 4 5 6 7, second_classification - 8 9 10 11, ARE - 12 13 14
     int first_operand_classification = instruction_line->command->src_operand->classification_type;
     int second_operand_classification = instruction_line->command->dst_operand->classification_type;
     int binary_string_number = 1; //first part binary
 
 
-    fill_the_binary_representation_with_zero(*binary_string, size_of_binary);
+    fill_the_binary_representation_with_zero(binary_string, BINARY_LINE_LENGTH);
     printf("The binary string is: %s \n", binary_string);
     set_binary_string_opcode_representation(instruction_line->command->opcode_command_type, *binary_string);
     printf("The opcode binary string is: %c \n", binary_string[6]);
@@ -154,11 +153,57 @@ bool is_instruction_line_opcode(InstructionLine instructionLine){
 
 
 
-void create_second_part_binary_from_instruction_line_opcode(InstructionLine *instruction_line, char* binary_string, int size_of_binary) {
+void fill_second_part_binary_opcode(InstructionLine *instruction_line, char* binary_string) {
     // The second part can be 15 bit or 30 bit it depend on the content of the line
+    size_t size_of_binary = instruction_line->binary_line_count - 1;
     binary_string = "1111111111111111111 \n";
 }
 
+void fill_binary_directive(InstructionLine *instruction_line, char *binary_string){
+    for (int i = 0; i < instruction_line->directive->data_values_count; ++i) {
+        if (is_instruction_line_directive_string(instruction_line)){
+            char_to_binary_string(instruction_line->directive->value[i], binary_string, i * BINARY_LINE_LENGTH);
+        }
+        else if (is_instruction_line_directive_integer(instruction_line)){
+            //TODO fill_binary_integer_data()
+        }
+
+    }
+}
+void char_to_binary_string(char c, char *binary_string, int start_point) {
+    int i;
+    char binary_str_tmp[BINARY_LINE_LENGTH + 1];
+    // Ensure binary_str is large enough (at least 16 characters)
+    if (binary_string == NULL || strlen(binary_string) < 15) {
+        fprintf(stderr, "Invalid binary string buffer\n");
+        return;
+    }
+    /* TODO - clear the binary str at start and the i dont need to memset at the function
+    // Clear the binary string
+    memset(binary_string, '0', 15);
+    binary_str[15] = '\0';
+    */
+    memset(binary_str_tmp, '0', 15);
+    binary_str_tmp[15] = '\0';
+
+    // Convert character to integer
+    int value = (int)c;
+
+    // Convert integer to binary string
+    for (i = 14; i >= 0; i--) {
+        binary_str_tmp[i] = (value & 1) + '0';
+        value >>= 1;
+    }
+    strcpy(binary_string + start_point, binary_str_tmp);
+}
+
+bool is_instruction_line_directive_integer(InstructionLine *instruction_line){
+    return false;
+}
+
+bool is_instruction_line_directive_string(InstructionLine *instruction_line){
+    return true;
+}
 
 bool instruction_line_has_three_binary_words(InstructionLine instructionLine) {
     return false;
