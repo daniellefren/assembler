@@ -106,5 +106,7 @@ InstructionLine *init_instruction_line(char* line);
 Command *init_command();
 Operand *init_operand();
 Directive *init_directive();
+void init_macro_name_array(char **macroNames);
+
 
 #endif

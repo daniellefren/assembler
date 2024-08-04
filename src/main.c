@@ -31,26 +31,13 @@ int main(int argc, char *argv[]) {
     // Call the first_run function with the file pointer
     return_value = first_run(file, &ic, &dc, assembly_lines_array, label_table);
     if(return_value){
-        printf("noooooo");
         return -1  ;
     }
+//    test_all_run(assembly_lines_array);
     //call the second_run function with the LinesArray table
 
 
-    printf("Get all instructions:\n");
-   /*
-    for(int k=0; k<2;k++){
-        printf("line - \n");
 
-        printf("%s \n", assembly_lines_array.lines[k].line_content);
-        printf("first_operand - \n");
-        printf("%s \n", assembly_lines_array.lines[k].first_operand);
-        printf("second_operand - \n");
-        printf("%s \n", assembly_lines_array.lines[k].second_operand);
-
-    }
-
-    */
     // Close the file
     fclose(file);
 
@@ -59,7 +46,7 @@ int main(int argc, char *argv[]) {
     }
 
     start_second_run(assembly_lines_array);
-    //test_all_run(assembly_lines_array);
+
 
 
 

@@ -116,7 +116,6 @@ char *get_instruction_line_binary(LinesArray *linesArray, int number_of_line){
 
 // Function to add an instruction line to the LinesArray
 void addInstructionLine(LinesArray *lines_array, InstructionLine *instruction_line) {
-    printf("addInstructionLine");
     // Check if the array needs to be resized
     if (lines_array->number_of_line >= lines_array->capacity) {
         // Double the capacity or set an initial capacity if it's zero
@@ -231,6 +230,18 @@ Directive *init_directive(){
         exit(EXIT_FAILURE);
     }
     return new_directive;
+}
+
+// Initialize macro name array
+void init_macro_name_array(char **macroNames) {
+    for (int i = 0; i < MAX_MACRO_NAMES; ++i) {
+        macroNames[i] = malloc(MAX_LABEL_LENGTH * sizeof(char));
+        if (!macroNames[i]) {
+            fprintf(stderr, "Error: Memory allocation failed for macro name %d\n", i);
+            exit(EXIT_FAILURE);
+        }
+        macroNames[i][0] = '\0'; // Ensure the string is initialized
+    }
 }
 
 
