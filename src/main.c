@@ -53,7 +53,11 @@ int main(int argc, char *argv[]) {
     */
     // Close the file
     fclose(file);
-    printf("\nYessss\n");
+
+    for (int i = 0; i < 10; ++i) {
+        printf("Line number %d: %s \n",i, assembly_lines_array->lines[i].line_content);
+    }
+
     start_second_run(assembly_lines_array);
     //test_all_run(assembly_lines_array);
 
