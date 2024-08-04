@@ -29,7 +29,7 @@ static const char *directives[] = {
 /* A/R/E modes ordered by their numerical value */
 enum ARE {ABSOLUTE, EXTERNAL, RELOCATABLE};
 /* Addressing methods ordered by their code */
-enum operand_classification_type {IMMEDIATE = 0, DIRECT = 1, INDIRECT_REGISTER = 2, DIRECT_REGISTER = 3, LABEL_TYPE = 4, METHOD_UNKNOWN = -1};
+enum operand_classification_type {IMMEDIATE = 0, DIRECT = 1, INDIRECT_REGISTER = 2, DIRECT_REGISTER = 3, METHOD_UNKNOWN = -1};
 /* Directives types */
 enum directives {DATA, STRING, STRUCT, ENTRY, EXTERN, NOT_DIRECTIVE};
 /* Enum of commands ordered by their opcode */
