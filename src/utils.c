@@ -66,7 +66,13 @@ void string_append(const char *first_string, const char *second_String, char *ap
 }
 
 void allocate_binary_instruction(InstructionLine *p_line, size_t binary_line_count, size_t binary_line_length) {
-    p_line->binary_instruction = calloc((binary_line_count * binary_line_length) + 1, sizeof(char));
+    size_t count_to_allocate = binary_line_count * binary_line_length + 1; // Calculate total size in bytes
+    printf("binary_line_count - %lu\n", binary_line_count);
+    if (binary_line_count == 0){//TODO - delete after danielle add binary_line_count logic
+        count_to_allocate = 46;
+    }
+    p_line->binary_instruction = (char*) malloc(count_to_allocate);
+    printf("The size wanted to allocate is %lu\n", count_to_allocate);
     if (p_line->binary_instruction == NULL) {
         fprintf(stderr, "Memory allocation failed for binary instruction\n");
         exit(1);
@@ -75,4 +81,31 @@ void allocate_binary_instruction(InstructionLine *p_line, size_t binary_line_cou
 
 void free_binary_instruction(InstructionLine *p_line) {
     free(p_line->binary_instruction);
+}
+
+void print_command(Command *command){
+    printf("Command name is %s\n", command->command_name);
+    if (command->operand_number > 0){
+        printf("Src Operand value is %s and the classification type is %d\n", command->src_operand->value, command->src_operand->classification_type);
+    }
+    else{
+        printf("No Operands :(\n");
+    }
+    if (command->operand_number > 1){
+        printf("Dst Operand value is %s and the classification type is %d\n", command->dst_operand->value, command->dst_operand->classification_type);
+    }
+
+}
+void print_directive(Directive *directive){
+    printf("The Lenth of the directive is %zu and the value is %s\n", directive->data_values_count, *directive->value);
+}
+
+void print_instruction_line(InstructionLine *instructionLine){
+    printf("The Content of line is %s\n", instructionLine->line_content);
+    if (instructionLine->command != NULL){
+        print_command(instructionLine->command);
+    }
+    else if (instructionLine->directive != NULL){
+        print_directive(instructionLine->directive);
+    }
 }

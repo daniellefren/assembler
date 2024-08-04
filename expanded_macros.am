@@ -169,3 +169,303 @@ K: .data 31
 .extern L3XYZ: .data 7, -57, +17, 9
 mov XYZ, r1
 ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"
+XYZ: .data 7, -57, +17, 9, 15
+mov XYZ, r1
+ABC: .string "danielle"

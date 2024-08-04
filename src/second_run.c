@@ -12,21 +12,17 @@
 void start_second_run(LinesArray *assembly_lines_array){
     printf("Starting Second run \n");
 
-
-    //Allocation
-    assembly_lines_array = malloc(sizeof(LinesArray));
-
-    //assembly_lines_array = generate_instruction_line_array(2, assembly_lines_array);
-
     printf("The number of lines in the struct is %d \n \n", assembly_lines_array->number_of_line);
 
     printf("Starting to print The lines Binary: \n");
 
-    for (int i = 0; i < assembly_lines_array->number_of_line; ++i) {
+    for (int i = 0; i < assembly_lines_array->number_of_line-340; ++i) {
         InstructionLine *p_line = &assembly_lines_array->lines[i];
         allocate_binary_instruction(p_line, p_line->binary_line_count, BINARY_LINE_LENGTH);
-        printf("Line number %d binary -  \n", i);
+        printf("\n****Line number %d *****  \n\n", i);
+        print_instruction_line(p_line);
         fill_instruction_line_binary(p_line);
+
         printf("The binary representation of the line is %s \n", assembly_lines_array->lines[i].binary_instruction );
     }
 
@@ -50,20 +46,11 @@ void fill_instruction_line_binary(InstructionLine *instruction_line){
     char *binary_instruction_p = instruction_line->binary_instruction;
     if (is_instruction_line_opcode(*instruction_line)){
         char binary_line[(instruction_line->binary_line_count * BINARY_LINE_LENGTH) + 1];
-        if (instruction_line->binary_line_count == 2){
-
-        }
-        else{
-
-        }
-
         fill_first_part_binary_opcode(instruction_line, instruction_line->binary_instruction);
         printf("First part binary - %s \n", instruction_line->binary_instruction);
-
         fill_second_part_binary_opcode(instruction_line, instruction_line->binary_instruction);
         printf("Second part binary - %s \n", instruction_line->binary_instruction);
 
-        // if the line doesn't have three word it has to have two words because it's an opcode line
 
     }
     else if(is_instruction_line_directive(*instruction_line)){
@@ -73,19 +60,32 @@ void fill_instruction_line_binary(InstructionLine *instruction_line){
 
 void fill_first_part_binary_opcode(InstructionLine *instruction_line, char *binary_string) {
     // Convert the opcode value to binary opcode - 0 1 2 3, first_classification - 4 5 6 7, second_classification - 8 9 10 11, ARE - 12 13 14
-    int first_operand_classification = instruction_line->command->src_operand->classification_type;
-    int second_operand_classification = instruction_line->command->dst_operand->classification_type;
     int binary_string_number = 1; //first part binary
+    int first_operand_classification;
+    int second_operand_classification;
+
+    if (instruction_line->command->operand_number > 0){
+        first_operand_classification = instruction_line->command->src_operand->classification_type;
+    }
+    else{
+        exit(0); //TODO - make sure is dont exit for command with no operand if there is one
+    }
+    if (instruction_line->command->operand_number >1){
+        second_operand_classification = instruction_line->command->dst_operand->classification_type;
+    }
 
 
     fill_the_binary_representation_with_zero(binary_string, BINARY_LINE_LENGTH);
-    printf("The binary string is: %s \n", binary_string);
-    set_binary_string_opcode_representation(instruction_line->command->opcode_command_type, *binary_string);
-    printf("The opcode binary string is: %c \n", binary_string[6]);
-    set_binary_string_operand_representation(first_operand_classification, second_operand_classification, *binary_string);
-    set_binary_string_ARE_representation(*binary_string,binary_string_number);
+    printf("The binary string (filled with zero) is: %s \n", binary_string);
+    set_binary_string_opcode_representation(instruction_line->command->opcode_command_type, binary_string);
+
+    printf("The opcode binary string is: %s \n", binary_string);
+    set_binary_string_operand_representation(first_operand_classification, second_operand_classification, binary_string);
+
+    set_binary_string_ARE_representation(binary_string,binary_string_number);
 }
 void set_binary_string_operand_representation(int first_operand_classification_type, int second_operand_classification_type, char *binary_string) {
+    //printf("Problem HERE! %s\n", instruction_line->line_content);
 
     int operand_binary_classification_size = 4;
     int first_classification_offset = 3;
@@ -118,18 +118,20 @@ void fill_the_binary_representation_with_zero(char *binary_string, size_t length
     if (length <= 0) {
         return;
     }
-
     // Fill the array with '0' characters using a loop
-    for (size_t i = 0; i < length - 1; i++) {
+    for (size_t i = 0; i < length; i++) {
         binary_string[i] = '0';
     }
 
     // Add null terminator at the end (within valid memory)
-    binary_string[length - 1] = '\0';
+    binary_string[length] = '\0';
 
 }
 void set_binary_string_opcode_representation(int opcode_number, char *binary_string) {
     printf("The opcode is %d \n", opcode_number);
+    if (binary_string == NULL) {
+        exit(0);
+    }
     int binary_value = opcode_number & ((1 << OPCODE_SIZE) - 1);  // Mask with all bits set for the desired size
 
     // Convert each bit to a character ('0' or '1')
@@ -138,16 +140,23 @@ void set_binary_string_opcode_representation(int opcode_number, char *binary_str
             binary_string[i] = '1';
         }
     }
-    printf("The opcode binary string is: %s \n", binary_string);
+
+    printf("The opcode binary string after opcode representation is: %s \n", binary_string);
 }
 
 bool is_instruction_line_directive(InstructionLine instructionLine){
+    if (instructionLine.directive != NULL){
+        return true;
+    }
     return false;
     //return instructionLine.directive_type != NOT_DIRECTIVE;
 }
 
 bool is_instruction_line_opcode(InstructionLine instructionLine){
-    return true;
+    if (instructionLine.command != NULL){
+        return true;
+    }
+    return false;
     //return instructionLine.directive_type != NOT_OPCODE;
 }
 
