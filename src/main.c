@@ -35,30 +35,32 @@ int main(int argc, char *argv[]) {
         return -1  ;
     }
     //call the second_run function with the LinesArray table
-    //start_second_run(assembly_lines_array);
 
-   // printf("Get all instructions:\n");
-    //for(int k=0; k<2;k++){
-      //  printf("line - \n");
 
-        //printf("%s \n", assembly_lines_array.lines[k].line_content);
-        //printf("first_operand - \n");
-        //printf("%s \n", assembly_lines_array.lines[k].first_operand);
-        //printf("second_operand - \n");
-        //printf("%s \n", assembly_lines_array.lines[k].second_operand);
+    printf("Get all instructions:\n");
+   /*
+    for(int k=0; k<2;k++){
+        printf("line - \n");
 
-//    }
+        printf("%s \n", assembly_lines_array.lines[k].line_content);
+        printf("first_operand - \n");
+        printf("%s \n", assembly_lines_array.lines[k].first_operand);
+        printf("second_operand - \n");
+        printf("%s \n", assembly_lines_array.lines[k].second_operand);
 
-//    return_value = second_run();
-//    printf("the value is %d", return_value);
+    }
+
+    */
     // Close the file
     fclose(file);
-
-    test_all_run(assembly_lines_array);
-
-
-
+    printf("\nYessss\n");
+    start_second_run(assembly_lines_array);
+    //test_all_run(assembly_lines_array);
 
 
-    return EXIT_SUCCESS;
+
+
+
+    //return EXIT_SUCCESS;
+    return 1;
 }
