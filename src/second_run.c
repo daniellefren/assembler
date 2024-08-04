@@ -11,14 +11,17 @@
 
 void start_second_run(LinesArray *assembly_lines_array){
     printf("Starting Second run \n");
+
+
     //Allocation
     assembly_lines_array = malloc(sizeof(LinesArray));
 
-    assembly_lines_array = generate_instruction_line_array(2, assembly_lines_array);
+    //assembly_lines_array = generate_instruction_line_array(2, assembly_lines_array);
 
     printf("The number of lines in the struct is %d \n \n", assembly_lines_array->number_of_line);
 
     printf("Starting to print The lines Binary: \n");
+
     for (int i = 0; i < assembly_lines_array->number_of_line; ++i) {
         InstructionLine *p_line = &assembly_lines_array->lines[i];
         allocate_binary_instruction(p_line, p_line->binary_line_count, BINARY_LINE_LENGTH);
@@ -44,8 +47,7 @@ void fill_instruction_line_binary(InstructionLine *instruction_line){
     // create second word and third word if needed binary (15 + 15)
     // append the binary words
     // if it's directive .....
-    char first_part_binary[15];
-    char second_part_binary[15];
+    char *binary_instruction_p = instruction_line->binary_instruction;
     if (is_instruction_line_opcode(*instruction_line)){
         char binary_line[(instruction_line->binary_line_count * BINARY_LINE_LENGTH) + 1];
         if (instruction_line->binary_line_count == 2){
@@ -56,10 +58,10 @@ void fill_instruction_line_binary(InstructionLine *instruction_line){
         }
 
         fill_first_part_binary_opcode(instruction_line, instruction_line->binary_instruction);
-        printf("First part binary - %s \n", first_part_binary);
+        printf("First part binary - %s \n", instruction_line->binary_instruction);
 
         fill_second_part_binary_opcode(instruction_line, instruction_line->binary_instruction);
-        printf("Second part binary - %s \n", second_part_binary);
+        printf("Second part binary - %s \n", instruction_line->binary_instruction);
 
         // if the line doesn't have three word it has to have two words because it's an opcode line
 
