@@ -58,58 +58,6 @@ void free_instruction_line(InstructionLine *instruction_line_pointer){
     printf("a");
 }
 
-
-LinesArray *generate_instruction_line_array(int max_lines, LinesArray *my_lines_array) {
-    if (my_lines_array == NULL) {
-        printf("Memory allocation failed for LinesArray!\n");
-        return NULL;
-    }
-
-    my_lines_array->lines = (InstructionLine *) malloc(max_lines * sizeof(InstructionLine));
-
-    if (my_lines_array->lines == NULL) {
-        free(my_lines_array);  // Free previously allocated memory for LinesArray
-        printf("Memory allocation failed for InstructionLine array!\n");
-        return NULL;
-    }
-
-    // Initialize other members of LinesArray
-    my_lines_array->number_of_line = 0;
-    my_lines_array->capacity = max_lines;
-
-    // Add test assembly instructions (assuming you have a function to create InstructionLine)
-    InstructionLine instruction;
-    Command command;
-
-    instruction.line_content = "MOV r2 *r2";
-
-    command.src_operand->value = "r1";
-    printf("Problem Here! \n");
-    fflush(stdout);
-    command.src_operand->classification_type = DIRECT_REGISTER;
-    command.dst_operand->value = "*r2";
-    command.dst_operand->classification_type = INDIRECT_REGISTER;
-    command.opcode_command_type = MOV;
-    command.operand_number = 2;
-    instruction.instruction_type = IS_COMMAND;
-    instruction.length = strlen(instruction.line_content);
-    instruction.command = &command;
-    my_lines_array->lines[my_lines_array->number_of_line++] = instruction;
-
-    Command command1;
-    instruction.line_content = "INC *r1";
-    command1.src_operand->value = "*r1";
-    command1.src_operand->classification_type = INDIRECT_REGISTER;
-    command1.operand_number = 1;
-    command1.opcode_command_type = INC;
-    instruction.instruction_type = IS_COMMAND;
-    instruction.length = strlen(instruction.line_content);
-    instruction.command = &command1;
-    my_lines_array->lines[my_lines_array->number_of_line++] = instruction;
-
-    return my_lines_array;
-}
-
 char *get_instruction_line_binary(LinesArray *linesArray, int number_of_line){
     return linesArray->lines[number_of_line].binary_instruction;
 }
