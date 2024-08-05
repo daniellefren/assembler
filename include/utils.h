@@ -12,4 +12,5 @@ void print_command(Command *command);
 void print_instruction_line(InstructionLine *instructionLine);
 void print_directive(Directive *directive);
 void erase_file_data(const char *filename);
+char* extract_numbers(const char *input, int length);
 #endif //ASSEMBLER_UTILS_H

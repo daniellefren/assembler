@@ -352,14 +352,18 @@ void define_operand_types(Operand *operand, LabelTable *label_table){
     operand->type = INVALID;
     int is_valid = 1;
     if (operand->value[0] == '#') {
+        int length = 0;
         // Check if the rest is a valid integer
         for (int i = 1; operand->value[i] != '\0'; ++i) {
             if (!isdigit(operand->value[i]) && operand->value[i] != '-') {
                 is_valid = 0;
+                ++length;
             }
         }
         if(is_valid){
             operand->type = INTEGER;
+            strcpy(operand->value, extract_numbers(operand->value, length));
+            printf("yess?? %s", operand->value);
         }
     }
     else if (operand->value[0] == '*') {
