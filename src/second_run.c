@@ -77,12 +77,15 @@ void fill_first_part_binary_opcode(InstructionLine *instruction_line, char *bina
 
     fill_the_binary_representation_with_zero(binary_string, BINARY_LINE_LENGTH);
     printf("The binary string (filled with zero) is: %s \n", binary_string);
-    set_binary_string_opcode_representation(instruction_line->command->opcode_command_type, binary_string);
 
+    set_binary_string_opcode_representation(instruction_line->command->opcode_command_type, binary_string);
     printf("The opcode binary string is: %s \n", binary_string);
+
     set_binary_string_operand_representation(first_operand_classification, second_operand_classification, binary_string);
+    printf("The binary string with operand is: %s \n", binary_string);
 
     set_binary_string_ARE_representation(binary_string,binary_string_number);
+    printf("The binary string with ARE is: %s \n", binary_string);
 }
 void set_binary_string_operand_representation(int first_operand_classification_type, int second_operand_classification_type, char *binary_string) {
     //printf("Problem HERE! %s\n", instruction_line->line_content);
@@ -101,7 +104,6 @@ void set_binary_string_operand_representation(int first_operand_classification_t
         //bit 9 = method 3, bit 10 method 2, bit 11 method 1, bit 12 method 0
         binary_string[second_classification_offset + operand_binary_classification_size - second_operand_classification_type] = '1';
     }
-    printf("The binary string with operand is: %s \n", binary_string);
 }
 
 void set_binary_string_ARE_representation(char *binary_string, int number_of_binary_string){

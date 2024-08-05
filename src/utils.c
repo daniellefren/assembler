@@ -86,13 +86,13 @@ void free_binary_instruction(InstructionLine *p_line) {
 void print_command(Command *command){
     printf("Command name is %s\n", command->command_name);
     if (command->operand_number > 0){
-        printf("Src Operand value is %s and the classification type is %d\n", command->src_operand->value, command->src_operand->classification_type);
+        printf("Src Operand value is %s, it's type is %u and the classification type is %d\n", command->src_operand->value, command->src_operand->type, command->src_operand->classification_type);
     }
     else{
         printf("No Operands :(\n");
     }
     if (command->operand_number > 1){
-        printf("Dst Operand value is %s and the classification type is %d\n", command->dst_operand->value, command->dst_operand->classification_type);
+        printf("Dst Operand value is %s, it's type is %u and the classification type is %d\n", command->dst_operand->value, command->dst_operand->type, command->dst_operand->classification_type);
     }
 
 }

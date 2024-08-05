@@ -39,7 +39,7 @@ void test_all_run(LinesArray* assembly_lines_array){
                     printf("first operand type %d", operand_a->type);
                     Operand *operand_b = command->dst_operand;
                     printf("Second operand %s\n", operand_b->value);
-                    printf("Second operand type %d", operand_b->type);
+                    printf("Second operand type %d\n", operand_b->type);
 
                     break;
                 }
