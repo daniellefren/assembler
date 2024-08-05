@@ -11,4 +11,5 @@ void allocate_binary_instruction(InstructionLine *p_line, size_t binary_line_cou
 void print_command(Command *command);
 void print_instruction_line(InstructionLine *instructionLine);
 void print_directive(Directive *directive);
+void erase_file_data(const char *filename);
 #endif //ASSEMBLER_UTILS_H

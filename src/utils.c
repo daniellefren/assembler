@@ -109,3 +109,12 @@ void print_instruction_line(InstructionLine *instructionLine){
         print_directive(instructionLine->directive);
     }
 }
+
+void erase_file_data(const char *filename) {
+    FILE *file = fopen(filename, "w"); // Open the file in write mode
+    if (file == NULL) {
+        perror("Error opening file");
+        return;
+    }
+    fclose(file); // Closing the file truncates it to zero length
+}

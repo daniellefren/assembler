@@ -55,6 +55,7 @@ int first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, LabelTable 
 
     FILE *expanded_macros_file = fopen(macroFileName, "r");
 
+
     while (fgets(line, MAX_LINE_LENGTH, expanded_macros_file) != NULL) {
         if (!ignore_line(line)) {
             return_value = read_line(line, label_table, ic, dc, lines_array);
@@ -79,6 +80,7 @@ void pre_run(char *line, MacroTable *macroTable, char **macroNames, FILE *file, 
     // Return number of macros
     int is_in_macro = 0;
     int macroCount = 0;
+    erase_file_data(macroFileName);
 
     while (fgets(line, MAX_LINE_LENGTH, file) != NULL) {
         char macroName[MAX_LABEL_LENGTH];
@@ -281,12 +283,18 @@ void handle_command(char *line, Command *new_command, LabelTable *label_table) {
     get_command_data(new_command->command_name, new_command);
 
     define_operands_from_line(new_command, line);
-    define_operand_types(new_command->src_operand, label_table);
-    define_operand_types(new_command->dst_operand, label_table);
 
+    switch (new_command->operand_number) {
+        case 1:
+            define_operand_types(new_command->src_operand, label_table);
+            classify_operand(new_command->src_operand);
+        case 2:
+            define_operand_types(new_command->src_operand, label_table);
+            define_operand_types(new_command->dst_operand, label_table);
 
-    classify_operand(new_command->src_operand);
-    classify_operand(new_command->dst_operand);
+            classify_operand(new_command->src_operand);
+            classify_operand(new_command->dst_operand);
+    }
 
 }
 
