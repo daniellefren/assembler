@@ -38,7 +38,6 @@ int first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, LabelTable 
     char line[MAX_LINE_LENGTH];
     char *macroNames[MAX_MACRO_NAMES];  // Array to store pointers to macro names
     int line_num = 1;
-    int is_in_macro = 0;
     MacroTable macroTable;
 
     init_macro_table(&macroTable);
@@ -47,10 +46,12 @@ int first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, LabelTable 
     // Reset file pointer to the beginning before calling pre_run
     rewind(file);
 
-    //TODO - check if in the macros there is no error
     pre_run(line, &macroTable, macroNames, file, &return_value); // Keeps track of the number of encountered macros
-    if(return_value) // TODO - make it better
+
+    //Check if there were no errors in the macro expand
+    if(return_value){
         return return_value;
+    }
 
     FILE *expanded_macros_file = fopen(macroFileName, "r");
 
@@ -106,7 +107,6 @@ void pre_run(char *line, MacroTable *macroTable, char **macroNames, FILE *file, 
             }
         }
     }
-
 }
 
 int read_line(char *line, LabelTable *label_table, int *ic, int *dc, LinesArray *lines_array) {
@@ -161,20 +161,17 @@ int read_line(char *line, LabelTable *label_table, int *ic, int *dc, LinesArray 
             new_label->type = COMMAND;
         }
         Command *new_command = init_command();
-        handle_command(line, ic, new_command, label_table);
+        handle_command(line, new_command, label_table);
         new_instruction_line->binary_line_count = find_number_of_lines_in_binary(new_command);
 
         (*ic)+= new_instruction_line->binary_line_count;
 
         new_instruction_line->command = new_command;
-
     }
-
     if(hasLabel == 0 && !return_value){
         new_instruction_line->label = new_label;
         addNewLabel(label_table, new_label);
     }
-
     if(!return_value)
         addInstructionLine(lines_array, new_instruction_line);
 
@@ -278,7 +275,7 @@ void expand_macro(const Macro *macro, FILE *outputFile) {
     }
 }
 
-void handle_command(char *line, int *ic, Command *new_command, LabelTable *label_table) {
+void handle_command(char *line, Command *new_command, LabelTable *label_table) {
     sscanf(line, "%s", new_command->command_name);
 
     get_command_data(new_command->command_name, new_command);
