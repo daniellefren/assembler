@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
         printf("Line number %d: %s \n",i, assembly_lines_array->lines[i].line_content);
     }
 
-    start_second_run(assembly_lines_array);
+//    start_second_run(assembly_lines_array);
 
 
 
