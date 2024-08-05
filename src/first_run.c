@@ -363,7 +363,6 @@ void define_operand_types(Operand *operand, LabelTable *label_table){
         if(is_valid){
             operand->type = INTEGER;
             strcpy(operand->value, extract_numbers(operand->value, length));
-            printf("yess?? %s", operand->value);
         }
     }
     else if (operand->value[0] == '*') {
