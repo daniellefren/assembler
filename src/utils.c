@@ -109,3 +109,32 @@ void print_instruction_line(InstructionLine *instructionLine){
         print_directive(instructionLine->directive);
     }
 }
+
+void erase_file_data(const char *filename) {
+    FILE *file = fopen(filename, "w"); // Open the file in write mode
+    if (file == NULL) {
+        perror("Error opening file");
+        return;
+    }
+    fclose(file); // Closing the file truncates it to zero length
+}
+
+char* extract_numbers(const char *input, int length) {
+    // Allocate memory for the new string
+    char *numbers = (char *)malloc(length + 1);
+    if (numbers == NULL) {
+        perror("Unable to allocate memory");
+        exit(EXIT_FAILURE);
+    }
+
+    // Extract the numeric characters
+    char *q = numbers;
+    for (const char *p = input; *p != '\0'; ++p) {
+        if (isdigit((unsigned char)*p)) {
+            *q++ = *p;
+        }
+    }
+    *q = '\0'; // Null-terminate the new string
+
+    return numbers;
+}

@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
     if(return_value){
         return -1  ;
     }
-//    test_all_run(assembly_lines_array);
+    test_all_run(assembly_lines_array);
     //call the second_run function with the LinesArray table
 
 
