@@ -73,15 +73,13 @@ void addInstructionLine(LinesArray *lines_array, InstructionLine *instruction_li
             fprintf(stderr, "Error: Unable to allocate memory for lines array\n");
             exit(EXIT_FAILURE);
         }
-//        for(int i=0;i<lines_array->capacity;i++){
-//            new_lines[i] = lines_array->lines[i];
-//        }
         lines_array->lines = new_lines;
         lines_array->capacity = new_capacity;
     }
 
     // Add the new instruction line to the array
     lines_array->lines[lines_array->number_of_line] = *instruction_line;
+    printf("\nnumber of lines %d\n", lines_array->number_of_line);
     lines_array->number_of_line++;
 }
 
