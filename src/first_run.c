@@ -18,9 +18,9 @@ Command commands_struct[] = {
         {"cmp", CMP, 2},
         {"add", ADD, 2},
         {"sub", SUB, 2},
+        {"lea", LEA, 2},
         {"not", NOT, 1},
         {"clr", CLR, 1},
-        {"lea", LEA, 2},
         {"inc", INC, 1},
         {"dec", DEC, 1},
         {"jmp", JMP, 1},
@@ -33,8 +33,7 @@ Command commands_struct[] = {
         {"not_opcode", NOT_OPCODE, 0}
 };
 
-int first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, LabelTable *label_table) {
-    int return_value = 0; // Defines if the assembly code did not have any errors in the proccess
+void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, LabelTable *label_table) {
     char line[MAX_LINE_LENGTH];
     char *macroNames[MAX_MACRO_NAMES];  // Array to store pointers to macro names
     int line_num = 1;
@@ -46,21 +45,15 @@ int first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, LabelTable 
     // Reset file pointer to the beginning before calling pre_run
     rewind(file);
 
-    pre_run(line, &macroTable, macroNames, file, &return_value); // Keeps track of the number of encountered macros
+    pre_run(line, &macroTable, macroNames, file); // Keeps track of the number of encountered macros
 
-    //Check if there were no errors in the macro expand
-    if(return_value){
-        return return_value;
-    }
 
     FILE *expanded_macros_file = fopen(macroFileName, "r");
 
 
     while (fgets(line, MAX_LINE_LENGTH, expanded_macros_file) != NULL) {
         if (!ignore_line(line)) {
-            return_value = read_line(line, label_table, ic, dc, lines_array);
-            if(return_value)
-                break;
+            read_line(line, label_table, ic, dc, lines_array);
         }
         line_num++;
     }
@@ -71,11 +64,9 @@ int first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, LabelTable 
     for (int j = 0; j < MAX_MACRO_NAMES; ++j) {
         free(macroNames[j]);
     }
-
-    return return_value;
 }
 
-void pre_run(char *line, MacroTable *macroTable, char **macroNames, FILE *file, int* return_value) {
+void pre_run(char *line, MacroTable *macroTable, char **macroNames, FILE *file) {
     // Run and expand all macros in the program.
     // Return number of macros
     int is_in_macro = 0;
@@ -89,7 +80,10 @@ void pre_run(char *line, MacroTable *macroTable, char **macroNames, FILE *file, 
                 is_in_macro = 1;
 
                 sscanf(line, "%*s %s", macroName);  // Skip "%macro" and capture the name
-                *return_value = is_known_assembly_keyword(macroName);
+                if(is_known_assembly_keyword(macroName)){
+                    fprintf(stderr, "Macro %s is known assembly keyword\n", macroName);
+                    exit(EXIT_FAILURE);
+                }
 
                 if (macroCount < MAX_MACRO_NAMES) {
                     strcpy(macroNames[macroCount++], macroName);
@@ -111,21 +105,19 @@ void pre_run(char *line, MacroTable *macroTable, char **macroNames, FILE *file, 
     }
 }
 
-int read_line(char *line, LabelTable *label_table, int *ic, int *dc, LinesArray *lines_array) {
-    int return_value = 0;
+void read_line(char *line, LabelTable *label_table, int *ic, int *dc, LinesArray *lines_array) {
     char label[MAX_LABEL_LENGTH] = "";
     int hasLabel;
 
     line = skip_spaces(line);
+    printf("line %s\n", line);
 
     InstructionLine *new_instruction_line = init_instruction_line(line);
 
     Label *new_label;
-    hasLabel = find_label(line, label, &return_value);
+    hasLabel = find_label(line, label);
 
-    //TODO - Find a way to stop the process if return_value is 0 in a better way
-
-    if (hasLabel == 0 && !return_value) {
+    if (hasLabel) {
         line = strchr(line, ':') + 1;
 //         Skip spaces after .data directive
         while (*line && isspace((unsigned char)*line)) {
@@ -138,15 +130,16 @@ int read_line(char *line, LabelTable *label_table, int *ic, int *dc, LinesArray 
         }
 
         strcpy(new_label->name, label);
+
         new_instruction_line->is_label=1;
         new_instruction_line->label = new_label;
 
         new_label->address = ic;
     }
 
-    if (is_data_directive(line) && !return_value) { // If .data or .String
+    if (is_data_directive(line)) { // If .data or .String
         new_instruction_line->instruction_type=DATA_DIRECTIVE;
-        if(hasLabel == 0){
+        if(hasLabel){
             new_label->type = DATA_DIRECTIVE;
         }
 
@@ -157,9 +150,9 @@ int read_line(char *line, LabelTable *label_table, int *ic, int *dc, LinesArray 
         new_instruction_line->directive = new_directive;
 
     }
-    else if (is_command(line, ic) && !return_value) {
+    else if (is_command(line, ic)) {
         new_instruction_line->instruction_type=COMMAND;
-        if(hasLabel == 0){
+        if(hasLabel){
             new_label->type = COMMAND;
         }
         Command *new_command = init_command();
@@ -170,14 +163,13 @@ int read_line(char *line, LabelTable *label_table, int *ic, int *dc, LinesArray 
 
         new_instruction_line->command = new_command;
     }
-    if(hasLabel == 0 && !return_value){
+    if(hasLabel){
         new_instruction_line->label = new_label;
         addNewLabel(label_table, new_label);
     }
-    if(!return_value)
-        addInstructionLine(lines_array, new_instruction_line);
 
-    return return_value;
+    addInstructionLine(lines_array, new_instruction_line);
+
 }
 
 
@@ -185,7 +177,7 @@ int write_line_to_file(char *line) {
     FILE *outputFile = fopen(macroFileName, "a"); // Open in append mode
     if (!outputFile) {
         fprintf(stderr, "Error: Could not open file '%s' for writing\n", macroFileName);
-        return 1;  // Indicate failure
+        exit(EXIT_FAILURE);
     }
 //    lower_string(line);
     // Write the string to the file
@@ -199,13 +191,14 @@ void write_expanded_macros_to_file(MacroTable *macroTable) {
     FILE *outputFile = fopen(macroFileName, "a"); // Open in append mode
     if (!outputFile) {
         fprintf(stderr, "Error: Could not open file '%s' for writing macros\n", macroFileName);
-        return;
+        exit(EXIT_FAILURE);
     }
 
     // Write each macro's body to the file
     for (int i = 0; i < macroTable->count; ++i) {
         for (int j = 0; j < macroTable->macros[i].lineCount; ++j) {
             fprintf(outputFile, "%s", macroTable->macros[i].body[j]);
+            exit(EXIT_FAILURE);
         }
     }
 
@@ -278,6 +271,8 @@ void expand_macro(const Macro *macro, FILE *outputFile) {
 }
 
 void handle_command(char *line, Command *new_command, LabelTable *label_table) {
+    //TODO - return 0 when not valid
+
     sscanf(line, "%s", new_command->command_name);
 
     get_command_data(new_command->command_name, new_command);
@@ -295,7 +290,6 @@ void handle_command(char *line, Command *new_command, LabelTable *label_table) {
             classify_operand(new_command->src_operand);
             classify_operand(new_command->dst_operand);
     }
-
 }
 
 
@@ -327,25 +321,30 @@ void define_operands_from_line(Command *new_command, char* line){
             // Extract the first operand
             sscanf(line, "%[^,]", new_command->src_operand->value);
 
-            // Move past the first operand and the comma
-            line = strchr(line, ',');
-            if (line != NULL) {
-                line++; // Skip the comma
-            }
-
-            // Skip spaces before second operand
-            while (*line == ' ' || *line == '\t') {
-                line++;
-            }
-
             // Extract the second operand
-            sscanf(line, "%s", new_command->dst_operand->value);
+            extract_second_operand_from_line(line, new_command);
             return;
 
         default:
             fprintf(stderr, "Invalid number of operands: %d\n", new_command->operand_number);
             exit(EXIT_FAILURE);
     }
+}
+
+void extract_second_operand_from_line(char* line, Command *new_command){
+    // Move past the first operand and the comma
+    line = strchr(line, ',');
+    if (line != NULL) {
+        line++; // Skip the comma
+    }
+
+    // Skip spaces before second operand
+    while (*line == ' ' || *line == '\t') {
+        line++;
+    }
+
+    // Extract the second operand
+    sscanf(line, "%s", new_command->dst_operand->value);
 }
 
 void define_operand_types(Operand *operand, LabelTable *label_table){
@@ -363,40 +362,43 @@ void define_operand_types(Operand *operand, LabelTable *label_table){
         if(is_valid){
             operand->type = INTEGER;
             strcpy(operand->value, extract_numbers(operand->value, length));
-            printf("yess?? %s", operand->value);
         }
     }
     else if (operand->value[0] == '*') {
-        if (operand->value[1] == 'r' && isdigit(operand->value[2])){
+        if (operand->value[1] == 'r' && operand->value[2] >= '1' && operand->value[2] <= '7'){
             operand->type = REGISTER;
         }
     }
 
-    else if (operand->value[0] == 'r' && isdigit(operand->value[1])){
+    else if (operand->value[0] == 'r' && operand->value[1] >= '1' && operand->value[1] <= '7'){
             operand->type = REGISTER;
     }
 
-//    else if(label_exists(label_table, operand->value)){
     else if(is_valid_label(operand->value)){
         operand->type = LABEL;
+    }
+    else{
+        fprintf(stderr, "Not valid operand type.\n");
+        exit(EXIT_FAILURE);
     }
 }
 
 // Function to check if a string is a valid label
 int is_valid_label(const char *label) {
-    // Check if the label is a known keyword
-    if (is_known_assembly_keyword(label)) {
-        return 0; // Invalid if it matches a keyword
-    }
-
-    // Check if the label starts with a letter or underscore
-    if (!isalpha((unsigned char)label[0]) && label[0] != '_') {
+    //Check length of the label
+    size_t length = strlen(label);
+    if (length == 0 || length > MAX_LABEL_LENGTH) {
         return 0;
     }
 
-    // Check the remaining characters
-    for (size_t i = 1; label[i] != '\0'; ++i) {
-        if (!isalnum((unsigned char)label[i]) && label[i] != '_') {
+    //Check if the first character is a letter
+    if (!isalpha((unsigned char)label[0])) {
+        return 0;
+    }
+
+    //  Check if other characters are letters/numbers
+    for (size_t i = 1; i < length; ++i) {
+        if (!isalnum((unsigned char)label[i])) {
             return 0;
         }
     }
@@ -440,6 +442,10 @@ void classify_operand(Operand *new_operand) {
     else if (new_operand->type == REGISTER) {
         new_operand->classification_type = DIRECT_REGISTER; // Direct Register addressing
     }
+    else{
+        fprintf(stderr, "Not valid classification type");
+        exit(EXIT_FAILURE);
+    }
 
 }
 
@@ -455,6 +461,7 @@ void get_command_data(char* command_name, Command *new_command){
     }
     // Handle the case where the opcode is not found
     fprintf(stderr, "Error: Opcode %d not found in the instruction set.\n", command_opcode);
+    exit(EXIT_FAILURE);
 }
 
 int ignore_line(char *line) {
@@ -471,7 +478,7 @@ char* skip_spaces(char *line) {
 }
 
 // Function to check if a line is a label
-int find_label(char *line, char *label, int* return_value) {
+int find_label(char *line, char *label) {
     // Skip leading whitespace
     while (*line && isspace((unsigned char)*line)) {
         line++;
@@ -483,17 +490,22 @@ int find_label(char *line, char *label, int* return_value) {
     while (*start && !isspace((unsigned char)*start) && *start != ':') {
         start++;
     }
-
+    printf("start %s", start);
     // If a colon is found, we assume it is a label
     if (*start == ':') {
+        printf("there is :");
         size_t len = start - line;
         strncpy(label, line, len);
         label[len] = '\0'; // Null-terminate the label
 
         // Check if the label is a known assembly keyword
-        *return_value = is_known_assembly_keyword(label);
+        return !is_known_assembly_keyword(label);
     }
-    return return_value;
+    if(((*start == ' ') && *(start + 1) == ':')){
+        fprintf(stderr, "Label is not valid -- a space between the label and the :\n");
+        exit(EXIT_FAILURE);
+    }
+    return 0;
 }
 
 // Return 1 if label is an assembly keyword, else 0
@@ -562,6 +574,8 @@ bool is_data_directive(char *line) {
 
 void handle_directives(char *line, int *dc, Directive *new_directive) {
     //TODO - handle .extern
+    //TODO - return value 1 when error
+    //TODO - split to functions
 
     char directive_type[MAX_LINE_LENGTH];
     char *ptr = line;
@@ -572,7 +586,7 @@ void handle_directives(char *line, int *dc, Directive *new_directive) {
     if (sscanf(line, "%s", directive_type) != 1) {
         fprintf(stderr, "Error: Failed to read directive type\n");
         new_directive->type = NOT_DIRECTIVE;
-        return;
+        exit(EXIT_FAILURE);
     }
 
     if (strcmp(directive_type, ".data") == 0) {
@@ -622,6 +636,7 @@ void handle_directives(char *line, int *dc, Directive *new_directive) {
     } else {
         new_directive->type = NOT_DIRECTIVE;
         fprintf(stderr, "Error: Unknown directive %s\n", directive_type);
+        exit(EXIT_FAILURE);
     }
 
     // Allocate memory for the values in the symbol
@@ -638,6 +653,7 @@ void handle_directives(char *line, int *dc, Directive *new_directive) {
     }
     new_directive->data_values_count = values_count;
 //    debugging_data(new_directive);
+
 }
 
 

@@ -8,7 +8,6 @@
 int main(int argc, char *argv[]) {
     FILE *file;
     int ic, dc = 0;
-    int return_value = 0;
 
 
     LinesArray *assembly_lines_array = init_lines_array(10);
@@ -29,10 +28,9 @@ int main(int argc, char *argv[]) {
 
 
     // Call the first_run function with the file pointer
-    return_value = first_run(file, &ic, &dc, assembly_lines_array, label_table);
-    if(return_value){
-        return -1  ;
-    }
+    first_run(file, &ic, &dc, assembly_lines_array, label_table);
+
+    dc += ic;
     test_all_run(assembly_lines_array);
     //call the second_run function with the LinesArray table
 
