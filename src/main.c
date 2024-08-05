@@ -47,11 +47,6 @@ int main(int argc, char *argv[]) {
 
 //    start_second_run(assembly_lines_array);
 
-
-
-
-
-
     //return EXIT_SUCCESS;
     return 1;
 }
