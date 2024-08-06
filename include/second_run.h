@@ -21,4 +21,5 @@ bool is_instruction_line_directive_string(InstructionLine *instruction_line);
 bool is_instruction_line_directive_integer(InstructionLine *instruction_line);
 void fill_operand_binary(InstructionLine *instructionLine, char *binary_string);
 void append_number_binary_to_string(int number, char *binary_string);
+int is_operand_classification_type_valid(enum operand_classification_type operandClassificationType);
 #endif //ASSEMBLER_SECOND_RUN_H

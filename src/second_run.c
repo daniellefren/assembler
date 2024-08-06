@@ -11,9 +11,7 @@
 
 void start_second_run(LinesArray *assembly_lines_array){
     printf("Starting Second run \n");
-
     printf("The number of lines in the struct is %d \n \n", assembly_lines_array->number_of_line);
-
     printf("Starting to print The lines Binary: \n");
 
     //for (int i = 0; i < assembly_lines_array->number_of_line; ++i)
@@ -87,6 +85,8 @@ void fill_first_part_binary_opcode(InstructionLine *instruction_line, char *bina
 
 
 }
+
+
 void set_binary_string_operand_representation(int first_operand_classification_type, int second_operand_classification_type, char *binary_string) {
 
     int operand_binary_classification_size = 4;
@@ -95,11 +95,11 @@ void set_binary_string_operand_representation(int first_operand_classification_t
 
     printf("First classification type is %d \n", first_operand_classification_type);
     printf("second classification type is %d \n", second_operand_classification_type);
-    if ((first_operand_classification_type >= IMMEDIATE) && (first_operand_classification_type <= DIRECT_REGISTER)) {
+    if (is_operand_classification_type_valid(first_operand_classification_type)) {
         //bit 5 = method 3, bit 6 method 2, bit 7 method 1, bit 8 method 0
         binary_string[first_classification_offset + operand_binary_classification_size - first_operand_classification_type] = '1';
     }
-    if ((second_operand_classification_type >= IMMEDIATE) && (second_operand_classification_type <= DIRECT_REGISTER)) {
+    if (is_operand_classification_type_valid(second_operand_classification_type)) {
         //bit 9 = method 3, bit 10 method 2, bit 11 method 1, bit 12 method 0
         binary_string[second_classification_offset + operand_binary_classification_size - second_operand_classification_type] = '1';
     }
@@ -279,3 +279,6 @@ bool instruction_line_has_three_binary_words(InstructionLine instructionLine) {
     return false;
 }
 
+int is_operand_classification_type_valid(enum operand_classification_type operandClassificationType){
+    return (operandClassificationType >= IMMEDIATE) && (operandClassificationType <= DIRECT_REGISTER);
+}
