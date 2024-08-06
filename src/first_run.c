@@ -13,6 +13,8 @@
 
 char macroFileName[] = "expanded_macros.am";
 
+//TODO - get all errors from code and not exit after one
+
 Command commands_struct[] = {
         {"mov", MOV, 2},
         {"cmp", CMP, 2},
@@ -447,7 +449,6 @@ void classify_operand(Operand *new_operand) {
         new_operand->classification_type = IMMEDIATE; // Immediate addressing
     }
     else if(new_operand->type == LABEL){
-        //TODO - what if the label is defined after
         new_operand->classification_type = DIRECT; // Direct addressing
     }
 
