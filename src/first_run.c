@@ -46,8 +46,9 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, LabelTable
 
     // Reset file pointer to the beginning before calling pre_run
     rewind(file);
-
+    printf("before pre run");
     pre_run(line, &macroTable, macroNames, file); // Keeps track of the number of encountered macros
+    printf("after pre run");
 
 
     FILE *expanded_macros_file = fopen(macroFileName, "r");
@@ -76,6 +77,7 @@ void pre_run(char *line, MacroTable *macroTable, char **macroNames, FILE *file) 
     erase_file_data(macroFileName);
 
     while (fgets(line, MAX_LINE_LENGTH, file) != NULL) {
+        printf("line %s\n", line);
         char macroName[MAX_LABEL_LENGTH];
         if (!ignore_line(line)) {
             if (is_macro_definition_start(line)) {
@@ -105,6 +107,7 @@ void pre_run(char *line, MacroTable *macroTable, char **macroNames, FILE *file) 
             }
         }
     }
+
 }
 
 void read_line(char *line, LabelTable *label_table, int *ic, int *dc, LinesArray *lines_array) {
@@ -137,7 +140,8 @@ void read_line(char *line, LabelTable *label_table, int *ic, int *dc, LinesArray
         new_instruction_line->label = new_label;
 
         new_label->address = ic;
-        new_label->is_internal = 1;
+        new_label->is_extern=0;
+        new_label->is_entry=0;
     }
 
     if (is_data_directive(line)) { // If .data or .String
@@ -200,7 +204,6 @@ void write_expanded_macros_to_file(MacroTable *macroTable) {
     for (int i = 0; i < macroTable->count; ++i) {
         for (int j = 0; j < macroTable->macros[i].lineCount; ++j) {
             fprintf(outputFile, "%s", macroTable->macros[i].body[j]);
-            exit(EXIT_FAILURE);
         }
     }
 
@@ -590,8 +593,6 @@ bool is_data_directive(char *line) {
 }
 
 void handle_directives(char *line, int *dc, Directive *new_directive, LabelTable *label_table, int* ic) {
-    //TODO - handle .extern, .entry
-    //TODO - return value 1 when error
     //TODO - split to functions
 
     char directive_type[MAX_LINE_LENGTH];
@@ -663,15 +664,18 @@ void handle_directives(char *line, int *dc, Directive *new_directive, LabelTable
 
         new_label->address = ic;
         new_label->type = EXTERN_DIRECTIVE;
-        new_label->is_internal=0;
+        new_label->is_extern=1;
         addNewLabel(label_table, new_label);
-        add_extern_to_externals_file();
+        add_extern_to_externals_file(new_label);
 
 
     } else if (strcmp(directive_type, ".entry") == 0) {
         new_directive->type = ENTRY;
         extract_word_after_keyword(ptr, new_directive->label, directive_type);
-//        add_entry_to_entries_file();
+        Label* label = find_label_by_name(label_table, new_directive->label);
+        label->is_entry=1;
+
+        add_entry_to_entries_file(new_directive->label);
 
     } else {
             new_directive->type = NOT_DIRECTIVE;
@@ -697,18 +701,40 @@ void handle_directives(char *line, int *dc, Directive *new_directive, LabelTable
 
 }
 
-void add_extern_to_externals_file(){
+//Return the label with the given name
+Label *find_label_by_name(LabelTable* label_table, char* label_name){
+    for(int i=0;i<label_table->size;i++){
+        if(strcmp(label_table->labels[i].name, label_name)){
+            return &label_table->labels[i];
+        }
+    }
+    fprintf(stderr, "Error finding label %s", label_name);
+    exit(EXIT_FAILURE);
+}
+
+void add_extern_to_externals_file(Label *label){
     FILE *file = fopen("output_files/externals.txt", "w");
-//    if (file == NULL) {
-//        perror("Unable to open file");
-//        exit(EXIT_FAILURE);
-//    }
-//
-//    for (int i = 0; i < table->count; i++) {
-//        fprintf(file, "%s %d\n", table->symbols[i].symbol, table->symbols[i].address);
-//    }
-//
-//    fclose(file);
+    if (file == NULL) {
+        perror("Unable to open externals file");
+        exit(EXIT_FAILURE);
+    }
+
+    fprintf(file, "%s %d\n", label->name, label->address);
+
+    fclose(file);
+}
+
+
+void add_entry_to_entries_file(char *label){
+    FILE *file = fopen("output_files/internals.txt", "w");
+    if (file == NULL) {
+        perror("Unable to open externals file");
+        exit(EXIT_FAILURE);
+    }
+
+    fprintf(file, "%s\n", label);
+
+    fclose(file);
 }
 
 void debugging_data(Directive *new_directive){

@@ -18,8 +18,9 @@ typedef struct {
 typedef struct {
     char name[MAX_LABEL_LENGTH];
     enum instruction_types type; //command or data directive
-    int is_internal; //1 if internal and 0 for external TODO - add logic at the first part
     int address;
+    int is_extern;
+    int is_entry;
 } Label;
 
 typedef struct {
