@@ -3,4 +3,4 @@
 
 ;ABC: .string "danielle"
 
-.extern ABS
+mov *r1, #4

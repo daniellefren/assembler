@@ -15,5 +15,5 @@ void erase_file_data(const char *filename);
 char* extract_numbers(const char *input, int length);
 int char_to_int(char *c);
 void extract_word_after_keyword(const char *input, char *output, const char *keyword);
-
+void remove_first_character(char *str);
 #endif //ASSEMBLER_UTILS_H
