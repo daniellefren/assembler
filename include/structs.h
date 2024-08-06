@@ -63,22 +63,6 @@ typedef struct {
 } LinesArray;
 
 
-
-
-
-typedef struct {
-    char* label;
-    int type;
-    char *value;
-    size_t data_values_count; // count of data values TODO why not int?
-} Data;
-
-typedef struct {
-    Data *directive;
-    size_t size;
-} DataTable;
-
-
 typedef struct {
     char name[MAX_LABEL_LENGTH];
     char body[MAX_MACRO_LENGTH][MAX_LINE_LENGTH];
