@@ -19,7 +19,7 @@ static const char *commands[] = {
 };
 
 static const char *directives[] = {
-        ".data", ".string", ".struct", ".entry", ".extern"
+        "data", "string", "struct", "entry", "extern"
 };
 
 #define COMMANDS_COUNT (sizeof(commands) / sizeof(commands[0]))
@@ -37,7 +37,8 @@ enum opcode_command {MOV, CMP, ADD, SUB, NOT, CLR, LEA, INC, DEC, JMP, BNE, RED,
 
 enum instruction_types {
     COMMAND = 1,
-    DATA_DIRECTIVE = 2
+    DATA_DIRECTIVE = 2,
+    EXTERN_DIRECTIVE = 3
 };
 
 enum operand_types {

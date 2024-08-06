@@ -11,7 +11,7 @@
 #include "../include/constants.h"
 #include "../include/utils.h"
 
-char macroFileName[] = "expanded_macros.am";
+char macroFileName[] = "output_files/expanded_macros.am";
 
 //TODO - get all errors from code and not exit after one
 
@@ -137,6 +137,7 @@ void read_line(char *line, LabelTable *label_table, int *ic, int *dc, LinesArray
         new_instruction_line->label = new_label;
 
         new_label->address = ic;
+        new_label->is_internal = 1;
     }
 
     if (is_data_directive(line)) { // If .data or .String
@@ -147,7 +148,7 @@ void read_line(char *line, LabelTable *label_table, int *ic, int *dc, LinesArray
 
         Directive *new_directive = init_directive();
 
-        handle_directives(line, dc, new_directive);
+        handle_directives(line, dc, new_directive, label_table, ic);
 
         new_instruction_line->directive = new_directive;
 
@@ -564,28 +565,29 @@ int label_exists(LabelTable *label_table, char *label) {
     return 0;
 }
 
-// Function to check if a line is a data or string directive
+// Function to check if the line contains a data directive
 bool is_data_directive(char *line) {
     // Skip leading spaces
     while (*line && isspace((unsigned char)*line)) {
         line++;
     }
 
-    // Check if the line starts with a dot and followed by "data" or "string"
+    // Check if the line starts with a dot
     if (*line == '.') {
         line++;
-        if (strncmp(line, "data", 4) == 0 && isspace((unsigned char)line[4])) {
-            return true;
-        }
-        if (strncmp(line, "string", 6) == 0 && isspace((unsigned char)line[6])) {
-            return true;
+        // Iterate over the directives array and check if any directive matches
+        for (size_t i = 0; i < sizeof(directives) / sizeof(directives[0]); i++) {
+            size_t len = strlen(directives[i]);
+            if (strncmp(line, directives[i], len) == 0 && isspace((unsigned char)line[len])) {
+                return true;
+            }
         }
     }
     return false;
 }
 
-void handle_directives(char *line, int *dc, Directive *new_directive) {
-    //TODO - handle .extern
+void handle_directives(char *line, int *dc, Directive *new_directive, LabelTable *label_table, int* ic) {
+    //TODO - handle .extern, .entry
     //TODO - return value 1 when error
     //TODO - split to functions
 
@@ -646,11 +648,34 @@ void handle_directives(char *line, int *dc, Directive *new_directive) {
                 (*dc)++;
             }
         }
+    } else if (strcmp(directive_type, ".extern") == 0){
+        new_directive->type = EXTERN;
+        Label *new_label = (Label *)malloc(10 * sizeof(Label));
+        if (new_label == NULL) {
+            fprintf(stderr, "Memory allocation error for directive\n");
+            exit(EXIT_FAILURE);
+        }
+        extract_word_after_keyword(ptr, new_label->name, directive_type);
+        strcpy(new_directive->label, new_label->name);
+
+        new_label->address = ic;
+        new_label->type = EXTERN_DIRECTIVE;
+        new_label->is_internal=0;
+        addNewLabel(label_table, new_label);
+        add_extern_to_externals_file();
+
+
+    } else if (strcmp(directive_type, ".entry") == 0) {
+        new_directive->type = ENTRY;
+        extract_word_after_keyword(ptr, new_directive->label, directive_type);
+//        add_entry_to_entries_file();
+
     } else {
-        new_directive->type = NOT_DIRECTIVE;
-        fprintf(stderr, "Error: Unknown directive %s\n", directive_type);
-        exit(EXIT_FAILURE);
+            new_directive->type = NOT_DIRECTIVE;
+            fprintf(stderr, "Error: Unknown directive %s\n", directive_type);
+            exit(EXIT_FAILURE);
     }
+
 
     // Allocate memory for the values in the symbol
     new_directive->value = (char **)malloc(values_count * sizeof(char *));
@@ -669,6 +694,9 @@ void handle_directives(char *line, int *dc, Directive *new_directive) {
 
 }
 
+void add_extern_to_externals_file(){
+    return;
+}
 
 void debugging_data(Directive *new_directive){
     //TODO - erase this function

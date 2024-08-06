@@ -21,11 +21,11 @@ void read_line(char *line, LabelTable *label_table, int *ic, int *dc, LinesArray
 void pre_run(char *line, MacroTable *macroTable, char **macroNames, FILE *file);
 
 void handle_command(char *line, Command *new_command, LabelTable *label_table);
-void handle_directives(char *line, int *dc, Directive *new_directive);
+void handle_directives(char *line, int *dc, Directive *new_directive, LabelTable *label_table, int* ic);
 void classify_operand(Operand *new_operand);
 int find_number_of_lines_in_binary(Command *new_command);
 //void handle_data_directive(char* directive_type, Directive *new_directive, char* ptr, char *values[MAX_LINE_LENGTH], int *dc, int *values_count);
-
+void add_extern_to_externals_file();
 int ignore_line(char *line);
 char* skip_spaces(char *line);
 

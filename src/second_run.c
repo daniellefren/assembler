@@ -213,9 +213,9 @@ void fill_operand_binary(Operand *operand,Operand *second_operand, char *binary_
         case DIRECT:
             int_number_to_binary = operand->label->address;
             int_to_binary_string(int_number_to_binary, binary_string, operand_number * BINARY_LINE_LENGTH);
-            if (operand->label->internal) { //internal
+            if (operand->label->is_internal) { //internal
                 set_binary_string_ARE_representation(binary_string, operand_number + 1, 'r');
-            } else if (!operand->label->internal) { // external
+            } else if (!operand->label->is_internal) { // external
                 set_binary_string_ARE_representation(binary_string, operand_number + 1, 'e');
             } else {
                 printf("Exception - Error not a viable label!");
