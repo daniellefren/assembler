@@ -119,6 +119,7 @@ void erase_file_data(const char *filename) {
     fclose(file); // Closing the file truncates it to zero length
 }
 
+// Function to extract numeric characters, including negative numbers, from a string
 char* extract_numbers(const char *input, int length) {
     // Allocate memory for the new string
     char *numbers = (char *)malloc(length + 1);
@@ -129,11 +130,21 @@ char* extract_numbers(const char *input, int length) {
 
     // Extract the numeric characters
     char *q = numbers;
-    for (const char *p = input; *p != '\0'; ++p) {
+    const char *p = input;
+
+    while (*p != '\0') {
         if (isdigit((unsigned char)*p)) {
             *q++ = *p;
+        } else if (*p == '-' && isdigit((unsigned char)*(p + 1))) {
+            *q++ = *p++; // Add the negative sign and move to the next character
+            while (isdigit((unsigned char)*p)) {
+                *q++ = *p++;
+            }
+        } else {
+            p++;
         }
     }
+
     *q = '\0'; // Null-terminate the new string
 
     return numbers;

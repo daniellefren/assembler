@@ -272,14 +272,14 @@ void expand_macro(const Macro *macro, FILE *outputFile) {
     }
 }
 
+//Handle when assembly line is a command
 void handle_command(char *line, Command *new_command, LabelTable *label_table) {
-    //TODO - return 0 when not valid
-
     sscanf(line, "%s", new_command->command_name);
 
     get_command_data(new_command->command_name, new_command);
 
     define_operands_from_line(new_command, line);
+    printf("this operand %s\n", new_command->src_operand->value);
     switch (new_command->operand_number) {
         case 1:
             define_operand_types(new_command->src_operand, label_table);
@@ -363,6 +363,7 @@ void define_operand_types(Operand *operand, LabelTable *label_table){
             }
         }
         if(is_valid){
+            printf("is valid integer\n");
             operand->type = INTEGER;
             strcpy(operand->value, extract_numbers(operand->value, length));
         }
