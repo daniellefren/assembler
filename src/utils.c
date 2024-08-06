@@ -165,3 +165,20 @@ int char_to_int(char *str) {
     return num * sign;
 }
 
+void extract_word_after_keyword(const char *input, char *output, const char *keyword) {
+    const char *p = strstr(input, keyword);
+
+    if (p != NULL) {
+        p += strlen(keyword); // Move the pointer past the keyword
+        while (isspace((unsigned char)*p)) {
+            p++; // Skip any leading whitespace
+        }
+        // Copy the word after the keyword to the output buffer
+        while (*p != '\0' && !isspace((unsigned char)*p)) {
+            *output++ = *p++;
+        }
+        *output = '\0'; // Null-terminate the output string
+    } else {
+        output[0] = '\0'; // If the keyword is not found, output is an empty string
+    }
+}
