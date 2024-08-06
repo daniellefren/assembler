@@ -169,7 +169,6 @@ void read_line(char *line, LabelTable *label_table, int *ic, int *dc, LinesArray
         new_instruction_line->label = new_label;
         addNewLabel(label_table, new_label);
     }
-
     addInstructionLine(lines_array, new_instruction_line);
 
 }
@@ -279,7 +278,6 @@ void handle_command(char *line, Command *new_command, LabelTable *label_table) {
     get_command_data(new_command->command_name, new_command);
 
     define_operands_from_line(new_command, line);
-    printf("this operand %s\n", new_command->src_operand->value);
     switch (new_command->operand_number) {
         case 1:
             define_operand_types(new_command->src_operand, label_table);
@@ -362,8 +360,8 @@ void define_operand_types(Operand *operand, LabelTable *label_table){
                 ++length;
             }
         }
+
         if(is_valid){
-            printf("is valid integer\n");
             operand->type = INTEGER;
             strcpy(operand->value, extract_numbers(operand->value, length));
         }
@@ -379,11 +377,9 @@ void define_operand_types(Operand *operand, LabelTable *label_table){
     }
 
     else if(is_valid_label(operand->value)){
-        printf("is validdddd");
         operand->type = LABEL;
     }
     else{
-        printf("????? %s", operand->value);
         fprintf(stderr, "Not valid operand type. %s\n", operand->value);
         exit(EXIT_FAILURE);
     }
@@ -414,7 +410,6 @@ int is_valid_label(const char *label) {
     if (!isalpha((unsigned char)label[0])) {
         return 0;
     }
-    printf("first character is letter\n");
 
     //  Check if other characters are letters/numbers
     for (size_t i = 1; i < length; ++i) {
@@ -422,7 +417,6 @@ int is_valid_label(const char *label) {
             return 0;
         }
     }
-    printf("end\n");
 
     return 1; // Valid label
 }
@@ -510,10 +504,8 @@ int find_label(char *line, char *label) {
     while (*start && !isspace((unsigned char)*start) && *start != ':') {
         start++;
     }
-    printf("start %s", start);
     // If a colon is found, we assume it is a label
     if (*start == ':') {
-        printf("there is :");
         size_t len = start - line;
         strncpy(label, line, len);
         label[len] = '\0'; // Null-terminate the label
@@ -633,6 +625,7 @@ void handle_directives(char *line, int *dc, Directive *new_directive) {
                 ptr++;
             }
         }
+
     } else if (strcmp(directive_type, ".string") == 0) {
         new_directive->type = STRING;
         // Find the first quote
