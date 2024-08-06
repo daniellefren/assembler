@@ -206,13 +206,13 @@ void fill_operand_binary(Operand *operand,Operand *second_operand, char *binary_
     switch (operand->classification_type) {
         case IMMEDIATE:
             int_number_to_binary = char_to_int(operand->value);
-            int_to_binary_string(int_number_to_binary, binary_string, operand_number * BINARY_LINE_LENGTH);
+            int_to_binary_string(int_number_to_binary, binary_string, operand_number * BINARY_LINE_LENGTH, 12);
             set_binary_string_ARE_representation(binary_string, operand_number + 1, 'a');
             break;
             //Label with 12 sivi for address from label table and 3 for ARE R=1 for internal and E=1 for External
         case DIRECT:
             int_number_to_binary = operand->label->address;
-            int_to_binary_string(int_number_to_binary, binary_string, operand_number * BINARY_LINE_LENGTH);
+            int_to_binary_string(int_number_to_binary, binary_string, operand_number * BINARY_LINE_LENGTH, 12);
             if (operand->label->is_internal) { //internal
                 set_binary_string_ARE_representation(binary_string, operand_number + 1, 'r');
             } else if (!operand->label->is_internal) { // external
@@ -223,42 +223,65 @@ void fill_operand_binary(Operand *operand,Operand *second_operand, char *binary_
             }
             break;
         case INDIRECT_REGISTER:
+        case DIRECT_REGISTER:
             register_value = operand->value;
-            if (second_operand != NULL) { //
-                if ((second_operand->classification_type == INDIRECT_REGISTER) ||
-                    (second_operand->classification_type == DIRECT_REGISTER)) {
-                    if (operand_number == 1) { //Change only on the src operand not on the dst (on the dst it's already changed
+            if (operand_number == 1) { //src operand
+                if (second_operand != NULL){
+                    if ((second_operand->classification_type == INDIRECT_REGISTER) ||
+                        (second_operand->classification_type == DIRECT_REGISTER)) { //second operand in register
                         register_to_binary_string(register_value, operand_number, binary_string, BINARY_LINE_LENGTH);
                         register_value = second_operand->value;
                         register_to_binary_string(register_value, operand_number + 1, binary_string,BINARY_LINE_LENGTH);
+                        set_binary_string_ARE_representation(binary_string, operand_number + 1, 'a'); //TODO why +1
                     }
+                    else{ // src operand with dst direct or immediate
+                        register_to_binary_string(register_value, operand_number, binary_string,BINARY_LINE_LENGTH);
+                        set_binary_string_ARE_representation(binary_string, operand_number + 1, 'a');
+                    }
+                }
+            }
+            else{ //dst operand
+                int a_offset = (BINARY_LINE_LENGTH*operand_number) + 12;
+                if (binary_string[a_offset] == '0'){ //The src operand wasn't a register
+                    register_to_binary_string(register_value, operand_number, binary_string,BINARY_LINE_LENGTH);
                     set_binary_string_ARE_representation(binary_string, operand_number + 1, 'a');
                 }
             }
-            else{
-                register_to_binary_string(register_value, operand_number, binary_string,BINARY_LINE_LENGTH);
-            }
             break;
-        case DIRECT_REGISTER:
-            break;
-            set_binary_string_ARE_representation(binary_string, operand_number + 1, 'a');
         case METHOD_UNKNOWN:
             break;
 
     }
 }
 void register_to_binary_string(char *register_value, int operand_number, char *binary_string, int offset){
+    //src its 8-6 and dst its 3-5 012345 678 91011 121314
+    int register_number;
+    register_number = char_to_int(register_value[1]);
 
-}
-
-void int_to_binary_string(int num, char *binary_string, int offset) {
-    // Convert the number to binary and populate the string
-    int i;
-    for (i = 0; i < 12; i++) {
-        binary_string[offset + 11 - i] = (num & (1 << i)) ? '1' : '0';
+    if (operand_number == 2) { //dst bit 91011
+        int_to_binary_string(register_number, binary_string,offset +9, 3);
+    }
+    else if(operand_number == 1) {//src bit 678
+        int_to_binary_string(register_number, binary_string,offset +6, 3);
     }
 }
 
+void int_to_binary_string(int num, char *binary_string, int offset, int num_bits) {
+    int i;
+
+    // Handle negative numbers
+    if (num < 0) {
+        binary_string[offset] = '1';
+        num = -num;
+    } else {
+        binary_string[offset] = '0';
+    }
+
+    // Convert to binary
+    for (i = 0; i < num_bits; i++) {
+        binary_string[offset + num_bits - i - 1] = (num & (1 << i)) ? '1' : '0';
+    }
+}
 void fill_binary_directive(InstructionLine *instruction_line, char *binary_string){
     for (int i = 0; i < instruction_line->directive->data_values_count; ++i) {
         if (is_instruction_line_directive_string(instruction_line)){
