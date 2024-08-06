@@ -695,7 +695,17 @@ void handle_directives(char *line, int *dc, Directive *new_directive, LabelTable
 }
 
 void add_extern_to_externals_file(){
-    return;
+    FILE *file = fopen("output_files/externals.txt", "w");
+//    if (file == NULL) {
+//        perror("Unable to open file");
+//        exit(EXIT_FAILURE);
+//    }
+//
+//    for (int i = 0; i < table->count; i++) {
+//        fprintf(file, "%s %d\n", table->symbols[i].symbol, table->symbols[i].address);
+//    }
+//
+//    fclose(file);
 }
 
 void debugging_data(Directive *new_directive){
