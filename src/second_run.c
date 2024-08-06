@@ -49,6 +49,7 @@ void fill_instruction_line_binary(InstructionLine *instruction_line){
         fill_first_part_binary_opcode(instruction_line, binary_instruction_p);
         printf("First part binary -                                      %s \n\n", binary_instruction_p);
         fill_second_part_binary_opcode(instruction_line, binary_instruction_p);
+
         printf("Second part binary -                                     %s \n", binary_instruction_p);
 
 
@@ -189,6 +190,7 @@ void fill_second_part_binary_opcode(InstructionLine *instruction_line, char *bin
             fill_operand_binary(dst_operand, NULL, binary_string,2);
             break;
         case 1:
+
             fill_operand_binary(src_operand, NULL, binary_string,1);
             break;
         case 0:
@@ -256,8 +258,7 @@ void fill_operand_binary(Operand *operand,Operand *second_operand, char *binary_
 void register_to_binary_string(char *register_value, int operand_number, char *binary_string, int offset){
     //src its 8-6 and dst its 3-5 012345 678 91011 121314
     int register_number;
-    register_number = char_to_int(register_value[1]);
-
+    register_number = char_to_int(register_value + 1);
     if (operand_number == 2) { //dst bit 91011
         int_to_binary_string(register_number, binary_string,offset +9, 3);
     }
