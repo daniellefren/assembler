@@ -13,18 +13,14 @@ void test_all_run(LinesArray* assembly_lines_array){
     printf("\nstarting final check\n");
 
     for(int i=0;i<assembly_lines_array->number_of_line;i++){
-        printf("%d line\n", i);
+        printf("%d line number\n", i);
         InstructionLine line = assembly_lines_array->lines[i];
         printf("line %s\n", line.line_content);
 
-        printf("instruction_type %d\n", line.instruction_type);
-        printf("is label? %d\n", line.is_label);
-
         if(line.is_label){
             Label *label = line.label;
-            printf("labelllll %s\n", label->name);
+            printf("label name %s\n", label->name);
             size_t length = strlen(label->name);
-            printf("The length of the string \"%s\" is %zu.\n", label->name, length);
         }
         if(line.instruction_type == COMMAND){
             Command *command = line.command;
