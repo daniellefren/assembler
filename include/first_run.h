@@ -24,6 +24,7 @@ void handle_command(char *line, Command *new_command, LabelTable *label_table);
 void handle_directives(char *line, int *dc, Directive *new_directive);
 void classify_operand(Operand *new_operand);
 int find_number_of_lines_in_binary(Command *new_command);
+//void handle_data_directive(char* directive_type, Directive *new_directive, char* ptr, char *values[MAX_LINE_LENGTH], int *dc, int *values_count);
 
 int ignore_line(char *line);
 char* skip_spaces(char *line);

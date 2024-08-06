@@ -134,7 +134,7 @@ char* extract_numbers(const char *input, int length) {
 
     while (*p != '\0') {
         if (isdigit((unsigned char)*p)) {
-            *q++ = *p;
+            *q++ = *p++;
         } else if (*p == '-' && isdigit((unsigned char)*(p + 1))) {
             *q++ = *p++; // Add the negative sign and move to the next character
             while (isdigit((unsigned char)*p)) {
