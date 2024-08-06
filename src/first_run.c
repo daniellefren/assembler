@@ -278,17 +278,18 @@ void handle_command(char *line, Command *new_command, LabelTable *label_table) {
     get_command_data(new_command->command_name, new_command);
 
     define_operands_from_line(new_command, line);
-
     switch (new_command->operand_number) {
         case 1:
             define_operand_types(new_command->src_operand, label_table);
             classify_operand(new_command->src_operand);
+            break;
         case 2:
             define_operand_types(new_command->src_operand, label_table);
             define_operand_types(new_command->dst_operand, label_table);
 
             classify_operand(new_command->src_operand);
             classify_operand(new_command->dst_operand);
+            break;
     }
 }
 
@@ -375,26 +376,42 @@ void define_operand_types(Operand *operand, LabelTable *label_table){
     }
 
     else if(is_valid_label(operand->value)){
+        printf("is validdddd");
         operand->type = LABEL;
     }
     else{
-        fprintf(stderr, "Not valid operand type.\n");
+        printf("????? %s", operand->value);
+        fprintf(stderr, "Not valid operand type. %s\n", operand->value);
         exit(EXIT_FAILURE);
     }
 }
 
 // Function to check if a string is a valid label
 int is_valid_label(const char *label) {
+    //TODO - add exit when not valid
     //Check length of the label
     size_t length = strlen(label);
     if (length == 0 || length > MAX_LABEL_LENGTH) {
         return 0;
     }
 
+    //check if not assembly keyword
+    if(is_known_assembly_keyword(label)){
+        return 0;
+    }
+
+    //TODO -  check if Label matches an existing macro name
+//    for (int i = 0; i < macroTable->count; i++) {
+//        if (strcmp(label, macroTable->macros[i].name) == 0) {
+//            return 0; // Label matches an existing macro name
+//        }
+//    }
+
     //Check if the first character is a letter
     if (!isalpha((unsigned char)label[0])) {
         return 0;
     }
+    printf("first character is letter\n");
 
     //  Check if other characters are letters/numbers
     for (size_t i = 1; i < length; ++i) {
@@ -402,6 +419,7 @@ int is_valid_label(const char *label) {
             return 0;
         }
     }
+    printf("end\n");
 
     return 1; // Valid label
 }
@@ -498,8 +516,8 @@ int find_label(char *line, char *label) {
         strncpy(label, line, len);
         label[len] = '\0'; // Null-terminate the label
 
-        // Check if the label is a known assembly keyword
-        return !is_known_assembly_keyword(label);
+        // TODO - maybe check here if the label valid
+        return 1;
     }
     if(((*start == ' ') && *(start + 1) == ':')){
         fprintf(stderr, "Label is not valid -- a space between the label and the :\n");
