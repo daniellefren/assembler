@@ -11,7 +11,7 @@
 #define IS_DIRECTIVE 1
 #define OPCODE_SIZE 4
 #define MAX_OPERAND_SIZE 10
-
+//#define EXTERNALS_FILE_NAME "output_files/externals.txt";
 
 static const char *commands[] = {
         "mov", "cmp", "add", "sub", "not", "clr", "lea", "inc", "dec", "jmp", "bne",
@@ -47,6 +47,7 @@ enum operand_types {
     LABEL = 2,
     INVALID = 3
 };
+
 
 
 
