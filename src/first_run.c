@@ -425,7 +425,7 @@ int is_valid_label(const char *label) {
 }
 
 int find_number_of_lines_in_binary(Command *new_command){
-    int number_of_binary_lines = new_command->operand_number; //The default for number of binary lines for data word is the operand number
+    int number_of_binary_lines = new_command->operand_number + 1; //The default for number of binary lines for data word is the operand number
 
     //If both operands are indirective or directive register classification, then they share the same data word
     if(new_command->operand_number == 2){
