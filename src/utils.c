@@ -182,3 +182,10 @@ void extract_word_after_keyword(const char *input, char *output, const char *key
         output[0] = '\0'; // If the keyword is not found, output is an empty string
     }
 }
+
+// Function to remove the first character from a string
+void remove_first_character(char *str) {
+    if (str != NULL && strlen(str) > 0) {
+        memmove(str, str + 1, strlen(str));
+    }
+}

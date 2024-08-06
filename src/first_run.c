@@ -450,7 +450,10 @@ void classify_operand(Operand *new_operand) {
 
     // Register indirect addressing - starts with *
     else if (new_operand->value[0] == '*' && new_operand->type == REGISTER) {
-            new_operand->classification_type = INDIRECT_REGISTER; // Indirect Register addressing
+        new_operand->classification_type = INDIRECT_REGISTER; // Indirect Register addressing
+
+        remove_first_character(new_operand->value);
+
     }
 
     // Register addressing - starts with r followed by a digit
