@@ -189,7 +189,7 @@ void fill_second_part_binary_opcode(InstructionLine *instruction_line, char *bin
             fill_operand_binary(dst_operand, NULL, binary_string,2);
             break;
         case 1:
-            fill_operand_binary(src_operand,binary_string,1);
+            fill_operand_binary(src_operand, NULL, binary_string,1);
             break;
         case 0:
             break;
