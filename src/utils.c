@@ -149,3 +149,19 @@ char* extract_numbers(const char *input, int length) {
 
     return numbers;
 }
+
+int char_to_int(char *str) {
+    int sign = 1;
+    int num = 0;
+
+    if (*str == '-') {
+        sign = -1;
+        str++;
+    }
+    while (*str >= '0' && *str <= '9') {
+        num = num * 10 + (*str - '0');
+        str++;
+    }
+    return num * sign;
+}
+
