@@ -20,6 +20,6 @@ void char_to_binary_string(char c, char *binary_string, int start_point);
 bool is_instruction_line_directive_string(InstructionLine *instruction_line);
 bool is_instruction_line_directive_integer(InstructionLine *instruction_line);
 int is_operand_classification_type_valid(enum operand_classification_type operandClassificationType);
-void int_to_binary_string(int num, char *binary_string, int offset);
+void int_to_binary_string(int num, char *binary_string, int offset, int num_bits);
 void register_to_binary_string(char *register_value, int operand_number, char *binary_string, int offset);
 #endif //ASSEMBLER_SECOND_RUN_H
