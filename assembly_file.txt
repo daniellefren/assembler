@@ -2,7 +2,7 @@
 .entry LIST
 .extern fn1
 MAIN: add r3, LIST
-mov #-1, r2
+mov #-1, #-3
 LOOP: prn #48
 lea STR, r6
 inc r6

@@ -39,21 +39,22 @@ void fill_instruction_line_binary(InstructionLine *instruction_line){
     // check if it's an opcode or directive if it's an opcode
     // create first word binary (15)
     // check how many word needed
-    // create second word and third word if needed binary (15 + 15)
+    // to create second word and third word if needed binary (15 + 15)
     // append the binary words
     // if it's directive .....
     char *binary_instruction_p = instruction_line->binary_instruction;
     if (is_instruction_line_opcode(*instruction_line)){
-        char binary_line[(instruction_line->binary_line_count * BINARY_LINE_LENGTH) + 1];
-        fill_first_part_binary_opcode(instruction_line, instruction_line->binary_instruction);
-        printf("First part binary - %s \n", instruction_line->binary_instruction);
-        fill_second_part_binary_opcode(instruction_line, instruction_line->binary_instruction);
-        printf("Second part binary - %s \n", instruction_line->binary_instruction);
+        printf("The number of lines in the binary is: %d \n", instruction_line->binary_line_count);
+        fill_the_binary_with_zero(binary_instruction_p, BINARY_LINE_LENGTH*instruction_line->binary_line_count);
+        fill_first_part_binary_opcode(instruction_line, binary_instruction_p);
+        printf("First part binary -                                      %s \n\n", binary_instruction_p);
+        fill_second_part_binary_opcode(instruction_line, binary_instruction_p);
+        printf("Second part binary -                                     %s \n", binary_instruction_p);
 
 
     }
     else if(is_instruction_line_directive(*instruction_line)){
-        fill_binary_directive(instruction_line, instruction_line->binary_instruction);
+        fill_binary_directive(instruction_line, binary_instruction_p);
     }
 }
 
@@ -61,14 +62,11 @@ void fill_first_part_binary_opcode(InstructionLine *instruction_line, char *bina
     // Convert the opcode value to binary opcode - 0 1 2 3, first_classification - 4 5 6 7, second_classification - 8 9 10 11, ARE - 12 13 14
     int binary_string_number = 1; //first part binary
     int first_operand_classification;
-    int second_operand_classification = -1; //so it wont change binary in set_binary_string_operand if there is only one operand
+    int second_operand_classification = -1; //so it won't change binary in set_binary_string_operand if there is only one operand
 
-    fill_the_binary_representation_with_zero(binary_string, BINARY_LINE_LENGTH);
-    printf("The binary string (filled with zero) is: %s \n", binary_string);
     set_binary_string_opcode_representation(instruction_line->command->opcode_command_type, binary_string);
-    printf("The binary string with opcode rep is: %s \n", binary_string);
     set_binary_string_ARE_representation(binary_string,binary_string_number, 'a');
-    printf("The binary string with ARE is: %s \n", binary_string);
+    printf("The binary string with ARE is:                           %s \n", binary_string);
     if (instruction_line->command->operand_number > 0){
         first_operand_classification = instruction_line->command->src_operand->classification_type;
     }
@@ -81,7 +79,7 @@ void fill_first_part_binary_opcode(InstructionLine *instruction_line, char *bina
     }
 
     set_binary_string_operand_representation(first_operand_classification, second_operand_classification, binary_string);
-    printf("The binary string with operand is: %s \n", binary_string);
+    printf("The binary string with operand is:                       %s \n", binary_string);
 
 
 }
@@ -108,35 +106,26 @@ void set_binary_string_operand_representation(int first_operand_classification_t
 void set_binary_string_ARE_representation(char *binary_string, int binary_string_number, char ARE){
     //number of binary string - is it the first binary string, second or third
     //First word always A = 1
-    int a_offset = 12;
-    char ARE_rep[4] = "000";
-
-    if (ARE == 'a'){
-
-        ARE_rep[0] = '1';
-
-
+    int offset = 11 + (15 * (binary_string_number-1));
+    switch (ARE) {
+        case 'a':
+            offset += 1;
+            break;
+        case 'r':
+            offset += 2;
+            break;
+        case 'e':
+            offset += 3;
+            break;
+        default:
+            printf("Exception Character is not a/r/e\n");
+            exit(1);
     }
-    else if (ARE == 'r') {
-        ARE_rep[1] = '1';
-        }
-    else{
-        ARE_rep[2] = '1';
-    }
-
-    if (binary_string_number == 1){
-        binary_string[a_offset] = '1';
-    }
-    else{//append if it's not the first line
-        strcat(binary_string, ARE_rep);
-    }
-
-
-    return;
+    binary_string[offset] = '1';
 }
 
 
-void fill_the_binary_representation_with_zero(char *binary_string, size_t length) {
+void fill_the_binary_with_zero(char *binary_string, size_t length) {
     // Check if length is valid (avoid buffer overflow)
     if (length <= 0) {
         return;
@@ -148,6 +137,7 @@ void fill_the_binary_representation_with_zero(char *binary_string, size_t length
 
     // Add null terminator at the end (within valid memory)
     binary_string[length] = '\0';
+    printf("The binary string (filled with zero) is: %s \n", binary_string);
 
 }
 void set_binary_string_opcode_representation(int opcode_number, char *binary_string) {
@@ -189,43 +179,84 @@ bool is_instruction_line_opcode(InstructionLine instructionLine){
 
 void fill_second_part_binary_opcode(InstructionLine *instruction_line, char *binary_string) {
     // The second part can be 15 bit or 30 bit it depend on the content of the line
-    int binary_line_count = instruction_line->binary_line_count;
     int operand_number = instruction_line->command->operand_number;
-    if (operand_number == 2) {
-        //There is number
-        if (instruction_line->command->src_operand->classification_type == IMMEDIATE){
-            int operand_number_value = instruction_line->command->src_operand->value - '0';
-            //TODO - danielle need to get only the number and not the #
-            printf("BUGGGGG The operand number is %s and dont need the #\n",instruction_line->command->src_operand->value);
-            append_number_binary_to_string(operand_number_value, binary_string);
-            set_binary_string_ARE_representation(binary_string, 2, 'a');
-        }
+    Operand *src_operand = instruction_line->command->src_operand;
+    Operand *dst_operand = instruction_line->command->dst_operand;
+
+    switch (operand_number) {
+        case 2:
+            fill_operand_binary(src_operand, dst_operand, binary_string,1);
+            fill_operand_binary(dst_operand, NULL, binary_string,2);
+            break;
+        case 1:
+            fill_operand_binary(src_operand, NULL, binary_string,1);
+            break;
+        case 0:
+            break;
+        default:
+            printf("Exception - problem with operand counter it's %d!", operand_number);
 
     }
-    else if (operand_number == 1){
+}
+void fill_operand_binary(Operand *operand,Operand *second_operand, char *binary_string, int operand_number) {
+    //operand number - 1 for src operand and 2 for dst operand
+    int int_number_to_binary;
+    int binary_string_number;
+    char *register_value;
+    switch (operand->classification_type) {
+        case IMMEDIATE:
+            int_number_to_binary = char_to_int(operand->value);
+            int_to_binary_string(int_number_to_binary, binary_string, operand_number * BINARY_LINE_LENGTH);
+            set_binary_string_ARE_representation(binary_string, operand_number + 1, 'a');
+            break;
+            //Label with 12 sivi for address from label table and 3 for ARE R=1 for internal and E=1 for External
+        case DIRECT:
+            int_number_to_binary = operand->label->address;
+            int_to_binary_string(int_number_to_binary, binary_string, operand_number * BINARY_LINE_LENGTH);
+            if (operand->label->internal) { //internal
+                set_binary_string_ARE_representation(binary_string, operand_number + 1, 'r');
+            } else if (!operand->label->internal) { // external
+                set_binary_string_ARE_representation(binary_string, operand_number + 1, 'e');
+            } else {
+                printf("Exception - Error not a viable label!");
+                exit(1);
+            }
+            break;
+        case INDIRECT_REGISTER:
+            register_value = operand->value;
+            if (second_operand != NULL) { //
+                if ((second_operand->classification_type == INDIRECT_REGISTER) ||
+                    (second_operand->classification_type == DIRECT_REGISTER)) {
+                    if (operand_number == 1) { //Change only on the src operand not on the dst (on the dst it's already changed
+                        register_to_binary_string(register_value, operand_number, binary_string, BINARY_LINE_LENGTH);
+                        register_value = second_operand->value;
+                        register_to_binary_string(register_value, operand_number + 1, binary_string,BINARY_LINE_LENGTH);
+                    }
+                    set_binary_string_ARE_representation(binary_string, operand_number + 1, 'a');
+                }
+            }
+            else{
+                register_to_binary_string(register_value, operand_number, binary_string,BINARY_LINE_LENGTH);
+            }
+            break;
+        case DIRECT_REGISTER:
+            break;
+            set_binary_string_ARE_representation(binary_string, operand_number + 1, 'a');
+        case METHOD_UNKNOWN:
+            break;
 
     }
-    else {
-        exit(1);
-    }
-//    strcat(binary_string, "1111111111111111111");
+}
+void register_to_binary_string(char *register_value, int operand_number, char *binary_string, int offset){
+
 }
 
-
-void fill_operand_binary(InstructionLine *instructionLine, char *binary_string){
-
-}
-
-void append_number_binary_to_string(int number, char *binary_string) {
-    // Find the end of the current binary string
-    char *end = binary_string + strlen(binary_string);
-
-    // Convert number to binary and append to the string
+void int_to_binary_string(int num, char *binary_string, int offset) {
+    // Convert the number to binary and populate the string
     int i;
-    for (i = 11; i >= 0; i--) {
-        *(end + i) = (number & (1 << i)) ? '1' : '0';
+    for (i = 0; i < 12; i++) {
+        binary_string[offset + 11 - i] = (num & (1 << i)) ? '1' : '0';
     }
-    *(end + 12) = '\0';
 }
 
 void fill_binary_directive(InstructionLine *instruction_line, char *binary_string){
