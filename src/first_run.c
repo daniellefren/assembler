@@ -598,7 +598,6 @@ void handle_directives(char *line, int *dc, Directive *new_directive, LabelTable
     char directive_type[MAX_LINE_LENGTH];
     char *ptr = line;
     char *values[MAX_LINE_LENGTH]; // Temporary array to hold values as strings
-    size_t values_count = 0;
 
     // Read the directive type from the line
     if (sscanf(line, "%s", directive_type) != 1) {
@@ -608,50 +607,11 @@ void handle_directives(char *line, int *dc, Directive *new_directive, LabelTable
     }
 
     if (strcmp(directive_type, ".data") == 0) {
-        new_directive->type = DATA;
-        ptr += strlen(directive_type);
-
-        while (*ptr != '\0') {
-            while (*ptr == ' ' || *ptr == '\t' || *ptr == ',') {
-                ptr++;
-            }
-            if (isdigit(*ptr) || (*ptr == '-' && isdigit(*(ptr + 1))) || (*ptr == '+' && isdigit(*(ptr + 1)))) {
-                char *end;
-                int number = strtol(ptr, &end, 10);
-                ptr = end; // Move ptr to the end of the parsed number
-
-                // Convert number to string and store in values
-                char buffer[12]; // Buffer to hold the string representation of the number
-                snprintf(buffer, sizeof(buffer), "%d", number);
-
-                values[values_count] = strdup(buffer);
-                values_count++;
-                (*dc)++;
-            } else {
-                ptr++;
-            }
-        }
+        handle_data_directive(line, new_directive, dc);
 
     } else if (strcmp(directive_type, ".string") == 0) {
-        new_directive->type = STRING;
-        // Find the first quote
-        char *start = strchr(line, '\"');
-        if (start) {
-            // Find the closing quote
-            char *end = strchr(start + 1, '\"');
-            if (end) {
-                // Copy the string contents excluding quotes
-                for (char *p = start + 1; p < end; p++) {
-                    char buffer[2] = {*p, '\0'};
-                    values[values_count] = strdup(buffer);
-                    values_count++;
-                    (*dc)++;
-                }
-                // Add the null terminator to the end of the string
-                values[values_count++] = strdup("\0");
-                (*dc)++;
-            }
-        }
+        handle_string_directive(line, new_directive, dc);
+
     } else if (strcmp(directive_type, ".extern") == 0){
         new_directive->type = EXTERN;
         Label *new_label = (Label *)malloc(10 * sizeof(Label));
@@ -683,23 +643,95 @@ void handle_directives(char *line, int *dc, Directive *new_directive, LabelTable
             exit(EXIT_FAILURE);
     }
 
+    debugging_data(new_directive);
 
-    // Allocate memory for the values in the symbol
+}
+
+void handle_string_directive(char *line, Directive *new_directive, int *dc) {
+    new_directive->type = STRING;
+
+    // Find the first quote
+    char *start = strchr(line, '\"');
+    if (start) {
+        // Find the closing quote
+        char *end = strchr(start + 1, '\"');
+        if (end) {
+            // Calculate the length of the string inside the quotes
+            size_t length = end - start - 1;
+
+            // Allocate memory for the values array
+            new_directive->value = (char **)malloc(sizeof(char *) * 2); // One for the string and one for NULL terminator
+            if (new_directive->value == NULL) {
+                perror("Unable to allocate memory for values");
+                exit(EXIT_FAILURE);
+            }
+
+            // Allocate memory for the string and copy it
+            new_directive->value[0] = (char *)malloc(length + 1);
+            if (new_directive->value[0] == NULL) {
+                perror("Unable to allocate memory for string");
+                exit(EXIT_FAILURE);
+            }
+            strncpy(new_directive->value[0], start + 1, length);
+            new_directive->value[0][length] = '\0'; // Null-terminate the string
+
+            // Set the second element to NULL
+            new_directive->value[1] = NULL;
+
+            new_directive->data_values_count = 1;
+            (*dc) += length;
+
+        }
+    }
+}
+
+void handle_data_directive(char *line, Directive *new_directive, int *dc) {
+    new_directive->type = DATA;
+    // Move the pointer to the first character after ".data"
+    char *ptr = line + strlen(".data");
+
+    // Temporary array to hold values as strings
+    char *values[100];
+    size_t values_count = 0;
+
+    while (*ptr != '\0') {
+        while (*ptr == ' ' || *ptr == '\t' || *ptr == ',') {
+            ptr++;
+        }
+        if (isdigit(*ptr) || (*ptr == '-' && isdigit(*(ptr + 1))) || (*ptr == '+' && isdigit(*(ptr + 1)))) {
+            char *end;
+            int number = strtol(ptr, &end, 10);
+            ptr = end; // Move ptr to the end of the parsed number
+
+            // Convert number to string and store in values
+            char buffer[12]; // Buffer to hold the string representation of the number
+            snprintf(buffer, sizeof(buffer), "%d", number);
+
+            values[values_count] = strdup(buffer);
+            values_count++;
+            (*dc)+= values_count;
+        } else {
+            ptr++;
+        }
+
+    }
+
+    // Allocate memory for the values in the directive
     new_directive->value = (char **)malloc(values_count * sizeof(char *));
-
     if (new_directive->value == NULL) {
         fprintf(stderr, "Memory allocation error\n");
         exit(EXIT_FAILURE);
     }
 
-    // Copy the values to the symbol
+    // Copy the values to the directive
     for (size_t i = 0; i < values_count; i++) {
         new_directive->value[i] = values[i];
     }
-    new_directive->data_values_count = values_count;
-//    debugging_data(new_directive);
 
+    new_directive->data_values_count = values_count;
+    (*dc) += values_count;
 }
+
 
 //Return the label with the given name
 Label *find_label_by_name(LabelTable* label_table, char* label_name){
@@ -715,7 +747,6 @@ Label *find_label_by_name(LabelTable* label_table, char* label_name){
 void add_extern_to_externals_file(Label *label, int file_number, int *ic){
     char externals_file_name[100];
     add_number_to_string(externals_file_name, "output_files/externals%d.txt", sizeof(externals_file_name), file_number);
-    printf("filename %s\n", externals_file_name);
     FILE *file = fopen(externals_file_name, "w");
     if (file == NULL) {
         perror("Unable to open externals file");
@@ -749,7 +780,8 @@ void debugging_data(Directive *new_directive){
     printf("Type: %d\n", new_directive->type);
     printf("Values count: %zu\n", new_directive->data_values_count);
     printf("Values: ");
-    for (size_t j = 0; j < new_directive->data_values_count; j++) {
+    printf("data_values_count %d\n", new_directive->data_values_count);
+    for (int j = 0; j < new_directive->data_values_count; j++) {
         printf("%s ", ((char **)new_directive->value)[j]);
     }
     printf("\n");

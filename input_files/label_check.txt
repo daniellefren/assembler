@@ -3,4 +3,8 @@
 
 ;ABC: .string "danielle"
 
-mov *r1, #4
+;mov *r1, #4
+
+ABS: .string "danielle"
+
+A: .data 1, 2, 4
