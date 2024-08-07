@@ -79,7 +79,6 @@ void addInstructionLine(LinesArray *lines_array, InstructionLine *instruction_li
 
     // Add the new instruction line to the array
     lines_array->lines[lines_array->number_of_line] = *instruction_line;
-    printf("\nnumber of lines %d\n", lines_array->number_of_line);
     lines_array->number_of_line++;
 }
 

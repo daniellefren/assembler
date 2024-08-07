@@ -191,3 +191,7 @@ void remove_first_character(char *str) {
         memmove(str, str + 1, strlen(str));
     }
 }
+
+void add_number_to_string(char *buffer, char* source, size_t buffer_size, int number) {
+    snprintf(buffer, buffer_size, source, number);
+}
