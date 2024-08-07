@@ -49,7 +49,7 @@ void test_all_run(LinesArray* assembly_lines_array){
         }
         if(line.instruction_type == DATA_DIRECTIVE){
             Directive *directive = line.directive;
-            printf("directive value:\n%d", directive->type);
+            printf("directive value: %d\n", directive->type);
             for(int j=0;j<directive->data_values_count;j++){
                 printf("%s,", directive->value[j]);
             }
