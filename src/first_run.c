@@ -11,9 +11,9 @@
 #include "../include/constants.h"
 #include "../include/utils.h"
 
-char macroFileName[] = "output_files/expanded_macros.am";
+char EXPANDED_MACRO_FILE_NAME[] = "output_files/expanded_macros%d.am";
 
-//TODO - get all errors from code and not exit after one
+//TODO - get all errors from code and not exit after one and return also the line number
 
 Command commands_struct[] = {
         {"mov", MOV, 2},
@@ -35,28 +35,28 @@ Command commands_struct[] = {
         {"not_opcode", NOT_OPCODE, 0}
 };
 
-void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, LabelTable *label_table) {
+void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, LabelTable *label_table, int file_number) {
     char line[MAX_LINE_LENGTH];
     char *macroNames[MAX_MACRO_NAMES];  // Array to store pointers to macro names
-    int line_num = 1;
-    MacroTable macroTable;
+    MacroTable macro_table;
+    int line_num = 0;
 
-    init_macro_table(&macroTable);
+    init_macro_table(&macro_table);
     init_macro_name_array(macroNames);
 
-    // Reset file pointer to the beginning before calling pre_run
-    rewind(file);
-    printf("before pre run");
-    pre_run(line, &macroTable, macroNames, file); // Keeps track of the number of encountered macros
-    printf("after pre run");
+    rewind(file); // Reset file pointer to the beginning before calling pre_run
+
+    char expended_macro_file_name[100];
+    add_number_to_string(expended_macro_file_name, EXPANDED_MACRO_FILE_NAME, sizeof(expended_macro_file_name), file_number);
+
+    pre_run(line, &macro_table, macroNames, file, expended_macro_file_name); // Keeps track of the number of encountered macros
 
 
-    FILE *expanded_macros_file = fopen(macroFileName, "r");
-
-
+    FILE *expanded_macros_file = fopen(expended_macro_file_name, "r");
+//
     while (fgets(line, MAX_LINE_LENGTH, expanded_macros_file) != NULL) {
         if (!ignore_line(line)) {
-            read_line(line, label_table, ic, dc, lines_array);
+            read_line(line, label_table, ic, dc, lines_array, &macro_table, file_number);
         }
         line_num++;
     }
@@ -69,15 +69,15 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, LabelTable
     }
 }
 
-void pre_run(char *line, MacroTable *macroTable, char **macroNames, FILE *file) {
+void pre_run(char *line, MacroTable *macro_table, char **macroNames, FILE *file, char* new_file_name) {
     // Run and expand all macros in the program.
     // Return number of macros
     int is_in_macro = 0;
     int macroCount = 0;
-    erase_file_data(macroFileName);
+    erase_file_data(new_file_name);
 
     while (fgets(line, MAX_LINE_LENGTH, file) != NULL) {
-        printf("line %s\n", line);
+//        printf("line %s\n", line);
         char macroName[MAX_LABEL_LENGTH];
         if (!ignore_line(line)) {
             if (is_macro_definition_start(line)) {
@@ -94,15 +94,15 @@ void pre_run(char *line, MacroTable *macroTable, char **macroNames, FILE *file) 
                 } else {
                     fprintf(stderr, "Warning: Reached maximum number of macro names (%d)\n", MAX_MACRO_NAMES);
                 }
-                is_in_macro = handle_macro_definition(file, macroTable, line); // Pass macroTable directly
+                is_in_macro = handle_macro_definition(file, macro_table, line); // Pass macro_table directly
             } else if (is_macro_invocation(line, macroName, macroNames)) {
                 Macro macro;
                 expand_macro(&macro, stdout);
-                write_expanded_macros_to_file(macroTable);
+                write_expanded_macros_to_file(macro_table, new_file_name);
 
             } else {
                 if (!is_in_macro) {
-                    write_line_to_file(line);
+                    write_line_to_file(line, new_file_name);
                 }
             }
         }
@@ -110,12 +110,12 @@ void pre_run(char *line, MacroTable *macroTable, char **macroNames, FILE *file) 
 
 }
 
-void read_line(char *line, LabelTable *label_table, int *ic, int *dc, LinesArray *lines_array) {
+void read_line(char *line, LabelTable *label_table, int *ic, int *dc, LinesArray *lines_array, MacroTable *macro_table, int file_number) {
     char label[MAX_LABEL_LENGTH] = "";
     int hasLabel;
 
     line = skip_spaces(line);
-    printf("line %s\n", line);
+//    printf("line %s\n", line);
 
     InstructionLine *new_instruction_line = init_instruction_line(line);
 
@@ -152,7 +152,7 @@ void read_line(char *line, LabelTable *label_table, int *ic, int *dc, LinesArray
 
         Directive *new_directive = init_directive();
 
-        handle_directives(line, dc, new_directive, label_table, ic);
+        handle_directives(line, dc, new_directive, label_table, ic, file_number);
 
         new_instruction_line->directive = new_directive;
 
@@ -163,7 +163,7 @@ void read_line(char *line, LabelTable *label_table, int *ic, int *dc, LinesArray
             new_label->type = COMMAND;
         }
         Command *new_command = init_command();
-        handle_command(line, new_command, label_table);
+        handle_command(line, new_command, label_table, macro_table);
         new_instruction_line->binary_line_count = find_number_of_lines_in_binary(new_command);
 
         (*ic)+= new_instruction_line->binary_line_count;
@@ -179,10 +179,10 @@ void read_line(char *line, LabelTable *label_table, int *ic, int *dc, LinesArray
 }
 
 
-int write_line_to_file(char *line) {
-    FILE *outputFile = fopen(macroFileName, "a"); // Open in append mode
+int write_line_to_file(char *line, char* new_file_name) {
+    FILE *outputFile = fopen(new_file_name, "a"); // Open in append mode
     if (!outputFile) {
-        fprintf(stderr, "Error: Could not open file '%s' for writing\n", macroFileName);
+        fprintf(stderr, "Error: Could not open file '%s' for writing\n", new_file_name);
         exit(EXIT_FAILURE);
     }
 //    lower_string(line);
@@ -193,33 +193,33 @@ int write_line_to_file(char *line) {
     return 0;  // Indicate success
 }
 
-void write_expanded_macros_to_file(MacroTable *macroTable) {
-    FILE *outputFile = fopen(macroFileName, "a"); // Open in append mode
+void write_expanded_macros_to_file(MacroTable *macro_table, char* new_file_name) {
+    FILE *outputFile = fopen(new_file_name, "a"); // Open in append mode
     if (!outputFile) {
-        fprintf(stderr, "Error: Could not open file '%s' for writing macros\n", macroFileName);
+        fprintf(stderr, "Error: Could not open file '%s' for writing macros\n", new_file_name);
         exit(EXIT_FAILURE);
     }
 
     // Write each macro's body to the file
-    for (int i = 0; i < macroTable->count; ++i) {
-        for (int j = 0; j < macroTable->macros[i].lineCount; ++j) {
-            fprintf(outputFile, "%s", macroTable->macros[i].body[j]);
+    for (int i = 0; i < macro_table->count; ++i) {
+        for (int j = 0; j < macro_table->macros[i].lineCount; ++j) {
+            fprintf(outputFile, "%s", macro_table->macros[i].body[j]);
         }
     }
 
     fclose(outputFile);
 }
 
-void add_macro(MacroTable *table, Macro macro) {
-    if (table->count >= table->capacity) {
-        table->capacity *= 2;
-        table->macros = (Macro *)realloc(table->macros, table->capacity * sizeof(Macro));
-        if (!table->macros) {
+void add_macro(MacroTable *macro_table, Macro macro) {
+    if (macro_table->count >= macro_table->capacity) {
+        macro_table->capacity *= 2;
+        macro_table->macros = (Macro *)realloc(macro_table->macros, macro_table->capacity * sizeof(Macro));
+        if (!macro_table->macros) {
             fprintf(stderr, "Error: Memory allocation failed while expanding macro table\n");
             exit(EXIT_FAILURE);
         }
     }
-    table->macros[table->count++] = macro;
+    macro_table->macros[macro_table->count++] = macro;
 }
 
 bool is_macro_definition_start(char *line) {
@@ -247,7 +247,7 @@ int is_macro_invocation(char *line, char *macroName, char **macroNames) {
 }
 
 // Return 0 if ended, else 1
-int handle_macro_definition(FILE *file, MacroTable *macroTable, const char *firstLine) {
+int handle_macro_definition(FILE *file, MacroTable *macro_table, const char *firstLine) {
     Macro macro;
     char line[MAX_LINE_LENGTH];
     char macroName[MAX_LABEL_LENGTH];
@@ -258,14 +258,14 @@ int handle_macro_definition(FILE *file, MacroTable *macroTable, const char *firs
 
     while (fgets(line, sizeof(line), file)) {
         if (is_macro_definition_end(line)) {
-            add_macro(macroTable, macro);
+            add_macro(macro_table, macro);
             return 0;
         }
         lower_string(line);
         strcpy(macro.body[macro.lineCount++], line);
     }
 
-    add_macro(macroTable, macro);
+    add_macro(macro_table, macro);
     return 1;
 }
 
@@ -276,7 +276,7 @@ void expand_macro(const Macro *macro, FILE *outputFile) {
 }
 
 //Handle when assembly line is a command
-void handle_command(char *line, Command *new_command, LabelTable *label_table) {
+void handle_command(char *line, Command *new_command, LabelTable *label_table, MacroTable *macro_table) {
     sscanf(line, "%s", new_command->command_name);
 
     get_command_data(new_command->command_name, new_command);
@@ -284,12 +284,12 @@ void handle_command(char *line, Command *new_command, LabelTable *label_table) {
     define_operands_from_line(new_command, line);
     switch (new_command->operand_number) {
         case 1:
-            define_operand_types(new_command->src_operand, label_table);
+            define_operand_types(new_command->src_operand, macro_table);
             classify_operand(new_command->src_operand);
             break;
         case 2:
-            define_operand_types(new_command->src_operand, label_table);
-            define_operand_types(new_command->dst_operand, label_table);
+            define_operand_types(new_command->src_operand, macro_table);
+            define_operand_types(new_command->dst_operand, macro_table);
 
             classify_operand(new_command->src_operand);
             classify_operand(new_command->dst_operand);
@@ -352,7 +352,7 @@ void extract_second_operand_from_line(char* line, Command *new_command){
     sscanf(line, "%s", new_command->dst_operand->value);
 }
 
-void define_operand_types(Operand *operand, LabelTable *label_table){
+void define_operand_types(Operand *operand, MacroTable *macro_table){
     operand->type = INVALID;
     int is_valid = 1;
     if (operand->value[0] == '#') {
@@ -380,7 +380,7 @@ void define_operand_types(Operand *operand, LabelTable *label_table){
             operand->type = REGISTER;
     }
 
-    else if(is_valid_label(operand->value)){
+    else if(is_valid_label(operand->value, macro_table)){
         operand->type = LABEL;
     }
     else{
@@ -390,7 +390,7 @@ void define_operand_types(Operand *operand, LabelTable *label_table){
 }
 
 // Function to check if a string is a valid label
-int is_valid_label(const char *label) {
+int is_valid_label(const char *label, MacroTable *macro_table) {
     //TODO - add exit when not valid
     //Check length of the label
     size_t length = strlen(label);
@@ -404,11 +404,11 @@ int is_valid_label(const char *label) {
     }
 
     //TODO -  check if Label matches an existing macro name
-//    for (int i = 0; i < macroTable->count; i++) {
-//        if (strcmp(label, macroTable->macros[i].name) == 0) {
-//            return 0; // Label matches an existing macro name
-//        }
-//    }
+    for (int i = 0; i < macro_table->count; i++) {
+        if (strcmp(label, macro_table->macros[i].name) == 0) {
+            return 0; // Label matches an existing macro name
+        }
+    }
 
     //Check if the first character is a letter
     if (!isalpha((unsigned char)label[0])) {
@@ -416,8 +416,8 @@ int is_valid_label(const char *label) {
     }
 
     //  Check if other characters are letters/numbers
-    for (size_t i = 1; i < length; ++i) {
-        if (!isalnum((unsigned char)label[i])) {
+    for (size_t j = 1; j < length; ++j) {
+        if (!isalnum((unsigned char)label[j])) {
             return 0;
         }
     }
@@ -592,7 +592,7 @@ bool is_data_directive(char *line) {
     return false;
 }
 
-void handle_directives(char *line, int *dc, Directive *new_directive, LabelTable *label_table, int* ic) {
+void handle_directives(char *line, int *dc, Directive *new_directive, LabelTable *label_table, int* ic, int file_number) {
     //TODO - split to functions
 
     char directive_type[MAX_LINE_LENGTH];
@@ -662,11 +662,11 @@ void handle_directives(char *line, int *dc, Directive *new_directive, LabelTable
         extract_word_after_keyword(ptr, new_label->name, directive_type);
         strcpy(new_directive->label, new_label->name);
 
-        new_label->address = ic;
+        new_label->address = 0; // external address, will be filled by linker
         new_label->type = EXTERN_DIRECTIVE;
         new_label->is_extern=1;
         addNewLabel(label_table, new_label);
-        add_extern_to_externals_file(new_label);
+        add_extern_to_externals_file(new_label, file_number, ic);
 
 
     } else if (strcmp(directive_type, ".entry") == 0) {
@@ -675,7 +675,7 @@ void handle_directives(char *line, int *dc, Directive *new_directive, LabelTable
         Label* label = find_label_by_name(label_table, new_directive->label);
         label->is_entry=1;
 
-        add_entry_to_entries_file(new_directive->label);
+        add_entry_to_entries_file(new_directive->label, file_number);
 
     } else {
             new_directive->type = NOT_DIRECTIVE;
@@ -712,23 +712,28 @@ Label *find_label_by_name(LabelTable* label_table, char* label_name){
     exit(EXIT_FAILURE);
 }
 
-void add_extern_to_externals_file(Label *label){
-    FILE *file = fopen("output_files/externals.txt", "w");
+void add_extern_to_externals_file(Label *label, int file_number, int *ic){
+    char externals_file_name[100];
+    add_number_to_string(externals_file_name, "output_files/externals%d.txt", sizeof(externals_file_name), file_number);
+    printf("filename %s\n", externals_file_name);
+    FILE *file = fopen(externals_file_name, "w");
     if (file == NULL) {
         perror("Unable to open externals file");
         exit(EXIT_FAILURE);
     }
 
-    fprintf(file, "%s %d\n", label->name, label->address);
+    fprintf(file, "%s %d\n", label->name, ic);
 
     fclose(file);
 }
 
 
-void add_entry_to_entries_file(char *label){
-    FILE *file = fopen("output_files/internals.txt", "w");
+void add_entry_to_entries_file(char *label, int file_number){
+    char entries_file_name[100];
+    add_number_to_string(entries_file_name, "output_files/entries%d.txt", sizeof(entries_file_name), file_number);
+    FILE *file = fopen(entries_file_name, "w");
     if (file == NULL) {
-        perror("Unable to open externals file");
+        perror("Unable to open entries file");
         exit(EXIT_FAILURE);
     }
 
