@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
-#include "stdlib.h"
+#include <stdlib.h>
+#include <limits.h>
 #include <stdbool.h>
 #include "../include/second_run.h"
 
@@ -14,15 +15,13 @@ void start_second_run(LinesArray *assembly_lines_array){
     printf("The number of lines in the struct is %d \n \n", assembly_lines_array->number_of_line);
     printf("Starting to print The lines Binary: \n");
 
-    //for (int i = 0; i < assembly_lines_array->number_of_line; ++i)
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < assembly_lines_array->number_of_line; ++i){
+        printf("\n****Line number %d *****  \n\n", i);
         InstructionLine *p_line = &assembly_lines_array->lines[i];
         allocate_binary_instruction(p_line, p_line->binary_line_count, BINARY_LINE_LENGTH);
-        printf("\n****Line number %d *****  \n\n", i);
         print_instruction_line(p_line);
         fill_instruction_line_binary(p_line);
 
-        printf("The binary representation of the line is %s \n", assembly_lines_array->lines[i].binary_instruction );
     }
 
     for (int j = 0; j < assembly_lines_array->number_of_line; ++j) {
@@ -43,20 +42,30 @@ void fill_instruction_line_binary(InstructionLine *instruction_line){
     // append the binary words
     // if it's directive .....
     char *binary_instruction_p = instruction_line->binary_instruction;
+    int binary_line_count = instruction_line->binary_line_count;
+    if (is_instruction_line_directive(*instruction_line)){ //TODO delete after danielle add logic for count directive
+        instruction_line->binary_line_count = 10;
+        binary_line_count = 10;
+    }
+    else if (binary_line_count == 0){
+        fprintf(stderr, "Error: 0 lines of binary for the instruction line\n");
+        return;
+    }
+    printf("The number of lines in the binary is: %d \n", binary_line_count);
+    fill_the_binary_with_zero(binary_instruction_p, BINARY_LINE_LENGTH*binary_line_count);
+
     if (is_instruction_line_opcode(*instruction_line)){
-        printf("The number of lines in the binary is: %d \n", instruction_line->binary_line_count);
-        fill_the_binary_with_zero(binary_instruction_p, BINARY_LINE_LENGTH*instruction_line->binary_line_count);
         fill_first_part_binary_opcode(instruction_line, binary_instruction_p);
         printf("First part binary -                                      %s \n\n", binary_instruction_p);
-        fill_second_part_binary_opcode(instruction_line, binary_instruction_p);
-
-        printf("Second part binary -                                     %s \n", binary_instruction_p);
-
-
+        if (binary_line_count >1){
+            fill_second_part_binary_opcode(instruction_line, binary_instruction_p);
+            printf("Second part binary -                                     %s \n", binary_instruction_p);
+        }
     }
     else if(is_instruction_line_directive(*instruction_line)){
         fill_binary_directive(instruction_line, binary_instruction_p);
     }
+    printf("***The binary representation of the line is %s \n", instruction_line->binary_instruction);
 }
 
 void fill_first_part_binary_opcode(InstructionLine *instruction_line, char *binary_string) {
@@ -72,13 +81,11 @@ void fill_first_part_binary_opcode(InstructionLine *instruction_line, char *bina
         first_operand_classification = instruction_line->command->src_operand->classification_type;
     }
     else{
-        printf("The binary string with ARE is: %s \n", binary_string);
-        exit(1); //TODO - make sure is dont exit for command with no operand if there is one
+        return;
     }
     if (instruction_line->command->operand_number >1){
         second_operand_classification = instruction_line->command->dst_operand->classification_type;
     }
-
     set_binary_string_operand_representation(first_operand_classification, second_operand_classification, binary_string);
     printf("The binary string with operand is:                       %s \n", binary_string);
 
@@ -215,13 +222,10 @@ void fill_operand_binary(Operand *operand,Operand *second_operand, char *binary_
         case DIRECT:
             int_number_to_binary = operand->label->address;
             int_to_binary_string(int_number_to_binary, binary_string, operand_number * BINARY_LINE_LENGTH, 12);
-            if (!operand->label->is_entry) { //internal
+            if (operand->label->is_entry) { //internal
                 set_binary_string_ARE_representation(binary_string, operand_number + 1, 'r');
-            } else if (operand->label->is_entry) { // external
+            } else { // external
                 set_binary_string_ARE_representation(binary_string, operand_number + 1, 'e');
-            } else {
-                printf("Exception - Error not a viable label!");
-                exit(1);
             }
             break;
         case INDIRECT_REGISTER:
@@ -267,6 +271,42 @@ void register_to_binary_string(char *register_value, int operand_number, char *b
     }
 }
 
+
+void fill_binary_directive(InstructionLine *instruction_line, char *binary_string){
+    int number_value;
+    Directive *directive = instruction_line->directive;
+
+    if (is_directive_data(directive)){
+        for (int i = 0; i < directive->data_values_count; ++i) {
+            if (directive->value == NULL){
+                fprintf(stderr, "Error - trying to access a directive->value but the value is NULL\n");
+                return;
+            }
+            if (directive->value[i] == NULL){
+                fprintf(stderr, "Error - trying to access a directive->value[i] but the value is NULL\n");
+                return;
+            }
+            number_value = char_to_int(directive->value[i]);
+            int_to_binary_string(number_value, binary_string,i *BINARY_LINE_LENGTH, BINARY_LINE_LENGTH);
+        }
+    }
+
+    else if (is_directive_string(directive)){
+        for (int i = 0; i < directive->data_values_count - 1; ++i) {
+            if (directive->value == NULL){
+                fprintf(stderr, "Error - trying to access a directive->value but the value is NULL\n");
+                return;
+            }
+            if (directive->value[i] == NULL){
+                fprintf(stderr, "Error - trying to access a directive->value[i] but the value is NULL\n");
+                return;
+            }
+            char_to_binary_string(directive->value[0][i], binary_string,i*BINARY_LINE_LENGTH, BINARY_LINE_LENGTH);
+        }
+    }
+
+}
+
 void int_to_binary_string(int num, char *binary_string, int offset, int num_bits) {
     int i;
 
@@ -283,53 +323,25 @@ void int_to_binary_string(int num, char *binary_string, int offset, int num_bits
         binary_string[offset + num_bits - i - 1] = (num & (1 << i)) ? '1' : '0';
     }
 }
-void fill_binary_directive(InstructionLine *instruction_line, char *binary_string){
-    for (int i = 0; i < instruction_line->directive->data_values_count; ++i) {
-        if (is_instruction_line_directive_string(instruction_line)){
-            char_to_binary_string(instruction_line->directive->value[i], binary_string, i * BINARY_LINE_LENGTH);
-        }
-        else if (is_instruction_line_directive_integer(instruction_line)){
-            //TODO fill_binary_integer_data()
-        }
 
-    }
-}
-
-void char_to_binary_string(char c, char *binary_string, int start_point) {
+void char_to_binary_string(char c, char *binary_string, int offset, int num_bits) {
     int i;
-    char binary_str_tmp[BINARY_LINE_LENGTH + 1];
-    // Ensure binary_str is large enough (at least 16 characters)
-    if (binary_string == NULL || strlen(binary_string) < 15) {
+
+    // Ensure binary_string is large enough to hold the result
+    if (binary_string == NULL || offset + num_bits > CHAR_BIT * sizeof(char) * strlen(binary_string)) {
         fprintf(stderr, "Invalid binary string buffer\n");
         return;
     }
-    /* TODO - clear the binary str at start and the i dont need to memset at the function
-    // Clear the binary string
-    memset(binary_string, '0', 15);
-    binary_str[15] = '\0';
-    */
-    memset(binary_str_tmp, '0', 15);
-    binary_str_tmp[15] = '\0';
 
-    // Convert character to integer
-    int value = (int)c;
+    // Convert character to unsigned char for positive representation
+    unsigned char uc = (unsigned char) c;
 
-    // Convert integer to binary string
-    for (i = 14; i >= 0; i--) {
-        binary_str_tmp[i] = (value & 1) + '0';
-        value >>= 1;
+    // Convert to binary
+    for (i = offset + num_bits - 1; i >= offset; i--) {
+        binary_string[i] = (uc & 1) + '0';
+        uc >>= 1;
     }
-    strcpy(binary_string + start_point, binary_str_tmp);
 }
-
-bool is_instruction_line_directive_integer(InstructionLine *instruction_line){
-    return false;
-}
-
-bool is_instruction_line_directive_string(InstructionLine *instruction_line){
-    return true;
-}
-
 bool instruction_line_has_three_binary_words(InstructionLine instructionLine) {
     return false;
 }

@@ -48,6 +48,7 @@ int main(int argc, char *argv[]) {
 
         start_second_run(assembly_lines_array);
         printf("end %d file\n", file_number);
+
     }
 
 

@@ -16,9 +16,7 @@ void set_binary_string_operand_representation(int first_operand_classification_t
 void fill_operand_binary(Operand *operand, Operand *second_operand, char *binary_string, int operand_number);
 void set_binary_string_ARE_representation(char *binary_string, int number_of_binary_string, char ARE);
 void fill_binary_directive(InstructionLine *instruction_line, char *binary_string);
-void char_to_binary_string(char c, char *binary_string, int start_point);
-bool is_instruction_line_directive_string(InstructionLine *instruction_line);
-bool is_instruction_line_directive_integer(InstructionLine *instruction_line);
+void char_to_binary_string(char c, char *binary_string, int offset, int num_bits);
 int is_operand_classification_type_valid(enum operand_classification_type operandClassificationType);
 void int_to_binary_string(int num, char *binary_string, int offset, int num_bits);
 void register_to_binary_string(char *register_value, int operand_number, char *binary_string, int offset);
