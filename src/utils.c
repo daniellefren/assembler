@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include "../include/utils.h"
 
 
@@ -96,8 +97,19 @@ void print_command(Command *command){
     }
 
 }
+
 void print_directive(Directive *directive){
-    printf("The Lenth of the directive is %zu and the value is %s\n", directive->data_values_count, *directive->value);
+    if (is_directive_data(directive)){
+        printf("The Lenth of the directive is %zu and the values are", directive->data_values_count);
+        for (int i = 0; i < directive->data_values_count; ++i) {
+            printf(" %s", directive->value[i]);
+        }
+        printf("\n");
+    }
+    else{
+        printf("The Lenth of the directive is %zu and the value is %s\n", directive->data_values_count, directive->value[0]);
+    }
+
 }
 
 void print_instruction_line(InstructionLine *instructionLine){
@@ -194,4 +206,21 @@ void remove_first_character(char *str) {
 
 void add_number_to_string(char *buffer, char* source, size_t buffer_size, int number) {
     snprintf(buffer, buffer_size, source, number);
+}
+
+
+bool is_directive_data(Directive *directive){
+    if (directive->type == DATA){
+        printf("The directive is data directive!\n");
+        return true;
+    }
+    return false;
+}
+
+bool is_directive_string(Directive *directive){
+    if (directive->type == STRING){
+        printf("The directive is string directive!\n");
+        return true;
+    }
+    return false;
 }
