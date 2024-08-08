@@ -33,7 +33,6 @@ int main(int argc, char *argv[]) {
         // Call the first_run function with the file pointer
         first_run(file, &ic, &dc, assembly_lines_array, label_table, file_number);
 
-        dc += ic;
         test_all_run(assembly_lines_array);
         //call the second_run function with the LinesArray table
 
