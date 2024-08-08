@@ -174,7 +174,6 @@ bool is_instruction_line_opcode(InstructionLine instructionLine){
         return true;
     }
     return false;
-    //return instructionLine.directive_type != NOT_OPCODE;
 }
 
 
@@ -193,7 +192,6 @@ void fill_second_part_binary_opcode(InstructionLine *instruction_line, char *bin
             fill_operand_binary(dst_operand, NULL, binary_string,2);
             break;
         case 1:
-
             fill_operand_binary(src_operand, NULL, binary_string,1);
             break;
         case 0:
@@ -273,11 +271,11 @@ void fill_binary_directive(InstructionLine *instruction_line, char *binary_strin
     Directive *directive = instruction_line->directive;
 
     if (is_directive_data(directive)){
+        if (directive->value == NULL){
+            fprintf(stderr, "Error - trying to access a directive->value but the value is NULL\n");
+            return;
+        }
         for (int i = 0; i < directive->data_values_count; ++i) {
-            if (directive->value == NULL){
-                fprintf(stderr, "Error - trying to access a directive->value but the value is NULL\n");
-                return;
-            }
             if (directive->value[i] == NULL){
                 fprintf(stderr, "Error - trying to access a directive->value[i] but the value is NULL\n");
                 return;
@@ -288,15 +286,15 @@ void fill_binary_directive(InstructionLine *instruction_line, char *binary_strin
     }
 
     else if (is_directive_string(directive)){
-        for (int i = 0; i < directive->data_values_count - 1; ++i) {
-            if (directive->value == NULL){
-                fprintf(stderr, "Error - trying to access a directive->value but the value is NULL\n");
-                return;
-            }
-            if (directive->value[i] == NULL){
-                fprintf(stderr, "Error - trying to access a directive->value[i] but the value is NULL\n");
-                return;
-            }
+        if (directive->value == NULL){
+            fprintf(stderr, "Error - trying to access a directive->value but the value is NULL\n");
+            return;
+        }
+        if (directive->value[0] == NULL){
+            fprintf(stderr, "Error - trying to access a directive->value[i] but the value is NULL\n");
+            return;
+        }
+        for (int i = 0; i < strlen(directive->value[0]); ++i) {
             char_to_binary_string(directive->value[0][i], binary_string,i*BINARY_LINE_LENGTH, BINARY_LINE_LENGTH);
         }
     }
@@ -328,10 +326,8 @@ void char_to_binary_string(char c, char *binary_string, int offset, int num_bits
         fprintf(stderr, "Invalid binary string buffer\n");
         return;
     }
-
     // Convert character to unsigned char for positive representation
     unsigned char uc = (unsigned char) c;
-
     // Convert to binary
     for (i = offset + num_bits - 1; i >= offset; i--) {
         binary_string[i] = (uc & 1) + '0';

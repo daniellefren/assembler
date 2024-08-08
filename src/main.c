@@ -41,13 +41,15 @@ int main(int argc, char *argv[]) {
         // Close the file
         fclose(file);
 
+
+
+
         for (int i = 0; i < assembly_lines_array->number_of_line; ++i) {
-            printf("Line number %d: %s \n",i, assembly_lines_array->lines[i].line_content);
+            printf("Line number %d: %s  ---- address=%d, binary line count= %d\n",i, assembly_lines_array->lines[i].line_content, assembly_lines_array->lines[i].starting_address, assembly_lines_array->lines[i].binary_line_count);
         }
 
-        start_second_run(assembly_lines_array);
-        printf("end %d file\n", file_number);
-
+//        start_second_run(assembly_lines_array);
+//        printf("end %d file\n", file_number);
     }
 
 

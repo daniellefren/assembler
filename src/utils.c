@@ -125,6 +125,7 @@ void print_directive(Directive *directive){
 
 void print_instruction_line(InstructionLine *instructionLine){
     printf("The Content of line is %s\n", instructionLine->line_content);
+    printf("The Address of line is %d\n", instructionLine->starting_address);
     if (instructionLine->command != NULL){
         print_command(instructionLine->command);
     }
