@@ -703,10 +703,9 @@ void handle_string_directive(char *line, Directive *new_directive, int *dc, Inst
 
             // Set the second element to NULL
             new_directive->value[1] = NULL;
-
             new_directive->data_values_count = 1;
-            (*dc) += length;
-            instruction_line->binary_line_count=length;
+            instruction_line->binary_line_count=length + 1;
+            (*dc) += instruction_line->binary_line_count;
 
         }
     }
