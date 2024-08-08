@@ -735,7 +735,6 @@ void handle_data_directive(char *line, Directive *new_directive, int *dc, Instru
 
             values[values_count] = strdup(buffer);
             values_count++;
-            (*dc)+= values_count;
         } else {
             ptr++;
         }
