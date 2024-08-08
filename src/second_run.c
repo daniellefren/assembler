@@ -16,8 +16,8 @@ void start_second_run(LinesArray *assembly_lines_array){
     printf("Starting to print The lines Binary: \n");
 
     for (int i = 0; i < assembly_lines_array->number_of_line; ++i){
-        printf("\n****Line number %d *****  \n\n", i);
         InstructionLine *p_line = &assembly_lines_array->lines[i];
+        printf("\n****Line number %d Address %d *****  \n\n", i, p_line->starting_address);
         allocate_binary_instruction(p_line, p_line->binary_line_count, BINARY_LINE_LENGTH);
         print_instruction_line(p_line);
         fill_instruction_line_binary(p_line);
@@ -27,11 +27,7 @@ void start_second_run(LinesArray *assembly_lines_array){
     for (int j = 0; j < assembly_lines_array->number_of_line; ++j) {
         free_binary_instruction(&assembly_lines_array->lines[j]);
     }
-
-    free(assembly_lines_array[0].lines);
-    free(assembly_lines_array);
-
-}
+    }
 
 
 void fill_instruction_line_binary(InstructionLine *instruction_line){

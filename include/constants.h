@@ -7,7 +7,7 @@
 #define BINARY_WORD_LENGTH 15
 #define MAX_COMMAND_LEN 10
 #define MAX_OPERAND_LEN 20
-
+#define OCTAL_LENGTH 5
 #define IS_COMMAND 0
 #define IS_DIRECTIVE 1
 #define OPCODE_SIZE 4
@@ -26,6 +26,7 @@ static const char *DIRECTIVES[] = {
 static const char *EXTERNALS_FILE_NAME = "output_files/ps%d.ext";
 static const char *ENTRIES_FILE_NAME = "output_files/ps%d.ent";
 static const char *EXPANDED_MACRO_FILE_NAME = "output_files/expanded_macros%d.am";
+static const char *OBJECTS_FILE_NAME = "output_files/ps%d.ob";
 
 
 #define COMMANDS_COUNT (sizeof(COMMANDS) / sizeof(COMMANDS[0]))
