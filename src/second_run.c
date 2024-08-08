@@ -43,11 +43,7 @@ void fill_instruction_line_binary(InstructionLine *instruction_line){
     // if it's directive .....
     char *binary_instruction_p = instruction_line->binary_instruction;
     int binary_line_count = instruction_line->binary_line_count;
-    if (is_instruction_line_directive(*instruction_line)){ //TODO delete after danielle add logic for count directive
-        instruction_line->binary_line_count = 10;
-        binary_line_count = 10;
-    }
-    else if (binary_line_count == 0){
+    if (binary_line_count == 0){
         fprintf(stderr, "Error: 0 lines of binary for the instruction line\n");
         return;
     }

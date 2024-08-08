@@ -68,9 +68,10 @@ void string_append(const char *first_string, const char *second_String, char *ap
 
 void allocate_binary_instruction(InstructionLine *p_line, size_t binary_line_count, size_t binary_line_length) {
     size_t count_to_allocate = binary_line_count * binary_line_length + 1; // Calculate total size in bytes
-    printf("binary_line_count - %lu\n", binary_line_count);
+    printf("The binary line count - %lu\n", binary_line_count);
     if (binary_line_count == 0){//TODO - delete after danielle add binary_line_count logic
-        count_to_allocate = 46;
+        fprintf(stderr, "Error: 0 lines of binary for the instruction line\n");
+        return;
     }
     p_line->binary_instruction = (char*) malloc(count_to_allocate);
     printf("The size wanted to allocate is %lu\n", count_to_allocate);
@@ -100,14 +101,24 @@ void print_command(Command *command){
 
 void print_directive(Directive *directive){
     if (is_directive_data(directive)){
-        printf("The Lenth of the directive is %zu and the values are", directive->data_values_count);
+        if (directive->data_values_count){
+            printf("The Lenth of the directive is %zu and the values are", directive->data_values_count);
+        }
+
         for (int i = 0; i < directive->data_values_count; ++i) {
             printf(" %s", directive->value[i]);
         }
         printf("\n");
     }
     else{
-        printf("The Lenth of the directive is %zu and the value is %s\n", directive->data_values_count, directive->value[0]);
+        if (directive->value != NULL){
+            printf("The Lenth of the directive is %zu and the value is %s\n", directive->data_values_count, directive->value[0]);
+        }
+        else{
+            fprintf(stderr, "Error: there is no values in the directive\n");
+            return;
+        }
+
     }
 
 }
