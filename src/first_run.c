@@ -193,7 +193,14 @@ void read_line(char *line, LabelTable *label_table, int *ic, int *dc, LinesArray
         new_instruction_line->label = new_label;
         addNewLabel(label_table, new_label);
     }
+    if(new_instruction_line->instruction_type==DATA_DIRECTIVE){
+        if(new_instruction_line->directive->type == EXTERN || new_instruction_line->directive->type == ENTRY){
+            return;
+        }
+    }
+
     addInstructionLine(lines_array, new_instruction_line);
+
 
 }
 

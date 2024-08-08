@@ -43,7 +43,8 @@ enum opcode_command {MOV, CMP, ADD, SUB, NOT, CLR, LEA, INC, DEC, JMP, BNE, RED,
 enum instruction_types {
     COMMAND = 1,
     DATA_DIRECTIVE = 2,
-    EXTERN_DIRECTIVE = 3
+    EXTERN_DIRECTIVE = 3,
+    ENTRY_DIRECTIVE = 4
 };
 
 enum operand_types {

@@ -129,6 +129,7 @@ InstructionLine *init_instruction_line(char* line){
     }
 
     new_instruction_line->length = strlen(line);
+    new_instruction_line->binary_line_count=0;
 
     return new_instruction_line;
 }
