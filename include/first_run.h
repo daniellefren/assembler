@@ -19,12 +19,12 @@ void get_expanded_macro_file_name(char *buffer, size_t buffer_size, int number);
 void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, LabelTable *label_table, int file_number);
 void read_line(char *line, LabelTable *label_table, int *ic, int *dc, LinesArray *lines_array, MacroTable *macro_table, int file_number);
 void pre_run(char *line, MacroTable *macro_table, char **macroNames, FILE *file, char* new_file_name);
-void handle_string_directive(char *line, Directive *new_directive, int *dc);
-void handle_data_directive(char *line, Directive *new_directive, int *dc);
+void handle_string_directive(char *line, Directive *new_directive, int *dc, InstructionLine *instruction_line);
+void handle_data_directive(char *line, Directive *new_directive, int *dc, InstructionLine *instruction_line);
 
 
 void handle_command(char *line, Command *new_command, LabelTable *label_table, MacroTable *macro_table);
-void handle_directives(char *line, int *dc, Directive *new_directive, LabelTable *label_table, int* ic, int file_number);
+void handle_directives(char *line, int *dc, Directive *new_directive, LabelTable *label_table, int* ic, int file_number, InstructionLine *new_instruction_line);
 void classify_operand(Operand *new_operand);
 int find_number_of_lines_in_binary(Command *new_command);
 
