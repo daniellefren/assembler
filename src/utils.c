@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <math.h>
 #include "../include/utils.h"
 
 
@@ -134,6 +135,9 @@ void print_instruction_line(InstructionLine *instructionLine){
     }
 }
 
+
+
+
 void erase_file_data(const char *filename) {
     FILE *file = fopen(filename, "w"); // Open the file in write mode
     if (file == NULL) {
@@ -235,4 +239,62 @@ bool is_directive_string(Directive *directive){
         return true;
     }
     return false;
+}
+
+
+char *get_octal_base_from_binary(const char *binary_string, int number_of_binary_bits, int offset) {
+    char octal_value[6];
+    int i;
+    int j;
+    char extracted_binary[17]; // Assuming maximum 15 bits + null terminator
+
+    // Check for invalid input
+    if (number_of_binary_bits <= 0 || offset < 0 || offset + number_of_binary_bits > strlen(binary_string)) {
+        fprintf(stderr, "Invalid input parameters\n");
+        return "Error"; // Indicate error
+    }
+
+
+    // Ensure the number of bits is a multiple of 3
+    if (number_of_binary_bits % 3 != 0) {
+        fprintf(stderr, "Number of bits must be a multiple of 3\n");
+        return ""; // Indicate error
+    }
+    // Print the original binary string
+    printf("Original binary string: %s\n", binary_string);
+
+    // Extract the desired portion
+    strncpy(extracted_binary, binary_string + offset, number_of_binary_bits);
+    extracted_binary[number_of_binary_bits] = '\0';
+    printf("new binary string: %s\n", extracted_binary);
+    /*
+    // Convert binary to octal
+    for (i = offset + number_of_binary_bits - 1, j = 0; i >= offset; i -= 3, j++) {
+        octal_value = (octal_value << 3) | ((extracted_binary[i] - '0') * 4 + (extracted_binary[i - 1] - '0') * 2 + (extracted_binary[i - 2] - '0'));
+    }
+    */
+    binary_to_octal(extracted_binary, octal_value);
+    printf("Ocatal number is %s\n", octal_value);
+    return octal_value;
+}
+
+
+void binary_to_octal(const char *binary_string, char *octal_string) {
+    if (binary_string == NULL || strlen(binary_string) != BINARY_WORD_LENGTH) {
+        fprintf(stderr, "Invalid binary string\n");
+        return;
+    }
+    int i, j, value = 0;
+    // Initialize octal_string with '0's
+    memset(octal_string, '0', OCTAL_LENGTH);
+    octal_string[OCTAL_LENGTH] = '\0';
+    // Convert binary to decimal
+    for (i = 0; i < BINARY_WORD_LENGTH; i++) {
+        value = (value << 1) | (binary_string[i] - '0');
+    }
+    // Convert decimal to octal
+    for (i = OCTAL_LENGTH - 1; i >= 0; i--) {
+        octal_string[i] = (value & 7) + '0';  // Get the last 3 bits and convert to octal digit
+        value >>= 3; // Shift right by 3 bits (1 octal digit)
+    }
 }

@@ -63,8 +63,7 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, LabelTable
     }
 
     fclose(file);
-
-    for(int i=0;i<lines_array->number_of_line;i++){
+    for(int i = 0;i<lines_array->number_of_line;i++){
         InstructionLine *instruction_line = &lines_array->lines[i];
         if(instruction_line->instruction_type == DATA_DIRECTIVE){
             instruction_line->starting_address += *ic;
