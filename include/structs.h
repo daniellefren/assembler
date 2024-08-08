@@ -63,6 +63,8 @@ typedef struct {
     InstructionLine *lines;  // Pointer to an array of Line structs
     unsigned int number_of_line;  // Number of lines currently stored
     size_t capacity;  // Maximum capacity of the lines array
+    int ic;
+    int dc;
 } LinesArray;
 
 
