@@ -47,11 +47,12 @@ typedef struct {
 typedef struct {
     char *line_content; // String containing the assembly instruction (content of the line)
     size_t length;  // Length of the line (excluding null terminator)
-    int instruction_type; //is it data directive or command
+    enum instruction_types instruction_type; //is it data directive or command
     int is_label; // is there a label with the command
     Command *command;
     Directive *directive;
     Label *label;
+    int starting_address;
     int binary_line_count; // the number of binary lines
     char *binary_instruction; //the line in binary instruction
 } InstructionLine;

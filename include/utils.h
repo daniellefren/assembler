@@ -18,5 +18,5 @@ void extract_word_after_keyword(const char *input, char *output, const char *key
 void remove_first_character(char *str);
 bool is_directive_data(Directive *directive);
 bool is_directive_string(Directive *directive);
-void add_number_to_string(char *buffer, char* source, size_t buffer_size, int number);
+void add_number_to_string(char *buffer, const char* source, size_t buffer_size, int number);
 #endif //ASSEMBLER_UTILS_H

@@ -10,8 +10,8 @@
 #include "../include/assembler.h"
 #include "../include/constants.h"
 #include "../include/utils.h"
+#include "../include/files_handler.h"
 
-char EXPANDED_MACRO_FILE_NAME[] = "output_files/expanded_macros%d.am";
 
 //TODO - get all errors from code and not exit after one and return also the line number
 
@@ -36,6 +36,7 @@ Command commands_struct[] = {
 };
 
 void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, LabelTable *label_table, int file_number) {
+    *ic = 100; // Starting point of assembler
     char line[MAX_LINE_LENGTH];
     char *macroNames[MAX_MACRO_NAMES];  // Array to store pointers to macro names
     MacroTable macro_table;
@@ -62,6 +63,15 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, LabelTable
     }
 
     fclose(file);
+
+
+    for(int i;i<lines_array->number_of_line;i++){
+        InstructionLine *instruction_line = &lines_array->lines[i];
+        if(instruction_line->instruction_type == DATA_DIRECTIVE || instruction_line->instruction_type == EXTERN_DIRECTIVE){
+            instruction_line->starting_address += *ic;
+        }
+    }
+
 
     // Free allocated memory for macro names
     for (int j = 0; j < MAX_MACRO_NAMES; ++j) {
@@ -139,13 +149,14 @@ void read_line(char *line, LabelTable *label_table, int *ic, int *dc, LinesArray
         new_instruction_line->is_label=1;
         new_instruction_line->label = new_label;
 
-        new_label->address = ic;
+
         new_label->is_extern=0;
         new_label->is_entry=0;
     }
 
     if (is_data_directive(line)) { // If .data or .String
         new_instruction_line->instruction_type=DATA_DIRECTIVE;
+        new_instruction_line->starting_address=*dc;
         if(hasLabel){
             new_label->type = DATA_DIRECTIVE;
         }
@@ -155,10 +166,14 @@ void read_line(char *line, LabelTable *label_table, int *ic, int *dc, LinesArray
         handle_directives(line, dc, new_directive, label_table, ic, file_number);
 
         new_instruction_line->directive = new_directive;
+        if(hasLabel){
+            new_label->address = *dc;
+        }
 
     }
     else if (is_command(line, ic)) {
         new_instruction_line->instruction_type=COMMAND;
+        new_instruction_line->starting_address=*ic;
         if(hasLabel){
             new_label->type = COMMAND;
         }
@@ -169,6 +184,9 @@ void read_line(char *line, LabelTable *label_table, int *ic, int *dc, LinesArray
         (*ic)+= new_instruction_line->binary_line_count;
 
         new_instruction_line->command = new_command;
+        if(hasLabel){
+            new_label->address = *ic;
+        }
     }
     if(hasLabel){
         new_instruction_line->label = new_label;
@@ -532,7 +550,7 @@ int is_known_assembly_keyword(const char *label) {
     //TODO - Know if label or macro
     // Copy commands into all_instructions
     for (size_t i = 0; i < COMMANDS_COUNT; ++i) {
-        if (strcmp(label, commands[i]) == 0) {
+        if (strcmp(label, COMMANDS[i]) == 0) {
             fprintf(stderr, "Label is not valid -- A known assembly keyword\n");
             return 1; //Label is a known command
         }
@@ -540,7 +558,7 @@ int is_known_assembly_keyword(const char *label) {
 
     // Copy directives into all_instructions
     for (size_t j = 0; j < DIRECTIVES_COUNT; ++j) {
-        if (strcmp(label, directives[j]) == 0) {
+        if (strcmp(label, DIRECTIVES[j]) == 0) {
             fprintf(stderr, "Label is not valid -- A known assembly keyword\n");
             return 1; //Label is a known directive
         }
@@ -555,7 +573,7 @@ int is_command(char *line, int *ic) {
         line++;
     }
     for (int i = 0; i < COMMANDS_COUNT; i++) {
-        if (strncmp(line, commands[i], strlen(commands[i])) == 0) {
+        if (strncmp(line, COMMANDS[i], strlen(COMMANDS[i])) == 0) {
             return 1;
         }
     }
@@ -582,9 +600,9 @@ bool is_data_directive(char *line) {
     if (*line == '.') {
         line++;
         // Iterate over the directives array and check if any directive matches
-        for (size_t i = 0; i < sizeof(directives) / sizeof(directives[0]); i++) {
-            size_t len = strlen(directives[i]);
-            if (strncmp(line, directives[i], len) == 0 && isspace((unsigned char)line[len])) {
+        for (size_t i = 0; i < sizeof(DIRECTIVES) / sizeof(DIRECTIVES[0]); i++) {
+            size_t len = strlen(DIRECTIVES[i]);
+            if (strncmp(line, DIRECTIVES[i], len) == 0 && isspace((unsigned char)line[len])) {
                 return true;
             }
         }
@@ -635,7 +653,7 @@ void handle_directives(char *line, int *dc, Directive *new_directive, LabelTable
         Label* label = find_label_by_name(label_table, new_directive->label);
         label->is_entry=1;
 
-        add_entry_to_entries_file(new_directive->label, file_number);
+        add_entry_to_entries_file(new_directive->label, file_number, label->address);
 
     } else {
             new_directive->type = NOT_DIRECTIVE;
@@ -744,34 +762,9 @@ Label *find_label_by_name(LabelTable* label_table, char* label_name){
     exit(EXIT_FAILURE);
 }
 
-void add_extern_to_externals_file(Label *label, int file_number, int *ic){
-    char externals_file_name[100];
-    add_number_to_string(externals_file_name, "output_files/externals%d.txt", sizeof(externals_file_name), file_number);
-    FILE *file = fopen(externals_file_name, "w");
-    if (file == NULL) {
-        perror("Unable to open externals file");
-        exit(EXIT_FAILURE);
-    }
-
-    fprintf(file, "%s %d\n", label->name, ic);
-
-    fclose(file);
-}
 
 
-void add_entry_to_entries_file(char *label, int file_number){
-    char entries_file_name[100];
-    add_number_to_string(entries_file_name, "output_files/entries%d.txt", sizeof(entries_file_name), file_number);
-    FILE *file = fopen(entries_file_name, "w");
-    if (file == NULL) {
-        perror("Unable to open entries file");
-        exit(EXIT_FAILURE);
-    }
 
-    fprintf(file, "%s\n", label);
-
-    fclose(file);
-}
 
 void debugging_data(Directive *new_directive){
     //TODO - erase this function
