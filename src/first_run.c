@@ -669,6 +669,7 @@ void handle_directives(char *line, int *dc, Directive *new_directive, LabelTable
             exit(EXIT_FAILURE);
     }
 
+    (*dc) += new_instruction_line->binary_line_count;
     debugging_data(new_directive);
 
 }
@@ -705,7 +706,6 @@ void handle_string_directive(char *line, Directive *new_directive, int *dc, Inst
             new_directive->value[1] = NULL;
             new_directive->data_values_count = 1;
             instruction_line->binary_line_count=length + 1;
-            (*dc) += instruction_line->binary_line_count;
 
         }
     }
@@ -754,7 +754,7 @@ void handle_data_directive(char *line, Directive *new_directive, int *dc, Instru
     }
 
     new_directive->data_values_count = values_count;
-    (*dc) += values_count;
+
     instruction_line->binary_line_count = values_count;
 }
 
