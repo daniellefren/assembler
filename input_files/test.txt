@@ -7,6 +7,7 @@ endmacr
  .entry LOOP
  lea STR, r6
  inc r6
+STR1: .string "abcd"
  mov *r6,K
  sub r1, r4
  m_macr
