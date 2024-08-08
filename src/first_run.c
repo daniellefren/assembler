@@ -36,7 +36,7 @@ Command commands_struct[] = {
 };
 
 void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, LabelTable *label_table, int file_number) {
-    *ic = 100; // Starting point of assembler
+    *ic = STARTING_IC; // Starting point of assembler
     char line[MAX_LINE_LENGTH];
     char *macroNames[MAX_MACRO_NAMES];  // Array to store pointers to macro names
     MacroTable macro_table;
@@ -67,7 +67,7 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, LabelTable
 
     for(int i;i<lines_array->number_of_line;i++){
         InstructionLine *instruction_line = &lines_array->lines[i];
-        if(instruction_line->instruction_type == DATA_DIRECTIVE || instruction_line->instruction_type == EXTERN_DIRECTIVE){
+        if(instruction_line->instruction_type == DATA_DIRECTIVE){
             instruction_line->starting_address += *ic;
         }
     }
