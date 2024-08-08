@@ -2,9 +2,10 @@
 #include "../include/first_run.h"
 #include "../include/second_run.h"
 #include "../include/test_first_run.h"
-
+#include "../include/files_handler.h"
 //TODO - handle ic and dc
 // TODO - Add function that defines how many lines there is in an assembly command
+// TODO - Add function that read from directory and not files
 int main(int argc, char *argv[]) {
 
     int number_of_files = argc - 1;
@@ -33,25 +34,23 @@ int main(int argc, char *argv[]) {
         // Call the first_run function with the file pointer
         first_run(file, &ic, &dc, assembly_lines_array, label_table, file_number);
         assembly_lines_array->ic = ic;
-        assembly_lines_array->dc = dc;
+        assembly_lines_array->dc = dc; //TODO dont count .entry and .extern in the dc
 
-        test_all_run(assembly_lines_array);
+        //test_all_run(assembly_lines_array);
         //call the second_run function with the LinesArray table
-
-
 
         // Close the file
         fclose(file);
 
 
-        for (int i = 0; i < assembly_lines_array->number_of_line; ++i) {
-            printf("Line number %d: %s  ---- address=%d, binary line count= %d\n",i, assembly_lines_array->lines[i].line_content, assembly_lines_array->lines[i].starting_address, assembly_lines_array->lines[i].binary_line_count);
-        }
+
 
         start_second_run(assembly_lines_array);
-        printf("end %d file\n", file_number);
-    }
+        //printf("end %d file\n", file_number);
 
+        create_ob_file(assembly_lines_array, 1);
+        free_lines_array(assembly_lines_array);
+    }
 
     //return EXIT_SUCCESS;
     return 1;

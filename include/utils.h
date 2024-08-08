@@ -19,4 +19,6 @@ void remove_first_character(char *str);
 bool is_directive_data(Directive *directive);
 bool is_directive_string(Directive *directive);
 void add_number_to_string(char *buffer, const char* source, size_t buffer_size, int number);
+char *get_octal_base_from_binary(const char *binary_string, int number_of_binary_bits, int offset);
+void binary_to_octal(const char *binary_string, char *octal_string);
 #endif //ASSEMBLER_UTILS_H

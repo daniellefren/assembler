@@ -63,20 +63,17 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, LabelTable
     }
 
     fclose(file);
-
-
-    for(int i;i<lines_array->number_of_line;i++){
+    for(int i = 0;i<lines_array->number_of_line;i++){
         InstructionLine *instruction_line = &lines_array->lines[i];
         if(instruction_line->instruction_type == DATA_DIRECTIVE){
             instruction_line->starting_address += *ic;
         }
     }
-
-
     // Free allocated memory for macro names
     for (int j = 0; j < MAX_MACRO_NAMES; ++j) {
         free(macroNames[j]);
     }
+
 }
 
 void pre_run(char *line, MacroTable *macro_table, char **macroNames, FILE *file, char* new_file_name) {
