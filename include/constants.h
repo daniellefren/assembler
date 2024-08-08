@@ -13,17 +13,22 @@
 #define MAX_OPERAND_SIZE 10
 //#define EXTERNALS_FILE_NAME "output_files/externals.txt";
 
-static const char *commands[] = {
+static const char *COMMANDS[] = {
         "mov", "cmp", "add", "sub", "not", "clr", "lea", "inc", "dec", "jmp", "bne",
         "red", "prn", "jsr", "rts", "stop"
 };
 
-static const char *directives[] = {
+static const char *DIRECTIVES[] = {
         "data", "string", "struct", "entry", "extern"
 };
 
-#define COMMANDS_COUNT (sizeof(commands) / sizeof(commands[0]))
-#define DIRECTIVES_COUNT (sizeof(directives) / sizeof(directives[0]))
+static const char *EXTERNALS_FILE_NAME = "output_files/ps%d.ext";
+static const char *ENTRIES_FILE_NAME = "output_files/ps%d.ent";
+static const char *EXPANDED_MACRO_FILE_NAME = "output_files/expanded_macros%d.am";
+
+
+#define COMMANDS_COUNT (sizeof(COMMANDS) / sizeof(COMMANDS[0]))
+#define DIRECTIVES_COUNT (sizeof(DIRECTIVES) / sizeof(DIRECTIVES[0]))
 #define TOTAL_ASSEMBLY_KEYWORDS_COUNT (COMMANDS_COUNT + DIRECTIVES_COUNT)
 
 /* A/R/E modes ordered by their numerical value */

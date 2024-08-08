@@ -27,9 +27,7 @@ void handle_command(char *line, Command *new_command, LabelTable *label_table, M
 void handle_directives(char *line, int *dc, Directive *new_directive, LabelTable *label_table, int* ic, int file_number);
 void classify_operand(Operand *new_operand);
 int find_number_of_lines_in_binary(Command *new_command);
-//void handle_data_directive(char* directive_type, Directive *new_directive, char* ptr, char *values[MAX_LINE_LENGTH], int *dc, int *values_count);
-void add_extern_to_externals_file(Label *label, int file_number, int *ic);
-void add_entry_to_entries_file(char *label, int file_number);
+
 Label *find_label_by_name(LabelTable* label_table, char* label_name);
 
 int ignore_line(char *line);

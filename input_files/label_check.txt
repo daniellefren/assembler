@@ -1,9 +1,9 @@
 ;XYZ: .data 7, -57, +17, 9, 15
-;mov XYZ, r1
+mov XYZ, r1
 
 ;ABC: .string "danielle"
 
-;mov *r1, #4
+mov *r1, #4
 
 ABS: .string "danielle"
 
