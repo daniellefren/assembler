@@ -32,8 +32,7 @@ int main(int argc, char *argv[]) {
 
         // Call the first_run function with the file pointer
         first_run(file, &ic, &dc, assembly_lines_array, label_table, file_number);
-        assembly_lines_array->ic = ic;
-        assembly_lines_array->dc = dc;
+
 
         test_all_run(assembly_lines_array);
         //call the second_run function with the LinesArray table
@@ -48,7 +47,7 @@ int main(int argc, char *argv[]) {
             printf("Line number %d: %s  ---- address=%d, binary line count= %d\n",i, assembly_lines_array->lines[i].line_content, assembly_lines_array->lines[i].starting_address, assembly_lines_array->lines[i].binary_line_count);
         }
 
-        start_second_run(assembly_lines_array);
+//        start_second_run(assembly_lines_array);
         printf("end %d file\n", file_number);
     }
 

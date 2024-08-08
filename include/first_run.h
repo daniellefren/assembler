@@ -36,10 +36,8 @@ char* skip_spaces(char *line);
 int find_label(char *line, char *label);
 int label_exists(LabelTable *label_table, char *label); // TODO - check if relevant
 bool is_data_directive(char *line);
-bool is_extern_directive(char *line);
 int is_command(char *line, int *ic);
 int is_valid_label(const char *label, MacroTable *macro_table);
-bool is_entry_directive(char *line);
 
 int get_operand_opcode(char *command_name);
 

@@ -64,19 +64,21 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, LabelTable
 
     fclose(file);
 
-
-    for(int i;i<lines_array->number_of_line;i++){
+    for(int i=0;i<lines_array->number_of_line;i++){
         InstructionLine *instruction_line = &lines_array->lines[i];
         if(instruction_line->instruction_type == DATA_DIRECTIVE){
             instruction_line->starting_address += *ic;
         }
     }
 
-
     // Free allocated memory for macro names
     for (int j = 0; j < MAX_MACRO_NAMES; ++j) {
         free(macroNames[j]);
     }
+
+    //
+    lines_array->ic = *ic;
+    lines_array->dc = *dc;
 }
 
 void pre_run(char *line, MacroTable *macro_table, char **macroNames, FILE *file, char* new_file_name) {
@@ -773,7 +775,6 @@ Label *find_label_by_name(LabelTable* label_table, char* label_name){
 
 
 
-
 void debugging_data(Directive *new_directive){
     //TODO - erase this function
     printf("enter debugging\n");
@@ -787,14 +788,5 @@ void debugging_data(Directive *new_directive){
     }
     printf("\n");
     printf("finish debuggingData\n");
-}
-
-
-bool is_extern_directive(char *line) {
-    return strstr(line, ".extern") != NULL;
-}
-
-bool is_entry_directive(char *line) {
-    return strstr(line, ".entry") != NULL;
 }
 
