@@ -36,7 +36,7 @@ Command commands_struct[] = {
 };
 
 void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, LabelTable *label_table, int file_number) {
-    *ic = 100; // Starting point of assembler
+    *ic = STARTING_IC; // Starting point of assembler
     char line[MAX_LINE_LENGTH];
     char *macroNames[MAX_MACRO_NAMES];  // Array to store pointers to macro names
     MacroTable macro_table;
