@@ -163,12 +163,13 @@ void read_line(char *line, LabelTable *label_table, int *ic, int *dc, LinesArray
 
         Directive *new_directive = init_directive();
 
-        handle_directives(line, dc, new_directive, label_table, ic, file_number);
+        handle_directives(line, dc, new_directive, label_table, ic, file_number, new_instruction_line);
 
         new_instruction_line->directive = new_directive;
         if(hasLabel){
             new_label->address = *dc;
         }
+
 
     }
     else if (is_command(line, ic)) {
@@ -610,7 +611,7 @@ bool is_data_directive(char *line) {
     return false;
 }
 
-void handle_directives(char *line, int *dc, Directive *new_directive, LabelTable *label_table, int* ic, int file_number) {
+void handle_directives(char *line, int *dc, Directive *new_directive, LabelTable *label_table, int* ic, int file_number, InstructionLine *new_instruction_line) {
     //TODO - split to functions
 
     char directive_type[MAX_LINE_LENGTH];
@@ -625,10 +626,10 @@ void handle_directives(char *line, int *dc, Directive *new_directive, LabelTable
     }
 
     if (strcmp(directive_type, ".data") == 0) {
-        handle_data_directive(line, new_directive, dc);
+        handle_data_directive(line, new_directive, dc, new_instruction_line);
 
     } else if (strcmp(directive_type, ".string") == 0) {
-        handle_string_directive(line, new_directive, dc);
+        handle_string_directive(line, new_directive, dc, new_instruction_line);
 
     } else if (strcmp(directive_type, ".extern") == 0){
         new_directive->type = EXTERN;
@@ -665,7 +666,7 @@ void handle_directives(char *line, int *dc, Directive *new_directive, LabelTable
 
 }
 
-void handle_string_directive(char *line, Directive *new_directive, int *dc) {
+void handle_string_directive(char *line, Directive *new_directive, int *dc, InstructionLine *instruction_line) {
     new_directive->type = STRING;
 
     // Find the first quote
@@ -698,12 +699,13 @@ void handle_string_directive(char *line, Directive *new_directive, int *dc) {
 
             new_directive->data_values_count = 1;
             (*dc) += length;
+            instruction_line->binary_line_count=length;
 
         }
     }
 }
 
-void handle_data_directive(char *line, Directive *new_directive, int *dc) {
+void handle_data_directive(char *line, Directive *new_directive, int *dc, InstructionLine *instruction_line) {
     new_directive->type = DATA;
     // Move the pointer to the first character after ".data"
     char *ptr = line + strlen(".data");
@@ -748,6 +750,7 @@ void handle_data_directive(char *line, Directive *new_directive, int *dc) {
 
     new_directive->data_values_count = values_count;
     (*dc) += values_count;
+    instruction_line->binary_line_count = values_count;
 }
 
 
