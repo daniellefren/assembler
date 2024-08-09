@@ -33,10 +33,9 @@ int main(int argc, char *argv[]) {
 
         // Call the first_run function with the file pointer
         first_run(file, &ic, &dc, assembly_lines_array, label_table, file_number);
-        assembly_lines_array->ic = ic;
-        assembly_lines_array->dc = dc; //TODO dont count .entry and .extern in the dc
 
-        //test_all_run(assembly_lines_array);
+
+        test_all_run(assembly_lines_array);
         //call the second_run function with the LinesArray table
 
         // Close the file
@@ -46,7 +45,8 @@ int main(int argc, char *argv[]) {
 
 
         start_second_run(assembly_lines_array);
-        //printf("end %d file\n", file_number);
+        printf("end %d file\n", file_number);
+
 
         create_ob_file(assembly_lines_array, 1);
         free_lines_array(assembly_lines_array);
