@@ -113,4 +113,35 @@ void add_directive_lines_to_ob_file(InstructionLine *instructionLine, FILE *obje
     }
 }
 
+int write_line_to_file(char *line, char* new_file_name) {
+    FILE *outputFile = fopen(new_file_name, "a"); // Open in append mode
+    if (!outputFile) {
+        fprintf(stderr, "Error: Could not open file '%s' for writing\n", new_file_name);
+        exit(EXIT_FAILURE);
+    }
+//    lower_string(line);
+    // Write the string to the file
+    fprintf(outputFile, "%s", line);
 
+    fclose(outputFile);
+    return 0;  // Indicate success
+}
+
+void write_expanded_macros_to_file(MacroTable *macro_table, char* new_file_name) {
+    int i;
+    int j;
+    FILE *outputFile = fopen(new_file_name, "a"); // Open in append mode
+    if (!outputFile) {
+        fprintf(stderr, "Error: Could not open file '%s' for writing macros\n", new_file_name);
+        exit(EXIT_FAILURE);
+    }
+
+    // Write each macro's body to the file
+    for (i = 0; i < macro_table->count; ++i) {
+        for (j = 0; j < macro_table->macros[i].lineCount; ++j) {
+            fprintf(outputFile, "%s", macro_table->macros[i].body[j]);
+        }
+    }
+
+    fclose(outputFile);
+}

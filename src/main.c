@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
 
         start_second_run(assembly_lines_array);
         printf("end %d file\n", file_number);
-    }
+
 
         create_ob_file(assembly_lines_array, 1);
         free_lines_array(assembly_lines_array);
