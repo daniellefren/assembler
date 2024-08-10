@@ -34,7 +34,6 @@ Command commands_struct[] = {
 };
 
 void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, LabelTable *label_table, int file_number) {
-    *ic = STARTING_IC; // Starting point of assembler
     char line[MAX_LINE_LENGTH];
     char *macroNames[MAX_MACRO_NAMES];  // Array to store pointers to macro names
     char expended_macro_file_name[100];
@@ -43,15 +42,18 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, LabelTable
     int line_num;
     int i;
 
+    *ic = STARTING_IC; // Starting point of assembler
+
     init_macro_table(&macro_table);
     init_macro_name_array(macroNames);
 
     rewind(file); // Reset file pointer to the beginning before calling pre_run
 
+    //add file num to expended_macro_file_name to make new file for the assembly input file
     add_number_to_string(expended_macro_file_name, EXPANDED_MACRO_FILE_NAME, sizeof(expended_macro_file_name), file_number);
 
+    //Pre run in order to expand macros from asse,bly input file
     pre_run(line, &macro_table, macroNames, file, expended_macro_file_name); // Keeps track of the number of encountered macros
-
 
     expanded_macros_file = fopen(expended_macro_file_name, "r");
     line_num = 0;

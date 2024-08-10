@@ -36,14 +36,12 @@ int main(int argc, char *argv[]) {
 
 
         test_all_run(assembly_lines_array);
-        //call the second_run function with the LinesArray table
 
         // Close the file
         fclose(file);
 
 
-
-
+        //call the second_run function with the LinesArray table
         start_second_run(assembly_lines_array);
         printf("end %d file\n", file_number);
 
