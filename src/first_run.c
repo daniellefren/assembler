@@ -37,7 +37,9 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, LabelTable
     *ic = STARTING_IC; // Starting point of assembler
     char line[MAX_LINE_LENGTH];
     char *macroNames[MAX_MACRO_NAMES];  // Array to store pointers to macro names
+    char expended_macro_file_name[100];
     MacroTable macro_table;
+    FILE *expanded_macros_file;
     int line_num;
     int i;
 
@@ -46,13 +48,12 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, LabelTable
 
     rewind(file); // Reset file pointer to the beginning before calling pre_run
 
-    char expended_macro_file_name[100];
     add_number_to_string(expended_macro_file_name, EXPANDED_MACRO_FILE_NAME, sizeof(expended_macro_file_name), file_number);
 
     pre_run(line, &macro_table, macroNames, file, expended_macro_file_name); // Keeps track of the number of encountered macros
 
 
-    FILE *expanded_macros_file = fopen(expended_macro_file_name, "r");
+    expanded_macros_file = fopen(expended_macro_file_name, "r");
     line_num = 0;
     while (fgets(line, MAX_LINE_LENGTH, expanded_macros_file) != NULL) {
         if (!ignore_line(line)) {
@@ -84,21 +85,19 @@ void pre_run(char *line, MacroTable *macro_table, char **macroNames, FILE *file,
     // Return number of macros
     int is_in_macro = 0;
     int macroCount = 0;
+    char macroName[MAX_LABEL_LENGTH];
+    Macro macro;
+
     erase_file_data(new_file_name);
 
     while (fgets(line, MAX_LINE_LENGTH, file) != NULL) {
-//        printf("line %s\n", line);
-        char macroName[MAX_LABEL_LENGTH];
         if (!ignore_line(line)) {
             if (is_macro_definition_start(line)) {
-                is_in_macro = 1;
-
                 sscanf(line, "%*s %s", macroName);  // Skip "%macro" and capture the name
                 if(is_known_assembly_keyword(macroName)){
                     fprintf(stderr, "Macro %s is known assembly keyword\n", macroName);
                     exit(EXIT_FAILURE);
                 }
-
                 if (macroCount < MAX_MACRO_NAMES) {
                     strcpy(macroNames[macroCount++], macroName);
                 } else {
@@ -106,7 +105,6 @@ void pre_run(char *line, MacroTable *macro_table, char **macroNames, FILE *file,
                 }
                 is_in_macro = handle_macro_definition(file, macro_table, line); // Pass macro_table directly
             } else if (is_macro_invocation(line, macroName, macroNames)) {
-                Macro macro;
                 expand_macro(&macro, stdout);
                 write_expanded_macros_to_file(macro_table, new_file_name);
 
@@ -129,7 +127,6 @@ void read_line(char *line, LabelTable *label_table, int *ic, int *dc, LinesArray
     InstructionLine *new_instruction_line;
 
     line = skip_spaces(line);
-//    printf("line %s\n", line);
 
     new_instruction_line = init_instruction_line(line);
 
@@ -141,6 +138,7 @@ void read_line(char *line, LabelTable *label_table, int *ic, int *dc, LinesArray
         while (*line && isspace((unsigned char)*line)) {
             line++;
         }
+
         new_label = (Label *)malloc(10 * sizeof(Label));
         if (new_label == NULL) {
             fprintf(stderr, "Memory allocation error for directive\n");
@@ -191,7 +189,7 @@ void read_line(char *line, LabelTable *label_table, int *ic, int *dc, LinesArray
     }
     if(hasLabel){
         new_instruction_line->label = new_label;
-        addNewLabel(label_table, new_label);
+        add_new_label(label_table, new_label);
     }
     if(new_instruction_line->instruction_type==DATA_DIRECTIVE){
         if(new_instruction_line->directive->type == EXTERN || new_instruction_line->directive->type == ENTRY){
@@ -204,6 +202,7 @@ void read_line(char *line, LabelTable *label_table, int *ic, int *dc, LinesArray
 
 }
 
+//add macro to macro table
 void add_macro(MacroTable *macro_table, Macro macro) {
     if (macro_table->count >= macro_table->capacity) {
         macro_table->capacity *= 2;
@@ -635,7 +634,7 @@ void handle_directives(char *line, int *dc, Directive *new_directive, LabelTable
         label->address = 0; // external address, will be filled by linker
         label->type = EXTERN_DIRECTIVE;
         label->is_extern=1;
-        addNewLabel(label_table, label);
+        add_new_label(label_table, label);
         add_extern_to_externals_file(label, file_number, ic);
 
 

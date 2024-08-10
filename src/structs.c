@@ -82,7 +82,7 @@ void addInstructionLine(LinesArray *lines_array, InstructionLine *instruction_li
     lines_array->number_of_line++;
 }
 
-void addNewLabel(LabelTable *label_table, Label *label) {
+void add_new_label(LabelTable *label_table, Label *label) {
     // Check if the array needs to be resized
     if (label_table->size >= label_table->capacity) {
         // Double the capacity or set an initial capacity if it's zero
