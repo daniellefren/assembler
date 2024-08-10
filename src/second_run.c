@@ -4,7 +4,7 @@
 #include <limits.h>
 #include <stdbool.h>
 #include "../include/second_run.h"
-
+#include "../include/files_handler.h"
 
 
 #define BINARY_INSTRUCTION_MAX_LENGTH 46
@@ -23,7 +23,7 @@ void start_second_run(LinesArray *assembly_lines_array){
         fill_instruction_line_binary(p_line);
 
     }
-
+    create_ob_file(assembly_lines_array, 1);
     for (int j = 0; j < assembly_lines_array->number_of_line; ++j) {
         free_binary_instruction(&assembly_lines_array->lines[j]);
     }

@@ -86,29 +86,44 @@ void add_first_line_to_ob_file(int number_of_command, int number_of_directive, F
 
 void add_command_lines_to_ob_file(InstructionLine *instructionLine, FILE *object_file){
     char *octal_number;
-    int instruction_address = instructionLine->starting_address;
+    int instruction_address;
+
+    octal_number = (char *)malloc(7 * sizeof(char));
+    if (octal_number == NULL) {
+        perror("Error: Unable to allocate memory for octal_number");
+        exit(EXIT_FAILURE);
+    }
+    instruction_address = instructionLine->starting_address;
     if (instructionLine->instruction_type != COMMAND){
         perror("Error: this instruction line is not a command");
         exit(EXIT_FAILURE);
     }
     for (int i = 0; i < instructionLine->binary_line_count; ++i) {
-        octal_number = get_octal_base_from_binary(instructionLine->binary_instruction, BINARY_WORD_LENGTH, i * BINARY_WORD_LENGTH);
+        fill_octal_string_from_binary(instructionLine->binary_instruction, BINARY_WORD_LENGTH, i * BINARY_WORD_LENGTH, octal_number);
         printf("The address is %d and the ocatal number is %s\n", instruction_address, octal_number);
         fprintf(object_file, "%d %s\n", instruction_address, octal_number);
         instruction_address += 1;
     }
+    free(octal_number);
 }
 
 void add_directive_lines_to_ob_file(InstructionLine *instructionLine, FILE *object_file){
     char *octal_number;
-    int instruction_address = instructionLine->starting_address;
+    int instruction_address;
+
+    octal_number = (char *)malloc(7 * sizeof(char));
+    if (octal_number == NULL) {
+        perror("Error: Unable to allocate memory for octal_number");
+        exit(EXIT_FAILURE);
+    }
+    instruction_address = instructionLine->starting_address;
     if (instructionLine->instruction_type != DATA_DIRECTIVE){
         perror("Error: this instruction line is not a data directive");
         exit(EXIT_FAILURE);
     }
     for (int i = 0; i < instructionLine->binary_line_count; ++i) {
-        octal_number = get_octal_base_from_binary(instructionLine->binary_instruction, BINARY_WORD_LENGTH, i * BINARY_WORD_LENGTH);
-        printf("The address is %d and the ocatal number is %s\n", instruction_address, octal_number); //TODO Problem with convertion to octal number should add to the function the *ocatl_numer so it will change his value
+        fill_octal_string_from_binary(instructionLine->binary_instruction, BINARY_WORD_LENGTH, i * BINARY_WORD_LENGTH, octal_number);
+        printf("The address is %d and the ocatal number is %s\n", instruction_address, octal_number);
         fprintf(object_file, "%d %s\n", instruction_address, octal_number);
         instruction_address += 1;
     }
