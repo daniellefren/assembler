@@ -87,6 +87,7 @@ void add_first_line_to_ob_file(int number_of_command, int number_of_directive, F
 void add_command_lines_to_ob_file(InstructionLine *instructionLine, FILE *object_file){
     char *octal_number;
     int instruction_address;
+
     octal_number = (char *)malloc(7 * sizeof(char));
     if (octal_number == NULL) {
         perror("Error: Unable to allocate memory for octal_number");
@@ -109,6 +110,7 @@ void add_command_lines_to_ob_file(InstructionLine *instructionLine, FILE *object
 void add_directive_lines_to_ob_file(InstructionLine *instructionLine, FILE *object_file){
     char *octal_number;
     int instruction_address;
+
     octal_number = (char *)malloc(7 * sizeof(char));
     if (octal_number == NULL) {
         perror("Error: Unable to allocate memory for octal_number");
