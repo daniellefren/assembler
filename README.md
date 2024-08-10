@@ -7,11 +7,8 @@ This project is an assembler implementation designed to convert assembly languag
 - [Overview](#overview)
 - [Features](#features)
 - [Project Structure](#project-structure)
-- [Dependencies](#dependencies)
-- [How to Build](#how-to-build)
+- [Installation](#Installation)
 - [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
 
 ## Overview
 
