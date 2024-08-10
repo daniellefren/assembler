@@ -7,6 +7,7 @@
 
 
 void create_ob_file(LinesArray *linesArray, int file_number){
+    // TODO - add if condition when lines_array is empty
     char ob_file_name[100];
     int number_of_command;
     int number_of_directive;

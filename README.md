@@ -39,7 +39,8 @@ In the end of the pre-processing, we have a new file (each assembly input file, 
 The first pass of the assembler, scans through the expanded macros file that the pre-assembler has created.
 Through the scan' it identifies labels (Symbols) and assigns them numerical values representing their corresponding memory addresses, and stores into a lableTable.
 In addition, it created an InstructionLine for each line from the assembly code.
-Each instruction line is stored in the linesArray, and consists with tha data of the current command/direct of the assembly line, and a number that represents the number of binary lines for the current assembly line. 
+Each instruction line is stored in the linesArray, and consists with tha data of the current command/direct of the assembly line, and a number that represents the number of binary lines for the current assembly line.
+Furthermore, two files - `ps.end` and `ps.ext` are made in this pass, contains all the entries and externals in file.
 
 
 ### Second Pass

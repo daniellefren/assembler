@@ -17,13 +17,16 @@ void expand_macro(const Macro *macro, FILE *outputFile);
 void get_expanded_macro_file_name(char *buffer, size_t buffer_size, int number);
 void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, LabelTable *label_table, int file_number);
 void read_line(char *line, LabelTable *label_table, int *ic, int *dc, LinesArray *lines_array, MacroTable *macro_table, int file_number);
-void pre_run(char *line, MacroTable *macro_table, char **macroNames, FILE *file, char* new_file_name);
+void pre_run(MacroTable *macro_table, char **macroNames, FILE *file, char* new_file_name);
 void handle_string_directive(char *line, Directive *new_directive, InstructionLine *instruction_line);
 void handle_data_directive(char *line, Directive *new_directive, InstructionLine *instruction_line);
 
 
-void handle_command(char *line, Command *new_command, LabelTable *label_table, MacroTable *macro_table);
-void handle_directives(char *line, int *dc, Directive *new_directive, LabelTable *label_table, int* ic, int file_number, InstructionLine *new_instruction_line);
+void handle_command(char *line, LabelTable *label_table, MacroTable *macro_table, InstructionLine *new_instruction_line);
+void handle_directives(char *line, int *dc, LabelTable *label_table, int* ic, int file_number, InstructionLine *new_instruction_line);
+Label* handle_label(InstructionLine *instruction_line, char *label_name);
+void handle_extern_directive(char *line, Directive *new_directive, LabelTable *label_table, int file_number, int *ic);
+void handle_entry_directive(Directive *new_directive, int file_number, LabelTable *label_table, char* line);
 void classify_operand(Operand *new_operand);
 int find_number_of_lines_in_binary(Command *new_command);
 
@@ -41,7 +44,7 @@ int is_valid_label(const char *label, MacroTable *macro_table);
 int get_operand_opcode(char *command_name);
 
 
-void get_command_data(char* command_name, Command *new_command);
+void get_operands_data_for_command(char* command_name, Command *new_command);
 void define_operands_from_line(Command *new_command, char* line);
 
 void define_operand_types(Operand *operand, MacroTable *macro_table);
