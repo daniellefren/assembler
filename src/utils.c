@@ -298,3 +298,31 @@ void binary_to_octal(const char *binary_string, char *octal_string) {
         value >>= 3; // Shift right by 3 bits (1 octal digit)
     }
 }
+
+/* Check if given string is integer
+ Return 0 if no or the length if yes */
+int check_if_valid_integer(char *str) {
+    printf("strrrr %s", str);
+    int i = 0;
+    int length = 0;
+
+    // Check for an optional negative sign
+    if (str[i] == '-') {
+        i++;
+    }
+
+    // Ensure that the string contains at least one digit
+    if (str[i] == '\0') {
+        return 0;  // No digits found, invalid integer
+    }
+
+    // Check each character to ensure it's a digit
+    for (; str[i] != '\0'; i++) {
+        if (!isdigit((unsigned char)str[i])) {
+            return 0;  // Invalid character found
+        }
+        length++;
+    }
+
+    return length;  // All checks passed, valid integer
+}
