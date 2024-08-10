@@ -244,7 +244,6 @@ bool is_directive_string(Directive *directive){
 void fill_octal_string_from_binary(const char *binary_string, int number_of_binary_bits, int offset, char *octal_string) {
     char octal_value[6] = {0};  // Initialize and ensure it's null-terminated
     char extracted_binary[17] = {0};  // Assuming maximum 15 bits + null terminator
-    int extracted_binary_len;
 
     // Check for invalid input
     if (number_of_binary_bits <= 0 || offset < 0 || offset + number_of_binary_bits > strlen(binary_string)) {
