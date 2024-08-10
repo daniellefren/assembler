@@ -328,7 +328,6 @@ void handle_command(char *line, LabelTable *label_table, MacroTable *macro_table
     new_command = init_command();
     new_instruction_line->instruction_type=COMMAND;
 
-
     sscanf(line, "%s", new_command->command_name);
 
     get_operands_data_for_command(new_command->command_name, new_command);
@@ -661,9 +660,17 @@ int is_data_directive(char *line) {
     return 0;
 }
 
+/**
+ * Processes an assembly directive and updates the instruction line accordingly.
+ * @param line The line of assembly code containing the directive to be processed.
+ * @param dc Pointer to the data counter, which tracks the memory address of the data items.
+ * @param label_table A pointer to the LabelTable structure that stores all labels encountered in the source file.
+ * @param ic Pointer to the instruction counter, which tracks the memory address of the commands.
+ * @param file_number An integer representing the number of the current file being processed, used for generating unique output file names.
+ * @param new_instruction_line A pointer to the `InstructionLine` structure that the label will be associated with.
+ */
 void handle_directives(char *line, int *dc, LabelTable *label_table, int* ic, int file_number, InstructionLine *new_instruction_line) {
     char directive_type[MAX_LINE_LENGTH];
-    char *ptr = line;
     Directive *new_directive;
     new_directive = init_directive();
 
@@ -698,9 +705,9 @@ void handle_directives(char *line, int *dc, LabelTable *label_table, int* ic, in
 
     (*dc) += new_instruction_line->binary_line_count;
     new_instruction_line->directive = new_directive;
-
 }
 
+//Mark label as entry in label table and add to entries file
 void handle_entry_directive(Directive *new_directive, int file_number, LabelTable *label_table, char* line){
     char *ptr = line;
     Label* label;
@@ -712,6 +719,7 @@ void handle_entry_directive(Directive *new_directive, int file_number, LabelTabl
     add_entry_to_entries_file(new_directive->label, file_number, label->address);
 }
 
+//Add extern label to label table and add to externals file
 void handle_extern_directive(char *line, Directive *new_directive, LabelTable *label_table, int file_number, int *ic){
     Label* label;
     char *ptr = line;
@@ -732,6 +740,12 @@ void handle_extern_directive(char *line, Directive *new_directive, LabelTable *l
     add_extern_to_externals_file(label, file_number, ic);
 }
 
+/**
+ * Processes a `.string` directive and extracts the string value into the directive structure.
+ * @param line The line of assembly code containing the `.string` directive.
+ * @param new_directive A pointer to the `Directive` structure to be populated with the extracted string data.
+ * @param instruction_line A pointer to the `InstructionLine` structure that will be updated with the binary line count for the string.
+ */
 void handle_string_directive(char *line, Directive *new_directive, InstructionLine *instruction_line) {
     char *start;
     char *end;
@@ -772,6 +786,12 @@ void handle_string_directive(char *line, Directive *new_directive, InstructionLi
     }
 }
 
+/**
+ * Processes a `.data` directive and extracts the integer values into the directive structure.
+ * @param line The line of assembly code containing the `.data` directive.
+ * @param new_directive A pointer to the `Directive` structure to be populated with the extracted data values.
+ * @param instruction_line A pointer to the `InstructionLine` structure that will be updated with the binary line count for the data.
+ */
 void handle_data_directive(char *line, Directive *new_directive, InstructionLine *instruction_line) {
     char *ptr;
     char *values[MAX_LINE_LENGTH];
@@ -781,12 +801,9 @@ void handle_data_directive(char *line, Directive *new_directive, InstructionLine
     int number;
     char buffer[12]; // Buffer to hold the string representation of the number
 
-
     new_directive->type = DATA;
     // Move the pointer to the first character after ".data"
     ptr = line + strlen(".data");
-
-    // Temporary array to hold values as strings
 
     values_count = 0;
 
