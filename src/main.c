@@ -2,7 +2,7 @@
 #include "../include/first_run.h"
 #include "../include/second_run.h"
 #include "../include/test_first_run.h"
-#include "../include/files_handler.h"
+
 //TODO - handle ic and dc
 // TODO - Add function that defines how many lines there is in an assembly command
 // TODO - Add function that read from directory and not files
@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
         printf("end %d file\n", file_number);
 
 
-        create_ob_file(assembly_lines_array, 1);
+
         free_lines_array(assembly_lines_array);
     }
 
