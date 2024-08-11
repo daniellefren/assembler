@@ -82,8 +82,9 @@ typedef struct {
 
 
 void free_lines_array(LinesArray *lines_array_pointer);
-
 void free_instruction_line(InstructionLine *instruction_line_pointer);
+void free_macro_table(MacroTable *macro_table);
+void free_symbol_table(SymbolTable *symbol_table);
 char *get_instruction_line_binary(LinesArray *linesArray, int number_of_line);
 void addInstructionLine(LinesArray *lines_array, InstructionLine *instruction_line);
 void add_new_symbol(SymbolTable *symbol_table, Symbol *new_symbol);
