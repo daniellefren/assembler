@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
         FILE *file;
         int ic, dc = 0;
         LinesArray *assembly_lines_array = init_lines_array(10);
-        LabelTable *label_table = init_label_table(10);
+        SymbolTable *symbol_table = init_symbol_table(10);
 
         // Open the file in read mode
         file = fopen(argv[file_number], "r");
@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
 
 
         // Call the first_run function with the file pointer
-        first_run(file, &ic, &dc, assembly_lines_array, label_table, file_number);
+        first_run(file, &ic, &dc, assembly_lines_array, symbol_table, file_number);
 
 
         test_all_run(assembly_lines_array);

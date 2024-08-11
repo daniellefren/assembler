@@ -17,10 +17,10 @@ void test_all_run(LinesArray* assembly_lines_array){
         InstructionLine line = assembly_lines_array->lines[i];
         printf("line %s\n", line.line_content);
 
-        if(line.is_label){
-            Label *label = line.label;
-            printf("label name %s\n", label->name);
-            size_t length = strlen(label->name);
+        if(line.is_symbol){
+            Symbol *symbol = line.symbol;
+            printf("symbol name %s\n", symbol->name);
+            size_t length = strlen(symbol->name);
         }
         if(line.instruction_type == COMMAND){
             Command *command = line.command;

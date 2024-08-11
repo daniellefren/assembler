@@ -35,16 +35,17 @@ Command commands_struct[] = {
 
 /**
  * Performs the first pass over the assembly source file.
- * The function processes the assembly source file to handle macro expansion, label handling, Commands and directive processing in the provided assembly file
+ * The function processes the assembly source file to handle macro expansion, symbol handling, Commands and directive processing in the provided assembly file
  * This function also updates the instruction counter (IC) and data counter (DC) based on the processed lines.
  * @param file The input assembly source file to be processed.
  * @param ic Pointer to the instruction counter, which tracks the memory address of the commands.
  * @param dc Pointer to the data counter, which tracks the memory address of the data items.
  * @param lines_array A pointer to the LinesArray structure that stores all lines of the source file after processing.
- * @param label_table A pointer to the LabelTable structure that stores all labels encountered in the source file.
+ * @param symbol_table A pointer to the SymbolTable structure that stores all symbols encountered in the source file.
  * @param file_number An integer representing the number of the current file being processed, used for generating unique output file names.
  */
-void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, LabelTable *label_table, int file_number) {
+void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTable *symbol_table, int file_number) {
+    int success;
     char line[MAX_LINE_LENGTH];
     char *macroNames[MAX_MACRO_NAMES];  // Array to store pointers to macro names
     char expended_macro_file_name[100];
@@ -53,6 +54,7 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, LabelTable
     int line_num;
     int i;
 
+    success = 1;
     *ic = STARTING_IC; // Starting point of assembler
 
     init_macro_table(&macro_table);
@@ -64,13 +66,13 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, LabelTable
     add_number_to_string(expended_macro_file_name, EXPANDED_MACRO_FILE_NAME, sizeof(expended_macro_file_name), file_number);
 
     //Pre run in order to expand macros from asse,bly input file
-    pre_run(&macro_table, macroNames, file, expended_macro_file_name); // Keeps track of the number of encountered macros
+    success = pre_run(&macro_table, macroNames, file, expended_macro_file_name); // Keeps track of the number of encountered macros
 
     expanded_macros_file = fopen(expended_macro_file_name, "r");
     line_num = 0;
     while (fgets(line, MAX_LINE_LENGTH, expanded_macros_file) != NULL) {
         if (!ignore_line(line)) {
-            read_line(line, label_table, ic, dc, lines_array, &macro_table, file_number);
+            success &= read_line(line, symbol_table, ic, dc, lines_array, &macro_table, file_number);
         }
         line_num++;
     }
@@ -91,6 +93,11 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, LabelTable
     //Declare final ic and dc in lines array
     lines_array->ic = *ic;
     lines_array->dc = *dc;
+
+    if(!success){
+        fprintf(stderr, "Program stopped running because of incorrect given assembly code");
+        exit(EXIT_FAILURE);
+    }
 }
 
 /**
@@ -103,12 +110,12 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, LabelTable
  * @param file The input assembly source file to be processed.
  * @param new_file_name The name of the output file where the expanded assembly code (with macros expanded) will be written.
  */
-void pre_run(MacroTable *macro_table, char **macroNames, FILE *file, char* new_file_name) {
+int pre_run(MacroTable *macro_table, char **macroNames, FILE *file, char* new_file_name) {
     // Run and expand all macros in the program.
     // Return number of macros
     int is_in_macro = 0;
     int macroCount = 0;
-    char macroName[MAX_LABEL_LENGTH];
+    char macroName[MAX_SYMBOL_LENGTH];
     Macro macro;
     char line[MAX_LINE_LENGTH];
 
@@ -120,7 +127,7 @@ void pre_run(MacroTable *macro_table, char **macroNames, FILE *file, char* new_f
                 sscanf(line, "%*s %s", macroName);  // Skip "%macro" and capture the name
                 if(is_known_assembly_keyword(macroName)){
                     fprintf(stderr, "Macro %s is known assembly keyword\n", macroName);
-                    exit(EXIT_FAILURE);
+                    return 0;
                 }
                 if (macroCount < MAX_MACRO_NAMES) {
                     strcpy(macroNames[macroCount++], macroName);
@@ -139,6 +146,7 @@ void pre_run(MacroTable *macro_table, char **macroNames, FILE *file, char* new_f
             }
         }
     }
+    return 1;
 
 }
 
@@ -197,7 +205,7 @@ int is_macro_invocation(char *line, char *macroName, char **macroNames) {
 int handle_macro_definition(FILE *file, MacroTable *macro_table, const char *firstLine) {
     Macro macro;
     char line[MAX_LINE_LENGTH];
-    char macroName[MAX_LABEL_LENGTH];
+    char macroName[MAX_SYMBOL_LENGTH];
 
     sscanf(firstLine, "%s", macroName);
     strcpy(macro.name, macroName + 7);  // Skip "%macro"
@@ -225,7 +233,7 @@ void expand_macro(const Macro *macro, FILE *outputFile) {
 }
 
 /**
- * Processes a single line of assembly code, handling labels, commands, and directives.
+ * Processes a single line of assembly code, handling symbols, commands, and directives.
  * @param line The line of assembly code to be processed.
  * @param ic Pointer to the instruction counter, which tracks the memory address of the commands.
  * @param dc Pointer to the data counter, which tracks the memory address of the data items.
@@ -233,83 +241,88 @@ void expand_macro(const Macro *macro, FILE *outputFile) {
  * @param macro_table A pointer to the `MacroTable` structure that stores the names and bodies of all macros encountered during the pre-run.
  * @param file_number An integer representing the number of the current file being processed, used for generating unique output file names.
  */
-void read_line(char *line, LabelTable *label_table, int *ic, int *dc, LinesArray *lines_array, MacroTable *macro_table, int file_number) {
-    char label_name[MAX_LABEL_LENGTH] = "";
-    int hasLabel;
-    Label *new_label;
+int read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, LinesArray *lines_array, MacroTable *macro_table, int file_number) {
+    char symbol_name[MAX_SYMBOL_LENGTH] = "";
+    int has_symbol;
+    Symbol *new_symbol;
     InstructionLine *new_instruction_line;
+    int success;
+
+    success = 1;
 
     line = skip_spaces(line);
 
     new_instruction_line = init_instruction_line(line);
 
-    hasLabel = find_label(line, label_name);
+    has_symbol = find_symbol(line, symbol_name);
 
-    if (hasLabel) {
+    if (has_symbol) {
         line = strchr(line, ':') + 1;
 //      Skip spaces after .data directive
         while (*line && isspace((unsigned char)*line)) {
             line++;
         }
-        new_label = handle_label(new_instruction_line, label_name);
+        new_symbol = handle_symbol(new_instruction_line, symbol_name);
     }
 
-    if (is_data_directive(line)) { // If .data or .String
-        handle_directives(line, dc, label_table, ic, file_number, new_instruction_line);
+    if (is_directive(line)) { // If .data or .String
+        handle_directives(line, dc, symbol_table, ic, file_number, new_instruction_line);
 
-        if(hasLabel){
-            new_label->type = DATA_DIRECTIVE;
-            new_label->address = *dc;
+        if(has_symbol){
+            new_symbol->type = DATA_DIRECTIVE;
+            new_symbol->address = *dc;
         }
     }
     else if (is_command(line)) {
         new_instruction_line->starting_address=*ic;
 
-        handle_command(line, label_table, macro_table, new_instruction_line);
+        success &= handle_command(line, symbol_table, macro_table, new_instruction_line);
 
         (*ic)+= new_instruction_line->binary_line_count;
 
-        if(hasLabel){
-            new_label->type = COMMAND;
-            new_label->address = *ic;
+        if(has_symbol){
+            new_symbol->type = COMMAND;
+            new_symbol->address = *ic;
         }
     }
-    if(hasLabel){
-        new_instruction_line->label = new_label;
-        add_new_label(label_table, new_label);
+    if(has_symbol){
+        new_instruction_line->symbol = new_symbol;
+        add_new_symbol(symbol_table, new_symbol);
     }
 
     if(new_instruction_line->instruction_type==DATA_DIRECTIVE){
         if(new_instruction_line->directive->type == EXTERN || new_instruction_line->directive->type == ENTRY){
-            return;
+            return success;
         }
     }
     addInstructionLine(lines_array, new_instruction_line);
+
+    return success;
 }
 
 /**
- * @brief Allocates memory and initializes a new label for the current instruction line.
- * @param new_instruction_line A pointer to the `InstructionLine` structure that the label will be associated with.
- * @param label_name The name of the label to be assigned to the new `Label` structure.
- * @return A pointer to the newly created `Label` structure.
+ * @brief Allocates memory and initializes a new symbol for the current instruction line.
+ * @param new_instruction_line A pointer to the `InstructionLine` structure that the symbol will be associated with.
+ * @param symbol_name The name of the symbol to be assigned to the new `symbol` structure.
+ * @return A pointer to the newly created `symbol` structure.
  */
-Label* handle_label(InstructionLine *new_instruction_line, char* label_name){
-    Label *new_label;
-    new_label = (Label *)malloc(10 * sizeof(Label));
-    if (new_label == NULL) {
+Symbol* handle_symbol(InstructionLine *new_instruction_line, char* symbol_name){
+    Symbol *new_symbol;
+    new_symbol = (Symbol *)malloc(10 * sizeof(Symbol));
+    if (new_symbol == NULL) {
         fprintf(stderr, "Memory allocation error for directive\n");
         exit(EXIT_FAILURE);
     }
 
-    strcpy(new_label->name, label_name);
+    strcpy(new_symbol->name, symbol_name);
 
-    new_instruction_line->is_label=1;
-    new_instruction_line->label = new_label;
+    new_instruction_line->is_symbol=1;
+    new_instruction_line->symbol = new_symbol;
 
-    new_label->is_extern=0;
-    new_label->is_entry=0;
+    new_symbol->is_extern=0;
+    new_symbol->is_entry=0;
 
-    return new_label;
+    return new_symbol;
 }
 
 /**
@@ -319,35 +332,35 @@ Label* handle_label(InstructionLine *new_instruction_line, char* label_name){
  * The function updates the `InstructionLine` structure with the command information and calculates the number
  * of binary lines required for the instruction.
  * @param line The line of assembly code containing the command to be processed.
- * @param label_table A pointer to the LabelTable structure that stores all labels encountered in the source file.
+ * @param symbol_table A pointer to the SymbolTable structure that stores all symbols encountered in the source file.
  * @param macro_table A pointer to the `MacroTable` structure that stores the names and bodies of all macros encountered during the pre-run.
- * @param new_instruction_line A pointer to the `InstructionLine` structure that the label will be associated with.
+ * @param new_instruction_line A pointer to the `InstructionLine` structure that the symbol will be associated with.
  */
-void handle_command(char *line, LabelTable *label_table, MacroTable *macro_table, InstructionLine *new_instruction_line) {
+int handle_command(char *line, SymbolTable *symbol_table, MacroTable *macro_table, InstructionLine *new_instruction_line) {
+    int success;
     Command *new_command;
     new_command = init_command();
     new_instruction_line->instruction_type=COMMAND;
+    success = 1;
 
     sscanf(line, "%s", new_command->command_name);
 
     get_operands_data_for_command(new_command->command_name, new_command);
 
     define_operands_from_line(new_command, line);
-    switch (new_command->operand_number) {
-        case 1:
-            define_operand_types(new_command->src_operand, macro_table);
-            classify_operand(new_command->src_operand);
-            break;
-        case 2:
-            define_operand_types(new_command->src_operand, macro_table);
-            define_operand_types(new_command->dst_operand, macro_table);
-
-            classify_operand(new_command->src_operand);
-            classify_operand(new_command->dst_operand);
-            break;
+    if(new_command->operand_number >= 1){
+        success = define_operand_types(new_command->src_operand, macro_table);
+        success &= classify_operand(new_command->src_operand);
+        if(new_command->operand_number == 2){
+            success &= define_operand_types(new_command->dst_operand, macro_table);
+            success &= classify_operand(new_command->dst_operand);
+        }
     }
+
     new_instruction_line->binary_line_count = find_number_of_lines_in_binary(new_command);
     new_instruction_line->command = new_command;
+
+    return success;
 }
 
 // Get all operands from the current line and insert the data to operands in new_command
@@ -411,7 +424,7 @@ void extract_second_operand_from_line(char* line, Command *new_command){
  * @param operand A pointer to the `Operand` structure that contains the operand's value and type.
  * @param macro_table A pointer to the `MacroTable` structure that stores the names and bodies of all macros encountered during the pre-run.
  */
-void define_operand_types(Operand *operand, MacroTable *macro_table){
+int define_operand_types(Operand *operand, MacroTable *macro_table){
     int length;
 
     operand->type = INVALID;
@@ -434,53 +447,54 @@ void define_operand_types(Operand *operand, MacroTable *macro_table){
             operand->type = REGISTER;
     }
 
-    else if(is_valid_label(operand->value, macro_table)){
-        operand->type = LABEL;
+    else if(is_valid_symbol(operand->value, macro_table)){
+        printf("valid symbol %s\n", operand->value);
+        operand->type = SYMBOL;
     }
     else{
         fprintf(stderr, "Not valid operand type. %s\n", operand->value);
-        exit(EXIT_FAILURE);
+        return 0;
     }
 }
 
 
-// Function to check if a string is a valid label name
-int is_valid_label(const char *label, MacroTable *macro_table) {
+// Function to check if a string is a valid symbol name
+int is_valid_symbol(const char *symbol, MacroTable *macro_table) {
     int i;
     size_t length;
     //TODO - add exit when not valid
    
-    //Check length of the label
-    length = strlen(label);
-    if (length == 0 || length > MAX_LABEL_LENGTH) {
+    //Check length of the symbol
+    length = strlen(symbol);
+    if (length == 0 || length > MAX_SYMBOL_LENGTH) {
         return 0;
     }
 
     //check if not assembly keyword
-    if(is_known_assembly_keyword(label)){
+    if(is_known_assembly_keyword(symbol)){
         return 0;
     }
 
-    //check if Label matches an existing macro name
+    //check if symbol matches an existing macro name
     for (i = 0; i < macro_table->count; i++) {
-        if (strcmp(label, macro_table->macros[i].name) == 0) {
-            return 0; // Label matches an existing macro name
+        if (strcmp(symbol, macro_table->macros[i].name) == 0) {
+            return 0; // symbol matches an existing macro name
         }
     }
 
     //Check if the first character is a letter
-    if (!isalpha((unsigned char)label[0])) {
+    if (!isalpha((unsigned char)symbol[0])) {
         return 0;
     }
 
     //  Check if other characters are letters/numbers
     for (i = 1; i < length; ++i) {
-        if (!isalnum((unsigned char)label[i])) {
+        if (!isalnum((unsigned char)symbol[i])) {
             return 0;
         }
     }
 
-    return 1; // Valid label
+    return 1; // Valid symbol
 }
 
 // Get number of binary lines for command based on the classification types of the operands
@@ -499,14 +513,14 @@ int find_number_of_lines_in_binary(Command *new_command){
 }
 
 //classify the operand classification mode
-void classify_operand(Operand *new_operand) {
+int classify_operand(Operand *new_operand) {
     new_operand->classification_type = METHOD_UNKNOWN; // set default
 
     // Immediate addressing - starts with #
     if (new_operand->type == INTEGER) {
         new_operand->classification_type = IMMEDIATE; // Immediate addressing
     }
-    else if(new_operand->type == LABEL){
+    else if(new_operand->type == SYMBOL){
         new_operand->classification_type = DIRECT; // Direct addressing
     }
 
@@ -524,8 +538,9 @@ void classify_operand(Operand *new_operand) {
     }
     else{
         fprintf(stderr, "Not valid classification type");
-        exit(EXIT_FAILURE);
+        return 0;
     }
+    return 1;
 
 }
 
@@ -560,8 +575,8 @@ char* skip_spaces(char *line) {
     return line;
 }
 
-// Function to check if a line is a label
-int find_label(char *line, char *label) {
+// Function to check if a line is a symbol
+int find_symbol(char *line, char *symbol) {
     char *start;
     size_t len;
     // Skip leading whitespace
@@ -571,41 +586,41 @@ int find_label(char *line, char *label) {
 
     start = line;
 
-    // Find the end of the label (until space or colon)
+    // Find the end of the symbol (until space or colon)
     while (*start && !isspace((unsigned char)*start) && *start != ':') {
         start++;
     }
-    // If a colon is found, we assume it is a label
+    // If a colon is found, we assume it is a symbol
     if (*start == ':') {
         len = start - line;
-        strncpy(label, line, len);
-        label[len] = '\0'; // Null-terminate the label
+        strncpy(symbol, line, len);
+        symbol[len] = '\0'; // Null-terminate the symbol
 
         return 1;
     }
     if(((*start == ' ') && *(start + 1) == ':')){
-        fprintf(stderr, "Label is not valid -- a space between the label and the :\n");
+        fprintf(stderr, "Symbol is not valid -- a space between the symbol and the :\n");
         exit(EXIT_FAILURE);
     }
     return 0;
 }
 
-// Return 1 if label is an assembly keyword, else 0
-int is_known_assembly_keyword(const char *label) {
+// Return 1 if symbol is an assembly keyword, else 0
+int is_known_assembly_keyword(const char *symbol) {
     int i;
-    //TODO - Know if label or macro
+    //TODO - Know if symbol or macro
     // Copy commands into all_instructions
     for (i = 0; i < COMMANDS_COUNT; ++i) {
-        if (strcmp(label, COMMANDS[i]) == 0) {
-            fprintf(stderr, "Label is not valid -- A known assembly keyword\n");
-            return 1; //Label is a known command
+        if (strcmp(symbol, COMMANDS[i]) == 0) {
+            fprintf(stderr, "symbol is not valid -- A known assembly keyword\n");
+            return 1; //symbol is a known command
         }
     }
 
     for (i = 0; i < DIRECTIVES_COUNT; ++i) {
-        if (strcmp(label, DIRECTIVES[i]) == 0) {
-            fprintf(stderr, "Label is not valid -- A known assembly keyword\n");
-            return 1; //Label is a known directive
+        if (strcmp(symbol, DIRECTIVES[i]) == 0) {
+            fprintf(stderr, "symbol is not valid -- A known assembly keyword\n");
+            return 1; //symbol is a known directive
         }
     }
 
@@ -626,11 +641,11 @@ int is_command(char *line) {
     return 0;
 }
 
-//Check if given label name already exists in label_table
-int label_exists(LabelTable *label_table, char *label_name) {
+//Check if given symbol name already exists in symbol_table
+int symbol_exists(SymbolTable *symbol_table, char *symbol_name) {
     int i;
-    for (i = 0; i < label_table->size; ++i) {
-        if (strcmp(label_table->labels[i].name, label_name) == 0) {
+    for (i = 0; i < symbol_table->size; ++i) {
+        if (strcmp(symbol_table->symbols[i].name, symbol_name) == 0) {
             return 1;
         }
     }
@@ -638,7 +653,7 @@ int label_exists(LabelTable *label_table, char *label_name) {
 }
 
 // Function to check if the line contains a data directive
-int is_data_directive(char *line) {
+int is_directive(char *line) {
     int i;
     size_t len;
     // Skip leading spaces
@@ -664,12 +679,12 @@ int is_data_directive(char *line) {
  * Processes an assembly directive and updates the instruction line accordingly.
  * @param line The line of assembly code containing the directive to be processed.
  * @param dc Pointer to the data counter, which tracks the memory address of the data items.
- * @param label_table A pointer to the LabelTable structure that stores all labels encountered in the source file.
+ * @param symbol_table A pointer to the SymbolTable structure that stores all symbols encountered in the source file.
  * @param ic Pointer to the instruction counter, which tracks the memory address of the commands.
  * @param file_number An integer representing the number of the current file being processed, used for generating unique output file names.
- * @param new_instruction_line A pointer to the `InstructionLine` structure that the label will be associated with.
+ * @param new_instruction_line A pointer to the `InstructionLine` structure that the symbol will be associated with.
  */
-void handle_directives(char *line, int *dc, LabelTable *label_table, int* ic, int file_number, InstructionLine *new_instruction_line) {
+void handle_directives(char *line, int *dc, SymbolTable *symbol_table, int* ic, int file_number, InstructionLine *new_instruction_line) {
     char directive_type[MAX_LINE_LENGTH];
     Directive *new_directive;
     new_directive = init_directive();
@@ -691,11 +706,11 @@ void handle_directives(char *line, int *dc, LabelTable *label_table, int* ic, in
         handle_string_directive(line, new_directive, new_instruction_line);
 
     } else if (strcmp(directive_type, ".extern") == 0){
-        handle_extern_directive(line, new_directive, label_table, file_number, ic);
+        handle_extern_directive(line, new_directive, symbol_table, file_number, ic);
 
 
     } else if (strcmp(directive_type, ".entry") == 0) {
-        handle_entry_directive(new_directive, file_number, label_table, line);
+        handle_entry_directive(new_directive, file_number, symbol_table, line);
 
     } else {
             new_directive->type = NOT_DIRECTIVE;
@@ -707,37 +722,37 @@ void handle_directives(char *line, int *dc, LabelTable *label_table, int* ic, in
     new_instruction_line->directive = new_directive;
 }
 
-//Mark label as entry in label table and add to entries file
-void handle_entry_directive(Directive *new_directive, int file_number, LabelTable *label_table, char* line){
+//Mark symbol as entry in symbol table and add to entries file
+void handle_entry_directive(Directive *new_directive, int file_number, SymbolTable *symbol_table, char* line){
     char *ptr = line;
-    Label* label;
+    Symbol* symbol;
     new_directive->type = ENTRY;
-    extract_word_after_keyword(ptr, new_directive->label, ".entry");
-    label = find_label_by_name(label_table, new_directive->label);
-    label->is_entry=1;
+    extract_word_after_keyword(ptr, new_directive->symbol, ".entry");
+    symbol = find_symbol_by_name(symbol_table, new_directive->symbol);
+    symbol->is_entry=1;
 
-    add_entry_to_entries_file(new_directive->label, file_number, label->address);
+    add_entry_to_entries_file(new_directive->symbol, file_number, symbol->address);
 }
 
-//Add extern label to label table and add to externals file
-void handle_extern_directive(char *line, Directive *new_directive, LabelTable *label_table, int file_number, int *ic){
-    Label* label;
+//Add extern symbol to symbol table and add to externals file
+void handle_extern_directive(char *line, Directive *new_directive, SymbolTable *symbol_table, int file_number, int *ic){
+    Symbol* symbol;
     char *ptr = line;
     new_directive->type = EXTERN;
 
-    label = (Label *)malloc(10 * sizeof(Label));
-    if (label == NULL) {
+    symbol = (Symbol *)malloc(10 * sizeof(Symbol));
+    if (symbol == NULL) {
         fprintf(stderr, "Memory allocation error for directive\n");
         exit(EXIT_FAILURE);
     }
-    extract_word_after_keyword(ptr, label->name, ".extern");
-    strcpy(new_directive->label, label->name);
+    extract_word_after_keyword(ptr, symbol->name, ".extern");
+    strcpy(new_directive->symbol, symbol->name);
 
-    label->address = 0; // external address, will be filled by linker
-    label->type = EXTERN_DIRECTIVE;
-    label->is_extern=1;
-    add_new_label(label_table, label);
-    add_extern_to_externals_file(label, file_number, ic);
+    symbol->address = 0; // external address, will be filled by linker
+    symbol->type = EXTERN_DIRECTIVE;
+    symbol->is_extern=1;
+    add_new_symbol(symbol_table, symbol);
+    add_extern_to_externals_file(symbol, file_number, ic);
 }
 
 /**
@@ -844,14 +859,14 @@ void handle_data_directive(char *line, Directive *new_directive, InstructionLine
 }
 
 
-//Return the label with the given name
-Label *find_label_by_name(LabelTable* label_table, char* label_name){
+//Return the symbol with the given name
+Symbol *find_symbol_by_name(SymbolTable* symbol_table, char* symbol_name){
     int i;
-    for(i=0;i<label_table->size;i++){
-        if(strcmp(label_table->labels[i].name, label_name)){
-            return &label_table->labels[i];
+    for(i=0;i<symbol_table->size;i++){
+        if(strcmp(symbol_table->symbols[i].name, symbol_name)){
+            return &symbol_table->symbols[i];
         }
     }
-    fprintf(stderr, "Error finding label %s", label_name);
+    fprintf(stderr, "Error finding symbol %s", symbol_name);
     exit(EXIT_FAILURE);
 }

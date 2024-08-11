@@ -40,7 +40,7 @@ void create_ob_file(LinesArray *linesArray, int file_number){
     }
 }
 
-void add_entry_to_entries_file(char *label_name, int file_number, int label_address){
+void add_entry_to_entries_file(char *symbol_name, int file_number, int symbol_address){
     char entries_file_name[100];
     add_number_to_string(entries_file_name, ENTRIES_FILE_NAME, sizeof(entries_file_name), file_number);
     FILE *file = fopen(entries_file_name, "w");
@@ -49,12 +49,12 @@ void add_entry_to_entries_file(char *label_name, int file_number, int label_addr
         exit(EXIT_FAILURE);
     }
 
-    fprintf(file, "%s %d\n", label_name, label_address);
+    fprintf(file, "%s %d\n", symbol_name, symbol_address);
 
     fclose(file);
 }
 
-void add_extern_to_externals_file(Label *label, int file_number, int *ic){
+void add_extern_to_externals_file(Symbol *symbol, int file_number, int *ic){
     char externals_file_name[100];
     add_number_to_string(externals_file_name, EXTERNALS_FILE_NAME, sizeof(externals_file_name), file_number);
     FILE *file = fopen(externals_file_name, "w");
@@ -63,7 +63,7 @@ void add_extern_to_externals_file(Label *label, int file_number, int *ic){
         exit(EXIT_FAILURE);
     }
 
-    fprintf(file, "%s %d\n", label->name, *ic);
+    fprintf(file, "%s %d\n", symbol->name, *ic);
 
     fclose(file);
 }

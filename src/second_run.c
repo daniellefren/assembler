@@ -208,11 +208,11 @@ void fill_operand_binary(Operand *operand,Operand *second_operand, char *binary_
             int_to_binary_string(int_number_to_binary, binary_string, operand_number * BINARY_LINE_LENGTH, 12);
             set_binary_string_ARE_representation(binary_string, operand_number + 1, 'a');
             break;
-            //Label with 12 sivi for address from label table and 3 for ARE R=1 for internal and E=1 for External
+            //Symbol with 12 sivi for address from symbol table and 3 for ARE R=1 for internal and E=1 for External
         case DIRECT:
-            int_number_to_binary = operand->label->address;
+            int_number_to_binary = operand->symbol->address;
             int_to_binary_string(int_number_to_binary, binary_string, operand_number * BINARY_LINE_LENGTH, 12);
-            if (operand->label->is_entry) { //internal
+            if (operand->symbol->is_entry) { //internal
                 set_binary_string_ARE_representation(binary_string, operand_number + 1, 'r');
             } else { // external
                 set_binary_string_ARE_representation(binary_string, operand_number + 1, 'e');
