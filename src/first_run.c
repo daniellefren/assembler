@@ -440,6 +440,7 @@ int define_operand_types(Operand *operand, MacroTable *macro_table){
         }
     }
     else if (operand->value[0] == '*') {
+        //TODO - the operand should be the register number (page 40)
         if (operand->value[1] == 'r' && operand->value[2] >= '1' && operand->value[2] <= '7'){
             operand->type = REGISTER;
         }
@@ -451,6 +452,7 @@ int define_operand_types(Operand *operand, MacroTable *macro_table){
 
     else if(is_valid_symbol(operand->value, macro_table)){
         printf("valid symbol %s\n", operand->value);
+        //TODO - check in page 40 if the operand should be the address
         operand->type = SYMBOL;
     }
     else{

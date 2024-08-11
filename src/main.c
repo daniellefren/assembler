@@ -3,9 +3,8 @@
 #include "../include/second_run.h"
 #include "../include/test_first_run.h"
 
-//TODO - handle ic and dc
-// TODO - Add function that defines how many lines there is in an assembly command
 // TODO - Add function that read from directory and not files
+//TODO - get over al the todos
 int main(int argc, char *argv[]) {
     LinesArray *assembly_lines_array;
     SymbolTable *symbol_table;
