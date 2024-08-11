@@ -42,20 +42,54 @@ SymbolTable *init_symbol_table(int initial_capacity) {
 }
 
 void free_lines_array(LinesArray *lines_array) {
-    if (lines_array == NULL) {
-        return;  // Nothing to free if lines_array is NULL
+    if (lines_array->lines) {
+        for (unsigned int i = 0; i < lines_array->number_of_line; i++) {
+            free_instruction_line(&lines_array->lines[i]);
+        }
+        free(lines_array->lines);
     }
+}
 
-    if (lines_array->lines != NULL) {
-        free(lines_array->lines);  // Free the allocated memory for InstructionLine array
-    }
-
-    free(lines_array);  // Free the memory allocated for LinesArray struct itself
+void free_macro_table(MacroTable *macro_table) {
+    free(macro_table->macros);
 }
 
 
-void free_instruction_line(InstructionLine *instruction_line_pointer){
-    printf("a");
+void free_instruction_line(InstructionLine *instruction_line) {
+
+    if (instruction_line->line_content) {
+        free(instruction_line->line_content);
+    }
+    if(instruction_line->is_symbol){
+        free(instruction_line->symbol);
+    }
+    if(instruction_line->instruction_type == COMMAND){
+        free(instruction_line->command);
+    }
+    else if(instruction_line->instruction_type == DATA_DIRECTIVE ||
+                instruction_line->instruction_type == EXTERN_DIRECTIVE ||
+                instruction_line->instruction_type == ENTRY_DIRECTIVE){
+        // Assuming that `directive->value` is allocated dynamically and needs to be freed
+        if (instruction_line->directive->value) {
+            for (size_t i = 0; i < instruction_line->directive->data_values_count; i++) {
+                free(instruction_line->directive->value[i]);
+            }
+            free(instruction_line->directive->value);
+        }
+        free(instruction_line->directive);
+    }
+
+    //TODO - free instruction_line->binary_instruction -- the following does not work
+//    if (instruction_line->binary_instruction) {
+//        free(instruction_line->binary_instruction);
+//    }
+}
+
+void free_symbol_table(SymbolTable *symbol_table) {
+    for (int i = 0; i < symbol_table->size; ++i) {
+        free(symbol_table->symbols[i].name); // If the name was dynamically allocated
+    }
+    free(symbol_table->symbols);
 }
 
 char *get_instruction_line_binary(LinesArray *linesArray, int number_of_line){

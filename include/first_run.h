@@ -52,5 +52,4 @@ int define_operand_types(Operand *operand, MacroTable *macro_table);
 int is_known_assembly_keyword(const char *symbol);
 
 void extract_second_operand_from_line(char* line, Command *new_command);
-
 #endif //ASSEMBLER_FIRST_RUN_H

@@ -7,7 +7,8 @@
 // TODO - Add function that defines how many lines there is in an assembly command
 // TODO - Add function that read from directory and not files
 int main(int argc, char *argv[]) {
-
+    LinesArray *assembly_lines_array;
+    SymbolTable *symbol_table;
     int number_of_files = argc - 1;
 
     // Check if the correct number of arguments is provided
@@ -20,8 +21,8 @@ int main(int argc, char *argv[]) {
     for(int file_number=1;file_number<=number_of_files;file_number++){
         FILE *file;
         int ic, dc = 0;
-        LinesArray *assembly_lines_array = init_lines_array(10);
-        SymbolTable *symbol_table = init_symbol_table(10);
+        assembly_lines_array = init_lines_array(10);
+        symbol_table = init_symbol_table(10);
 
         // Open the file in read mode
         file = fopen(argv[file_number], "r");
@@ -46,8 +47,8 @@ int main(int argc, char *argv[]) {
         printf("end %d file\n", file_number);
 
 
-
         free_lines_array(assembly_lines_array);
+        free_symbol_table(symbol_table);
     }
 
     //return EXIT_SUCCESS;

@@ -47,7 +47,7 @@ Command commands_struct[] = {
 void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTable *symbol_table, int file_number) {
     int success;
     char line[MAX_LINE_LENGTH];
-    char *macroNames[MAX_MACRO_NAMES];  // Array to store pointers to macro names
+    char *macro_names[MAX_MACRO_NAMES];  // Array to store pointers to macro names
     char expended_macro_file_name[100];
     MacroTable macro_table;
     FILE *expanded_macros_file;
@@ -58,7 +58,7 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
     *ic = STARTING_IC; // Starting point of assembler
 
     init_macro_table(&macro_table);
-    init_macro_name_array(macroNames);
+    init_macro_name_array(macro_names);
 
     rewind(file); // Reset file pointer to the beginning before calling pre_run
 
@@ -66,7 +66,7 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
     add_number_to_string(expended_macro_file_name, EXPANDED_MACRO_FILE_NAME, sizeof(expended_macro_file_name), file_number);
 
     //Pre run in order to expand macros from asse,bly input file
-    success = pre_run(&macro_table, macroNames, file, expended_macro_file_name); // Keeps track of the number of encountered macros
+    success = pre_run(&macro_table, macro_names, file, expended_macro_file_name); // Keeps track of the number of encountered macros
 
     expanded_macros_file = fopen(expended_macro_file_name, "r");
     line_num = 0;
@@ -87,7 +87,7 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
 
     // Free allocated memory for macro names
     for (i = 0; i < MAX_MACRO_NAMES; ++i) {
-        free(macroNames[i]);
+        free(macro_names[i]);
     }
 
     //Declare final ic and dc in lines array
@@ -98,6 +98,8 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
         fprintf(stderr, "Program stopped running because of incorrect given assembly code");
         exit(EXIT_FAILURE);
     }
+
+    free_macro_table(&macro_table);
 }
 
 /**
@@ -106,16 +108,16 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
  * and expands any macro invocations found in the source code. The expanded code is written to a new output file, which will be used in subsequent
  * assembly processing stages.
  * @param macro_table A pointer to the `MacroTable` structure that stores the names and bodies of all macros encountered during the pre-run.
- * @param macroNames An array of strings that keeps track of all macro names encountered in the source file.
+ * @param macro_names An array of strings that keeps track of all macro names encountered in the source file.
  * @param file The input assembly source file to be processed.
  * @param new_file_name The name of the output file where the expanded assembly code (with macros expanded) will be written.
  */
-int pre_run(MacroTable *macro_table, char **macroNames, FILE *file, char* new_file_name) {
+int pre_run(MacroTable *macro_table, char **macro_names, FILE *file, char* new_file_name) {
     // Run and expand all macros in the program.
     // Return number of macros
     int is_in_macro = 0;
     int macroCount = 0;
-    char macroName[MAX_SYMBOL_LENGTH];
+    char macro_name[MAX_SYMBOL_LENGTH];
     Macro macro;
     char line[MAX_LINE_LENGTH];
 
@@ -124,18 +126,18 @@ int pre_run(MacroTable *macro_table, char **macroNames, FILE *file, char* new_fi
     while (fgets(line, MAX_LINE_LENGTH, file) != NULL) {
         if (!ignore_line(line)) {
             if (is_macro_definition_start(line)) {
-                sscanf(line, "%*s %s", macroName);  // Skip "%macro" and capture the name
-                if(is_known_assembly_keyword(macroName)){
-                    fprintf(stderr, "Macro %s is known assembly keyword\n", macroName);
+                sscanf(line, "%*s %s", macro_name);  // Skip "%macro" and capture the name
+                if(is_known_assembly_keyword(macro_name)){
+                    fprintf(stderr, "Macro %s is known assembly keyword\n", macro_name);
                     return 0;
                 }
                 if (macroCount < MAX_MACRO_NAMES) {
-                    strcpy(macroNames[macroCount++], macroName);
+                    strcpy(macro_names[macroCount++], macro_name);
                 } else {
                     fprintf(stderr, "Warning: Reached maximum number of macro names (%d)\n", MAX_MACRO_NAMES);
                 }
                 is_in_macro = handle_macro_definition(file, macro_table, line); // Pass macro_table directly
-            } else if (is_macro_invocation(line, macroName, macroNames)) {
+            } else if (is_macro_invocation(line, macro_name, macro_names)) {
                 expand_macro(&macro, stdout);
                 write_expanded_macros_to_file(macro_table, new_file_name);
 
@@ -178,15 +180,15 @@ int is_macro_definition_end(char *line) {
 }
 
 //Return if the line represents a macro invocation
-int is_macro_invocation(char *line, char *macroName, char **macroNames) {
+int is_macro_invocation(char *line, char *macro_name, char **macro_names) {
     int i;
     // Extract potential macro name
-    sscanf(line, "%s", macroName);
+    sscanf(line, "%s", macro_name);
 
-    // Check if the extracted name is not empty and exists in macroNames
-    if (macroName[0] != '\0') {
-        for (i = 0; i < MAX_MACRO_NAMES && macroNames[i][0] != '\0'; ++i) {
-            if (strcmp(macroName, macroNames[i]) == 0) {
+    // Check if the extracted name is not empty and exists in macro_names
+    if (macro_name[0] != '\0') {
+        for (i = 0; i < MAX_MACRO_NAMES && macro_names[i][0] != '\0'; ++i) {
+            if (strcmp(macro_name, macro_names[i]) == 0) {
                 return 1; // Macro name found in the array
             }
         }
@@ -205,10 +207,10 @@ int is_macro_invocation(char *line, char *macroName, char **macroNames) {
 int handle_macro_definition(FILE *file, MacroTable *macro_table, const char *firstLine) {
     Macro macro;
     char line[MAX_LINE_LENGTH];
-    char macroName[MAX_SYMBOL_LENGTH];
+    char macro_name[MAX_SYMBOL_LENGTH];
 
-    sscanf(firstLine, "%s", macroName);
-    strcpy(macro.name, macroName + 7);  // Skip "%macro"
+    sscanf(firstLine, "%s", macro_name);
+    strcpy(macro.name, macro_name + 7);  // Skip "%macro"
     macro.lineCount = 0;
 
     while (fgets(line, sizeof(line), file)) {
