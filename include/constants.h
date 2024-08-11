@@ -3,7 +3,7 @@
 
 #define STARTING_IC 100
 #define MAX_MACRO_NAMES 150
-#define MAX_LABEL_LENGTH 31
+#define MAX_SYMBOL_LENGTH 31
 #define BINARY_WORD_LENGTH 15
 #define MAX_COMMAND_LEN 10
 #define MAX_OPERAND_LEN 20
@@ -52,7 +52,7 @@ enum instruction_types {
 enum operand_types {
     REGISTER = 0,
     INTEGER = 1,
-    LABEL = 2,
+    SYMBOL = 2,
     INVALID = 3
 };
 

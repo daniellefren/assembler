@@ -24,21 +24,21 @@ LinesArray *init_lines_array(int initial_capacity) {
     return lines_array;
 }
 
-LabelTable *init_label_table(int initial_capacity) {
-    LabelTable *label_table = (LabelTable *)malloc(sizeof(LabelTable));
-    if (!label_table) {
+SymbolTable *init_symbol_table(int initial_capacity) {
+    SymbolTable *symbol_table = (SymbolTable *)malloc(sizeof(SymbolTable));
+    if (!symbol_table) {
         fprintf(stderr, "Error: SymbolTable pointer is NULL\n");
         exit(EXIT_FAILURE);
     }
-    label_table->labels = (Label *)malloc(initial_capacity * sizeof(Label));
-    if (!label_table->labels) {
+    symbol_table->symbols = (Symbol *)malloc(initial_capacity * sizeof(Symbol));
+    if (!symbol_table->symbols) {
         fprintf(stderr, "Memory allocation failed for symbols array\n");
         exit(EXIT_FAILURE);
     }
-    label_table->size = 0;
-    label_table->capacity = initial_capacity;
+    symbol_table->size = 0;
+    symbol_table->capacity = initial_capacity;
 
-    return label_table;
+    return symbol_table;
 }
 
 void free_lines_array(LinesArray *lines_array) {
@@ -82,24 +82,24 @@ void addInstructionLine(LinesArray *lines_array, InstructionLine *instruction_li
     lines_array->number_of_line++;
 }
 
-void add_new_label(LabelTable *label_table, Label *label) {
+void add_new_symbol(SymbolTable *symbol_table, Symbol *symbol) {
     // Check if the array needs to be resized
-    if (label_table->size >= label_table->capacity) {
+    if (symbol_table->size >= symbol_table->capacity) {
         // Double the capacity or set an initial capacity if it's zero
-        size_t new_capacity = (label_table->capacity == 0) ? 10 : label_table->capacity * 2;
-        Label *new_labels = realloc(label_table->labels, new_capacity * sizeof(Label));
-        if (!new_labels) {
+        size_t new_capacity = (symbol_table->capacity == 0) ? 10 : symbol_table->capacity * 2;
+        Symbol *new_symbols = realloc(symbol_table->symbols, new_capacity * sizeof(Symbol));
+        if (!new_symbols) {
             fprintf(stderr, "Error: Unable to allocate memory for lines array\n");
             exit(EXIT_FAILURE);
         }
 
-        label_table->labels = new_labels;
-        label_table->capacity = new_capacity;
+        symbol_table->symbols = new_symbols;
+        symbol_table->capacity = new_capacity;
     }
 
     // Add the new instruction line to the array
-    label_table->labels[label_table->size] = *label;
-    label_table->size++;
+    symbol_table->symbols[symbol_table->size] = *symbol;
+    symbol_table->size++;
 }
 
 void init_macro_table(MacroTable *table) {
@@ -164,7 +164,7 @@ Operand *init_operand(){
     }
 
     operand->value = (char *)malloc(MAX_OPERAND_LEN * sizeof(char));
-    operand->label = (Label*)malloc(sizeof(Label));
+    operand->symbol = (Symbol *)malloc(sizeof(Symbol));
 
     return operand;
 }
@@ -181,7 +181,7 @@ Directive *init_directive(){
 // Initialize macro name array
 void init_macro_name_array(char **macroNames) {
     for (int i = 0; i < MAX_MACRO_NAMES; ++i) {
-        macroNames[i] = malloc(MAX_LABEL_LENGTH * sizeof(char));
+        macroNames[i] = malloc(MAX_SYMBOL_LENGTH * sizeof(char));
         if (!macroNames[i]) {
             fprintf(stderr, "Error: Memory allocation failed for macro name %d\n", i);
             exit(EXIT_FAILURE);

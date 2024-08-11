@@ -8,7 +8,7 @@
 #define MAX_MACRO_LENGTH 100
 
 typedef struct {
-    char label[MAX_LABEL_LENGTH];
+    char symbol[MAX_SYMBOL_LENGTH];
     enum directives type; //.data or .string
     char **value;
     size_t data_values_count; // count of data values
@@ -16,24 +16,24 @@ typedef struct {
 //} Symbol;
 
 typedef struct {
-    char name[MAX_LABEL_LENGTH];
+    char name[MAX_SYMBOL_LENGTH];
     enum instruction_types type; //command or data directive
     int address;
     int is_extern;
     int is_entry;
-} Label;
+} Symbol;
 
 typedef struct {
-    Label *labels;
+    Symbol *symbols;
     size_t size;
     size_t capacity;
-} LabelTable;
+} SymbolTable;
 
 typedef struct {
     char *value;
-    enum operand_types type; // Label or register or number TODO - change to enum
+    enum operand_types type; // symbol or register or number TODO - change to enum
     enum operand_classification_type classification_type; // int containing enum values for first operand classification type
-    Label *label;
+    Symbol *symbol;
 } Operand;
 
 typedef struct {
@@ -48,10 +48,10 @@ typedef struct {
     char *line_content; // String containing the assembly instruction (content of the line)
     size_t length;  // Length of the line (excluding null terminator)
     enum instruction_types instruction_type; //is it data directive or command
-    int is_label; // is there a label with the command
+    int is_symbol; // is there a symbol with the command
     Command *command;
     Directive *directive;
-    Label *label;
+    Symbol *symbol;
     int starting_address;
     int binary_line_count; // the number of binary lines
     char *binary_instruction; //the line in binary instruction
@@ -69,7 +69,7 @@ typedef struct {
 
 
 typedef struct {
-    char name[MAX_LABEL_LENGTH];
+    char name[MAX_SYMBOL_LENGTH];
     char body[MAX_MACRO_LENGTH][MAX_LINE_LENGTH];
     int lineCount;
 } Macro;
@@ -86,9 +86,9 @@ void free_lines_array(LinesArray *lines_array_pointer);
 void free_instruction_line(InstructionLine *instruction_line_pointer);
 char *get_instruction_line_binary(LinesArray *linesArray, int number_of_line);
 void addInstructionLine(LinesArray *lines_array, InstructionLine *instruction_line);
-void add_new_label(LabelTable *label_table, Label *new_label);
+void add_new_symbol(SymbolTable *symbol_table, Symbol *new_symbol);
 LinesArray *init_lines_array(int initial_capacity);
-LabelTable * init_label_table(int initial_capacity);
+SymbolTable * init_symbol_table(int initial_capacity);
 void init_macro_table(MacroTable *table);
 InstructionLine *init_instruction_line(char* line);
 Command *init_command();
