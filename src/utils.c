@@ -8,7 +8,8 @@
 
 void lower_string(char *string){
 // Convert command_name to lowercase
-    for (int i = 0; string[i]; i++) {
+    int i;
+    for (i = 0; string[i]; i++) {
         string[i] = tolower(string[i]);
     }
 }
@@ -64,10 +65,12 @@ void print_command(Command *command) {
 
 
 void print_directive(Directive *directive) {
+    int i;
+
     if (is_directive_data(directive)) {
         if (directive->data_values_count > 0) {
             printf("The length of the directive is %zu and the values are:", directive->data_values_count);
-            for (int i = 0; i < directive->data_values_count; ++i) {
+            for (i = 0; i < directive->data_values_count; ++i) {
                 if (directive->value != NULL) {
                     printf(" %s", directive->value[i]);
                 }
@@ -239,6 +242,9 @@ void fill_octal_string_from_binary(const char *binary_string, int number_of_bina
 
 
 void binary_to_octal(const char *binary_string, char *octal_string) {
+    int i, value;
+    value = 0;
+
     if (binary_string == NULL || strlen(binary_string) != BINARY_WORD_LENGTH) {
         print_internal_error(ERROR_CODE_44, "");
         return;
@@ -247,6 +253,7 @@ void binary_to_octal(const char *binary_string, char *octal_string) {
     int i, value;
 
     i, value = 0;
+
     // Initialize octal_string with '0's and null-terminate
     memset(octal_string, '0', OCTAL_LENGTH);
     octal_string[OCTAL_LENGTH] = '\0';
@@ -308,7 +315,7 @@ void int_to_binary_string(int num, char *binary_string, int offset, int num_bits
 
 void char_to_binary_string(char c, char *binary_string, int offset, int num_bits) {
     int i;
-
+    unsigned char uc;
     // Ensure binary_string is large enough
     if (binary_string == NULL || offset + num_bits > sizeof(char) * strlen(binary_string)) {
         print_internal_error(ERROR_CODE_45, "");
@@ -316,8 +323,8 @@ void char_to_binary_string(char c, char *binary_string, int offset, int num_bits
     }
 
     // Convert character to binary representation
-    unsigned char uc;
     uc = (unsigned char)c;
+
     for (i = offset + num_bits - 1; i >= offset; i--) {
         binary_string[i] = (uc & 1) + '0';
         uc >>= 1;

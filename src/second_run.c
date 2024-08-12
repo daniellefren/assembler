@@ -9,6 +9,7 @@
 
 
 void start_second_run(LinesArray *assembly_lines_array, int file_number){
+    int i;
     InstructionLine *p_line;
 
     printf("Starting Second run \n");
@@ -16,7 +17,7 @@ void start_second_run(LinesArray *assembly_lines_array, int file_number){
     printf("Starting to print The lines Binary: \n");
 
     // Iterate over each line in the assembly lines array
-    for (int i = 0; i < assembly_lines_array->number_of_line; ++i){
+    for (i = 0; i < assembly_lines_array->number_of_line; ++i){
         p_line = &assembly_lines_array->lines[i];
         printf("\n****Line number %d Address %d *****  \n\n", i, p_line->starting_address);
         allocate_binary_instruction(p_line, p_line->binary_line_count, BINARY_LINE_LENGTH);
@@ -133,12 +134,13 @@ void set_binary_string_ARE_representation(char *binary_string, int binary_string
 
 void fill_the_binary_with_zero(char *binary_string, size_t length) {
     // Check if the length is valid to avoid unnecessary operations or buffer overflows
+    size_t i;
     if (length <= 0) {
         print_internal_error(ERROR_CODE_37, "");
         exit(EXIT_FAILURE);
     }
 
-    for (size_t i = 0; i < length; i++) {
+    for (i = 0; i < length; i++) {
         binary_string[i] = '0';
     }
 
@@ -147,6 +149,7 @@ void fill_the_binary_with_zero(char *binary_string, size_t length) {
 }
 
 void set_binary_string_opcode_representation(int opcode_number, char *binary_string) {
+    int i;
     printf("The opcode is %d \n", opcode_number);
 
     if (binary_string == NULL) {
@@ -158,7 +161,7 @@ void set_binary_string_opcode_representation(int opcode_number, char *binary_str
     int binary_value = opcode_number & ((1 << OPCODE_SIZE) - 1);
 
     // Convert the binary value to a string of '0's and '1's
-    for (int i = 0; i < OPCODE_SIZE; i++) {
+    for (i = 0; i < OPCODE_SIZE; i++) {
         // Check each bit from the most significant to the least significant
         if (binary_value & (1 << (OPCODE_SIZE - 1 - i))) {
             binary_string[i] = '1'; // Set '1' if the bit is set
@@ -273,6 +276,7 @@ void register_to_binary_string(char *register_value, int operand_number, char *b
 
 
 void fill_binary_directive(InstructionLine *instruction_line, char *binary_string) {
+    int i;
     int number_value;
     Directive *directive;
     directive = instruction_line->directive;
@@ -283,7 +287,7 @@ void fill_binary_directive(InstructionLine *instruction_line, char *binary_strin
             print_internal_error(ERROR_CODE_33, "");
             return;
         }
-        for (int i = 0; i < directive->data_values_count; ++i) {
+        for (i = 0; i < directive->data_values_count; ++i) {
             if (directive->value[i] == NULL) {
                 print_internal_error(ERROR_CODE_34, "");
                 return;
@@ -303,7 +307,7 @@ void fill_binary_directive(InstructionLine *instruction_line, char *binary_strin
             print_internal_error(ERROR_CODE_34, "");
             return;
         }
-        for (int i = 0; i < strlen(directive->value[0]); ++i) {
+        for (i = 0; i < strlen(directive->value[0]); ++i) {
             char_to_binary_string(directive->value[0][i], binary_string,
                                   i * BINARY_LINE_LENGTH, BINARY_LINE_LENGTH);
         }
