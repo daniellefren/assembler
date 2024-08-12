@@ -12,6 +12,7 @@ Error errors[] = {
         {ERROR_CODE_5,  "Symbol is not valid -- too long"},
         {ERROR_CODE_6,  "Symbol is not valid -- should start with a letter"},
         {ERROR_CODE_7,  "Symbol is not valid -- should only contain with letters and numbers"},
+        {ERROR_CODE_50, "Symbol is not valid -- Already exists"},
         {ERROR_CODE_8,  "Program stopped running because of incorrect given assembly code"},
 
 
@@ -61,7 +62,7 @@ Error errors[] = {
 
         // File related errors
         {ERROR_CODE_48,  "Could not open file for writing"},
-        {ERROR_CODE_49,  "Could not open file for writing macros"},
+        {ERROR_CODE_49,  "Could not open file for writing macros"}
 
 };
 
