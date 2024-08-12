@@ -2,7 +2,6 @@
 #ifndef ASSEMBLER_UTILS_H
 #define ASSEMBLER_UTILS_H
 #include "../include/structs.h"
-#include <stdbool.h>
 
 /**
  * Convert a string to lowercase.

@@ -7,7 +7,7 @@
 /**
  * Create an output directory if it does not already exist.
  */
-void add_output_directory();
+void add_output_directory(void);
 
 
 /**
