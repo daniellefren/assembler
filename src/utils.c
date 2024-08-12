@@ -9,8 +9,6 @@
 
 #include "../include/utils.h"
 
-
-
 void lower_string(char *string){
 // Convert command_name to lowercase
     for (int i = 0; string[i]; i++) {
@@ -38,83 +36,68 @@ char *trim_spaces(char *str) {
     return str;
 }
 
-char* itoa(int val, int base){
-
-    static char buf[32] = {0};
-
-    int i = 30;
-
-    for(; val && i ; --i, val /= base)
-
-        buf[i] = "0123456789abcdef"[val % base];
-
-    return &buf[i+1];
-
-}
-
-void string_append(const char *first_string, const char *second_String, char *appended_string, size_t appended_string_size) {
-    /*
-     In calling function
-    char appended_string[100];  // Pre-allocate memory for combined string
-    string_append(string1, string2, appended_string, sizeof(appended_string_size));
-    */
+void string_append(const char *first_string, const char *second_string, char *appended_string, size_t appended_string_size) {
     size_t first_string_size = strlen(first_string);
-    size_t second_string_size = strlen(second_String);
+    size_t second_string_size = strlen(second_string);
     if (first_string_size + second_string_size + 1 > appended_string_size) {
-        // Handle insufficient space in destination (e.g., return error code)
-        return;
+        fprintf(stderr, "Error: insufficient space to append both strings\n");
+        exit(EXIT_FAILURE);
     }
 
-    // Copy s1 and s2 using strcpy and strcat
+    // Copy first_string and append second_string
     strcpy(appended_string, first_string);
-    strcat(appended_string, second_String);
+    strcat(appended_string, second_string);
 }
 
-void print_command(Command *command){
+
+void print_command(Command *command) {
     printf("Command name is %s\n", command->command_name);
-    if (command->operand_number > 0){
-        printf("Src Operand value is %s, it's type is %u and the classification type is %d\n", command->src_operand->value, command->src_operand->type, command->src_operand->classification_type);
-    }
-    else{
+
+    if (command->operand_number > 0) {
+        printf("Src Operand value is %s, its type is %u and the classification type is %d\n",
+               command->src_operand->value, command->src_operand->type, command->src_operand->classification_type);
+    } else {
         printf("No Operands :(\n");
     }
-    if (command->operand_number > 1){
-        printf("Dst Operand value is %s, it's type is %u and the classification type is %d\n", command->dst_operand->value, command->dst_operand->type, command->dst_operand->classification_type);
-    }
 
+    if (command->operand_number > 1) {
+        printf("Dst Operand value is %s, its type is %u and the classification type is %d\n",
+               command->dst_operand->value, command->dst_operand->type, command->dst_operand->classification_type);
+    }
 }
 
-void print_directive(Directive *directive){
-    if (is_directive_data(directive)){
-        if (directive->data_values_count){
-            printf("The Lenth of the directive is %zu and the values are", directive->data_values_count);
-        }
 
-        for (int i = 0; i < directive->data_values_count; ++i) {
-            printf(" %s", directive->value[i]);
+void print_directive(Directive *directive) {
+    if (is_directive_data(directive)) {
+        if (directive->data_values_count > 0) {
+            printf("The length of the directive is %zu and the values are:", directive->data_values_count);
+            for (int i = 0; i < directive->data_values_count; ++i) {
+                if (directive->value != NULL) {
+                    printf(" %s", directive->value[i]);
+                }
+            }
+            printf("\n");
+        } else {
+            printf("The directive length is 0 and has no values\n");
         }
-        printf("\n");
+    } else {
+        if (directive->value != NULL) {
+            printf("The length of the directive is %zu and the value is %s\n",
+                   directive->data_values_count, directive->value[0]);
+        } else {
+            fprintf(stderr, "Error: there are no values in the directive\n");
+        }
     }
-    else{
-        if (directive->value != NULL){
-            printf("The Lenth of the directive is %zu and the value is %s\n", directive->data_values_count, directive->value[0]);
-        }
-        else{
-            fprintf(stderr, "Error: there is no values in the directive\n");
-            return;
-        }
-
-    }
-
 }
 
-void print_instruction_line(InstructionLine *instructionLine){
+
+void print_instruction_line(InstructionLine *instructionLine) {
     printf("The Content of line is %s\n", instructionLine->line_content);
     printf("The Address of line is %d\n", instructionLine->starting_address);
-    if (instructionLine->command != NULL){
+
+    if (instructionLine->command != NULL) {
         print_command(instructionLine->command);
-    }
-    else if (instructionLine->directive != NULL){
+    } else if (instructionLine->directive != NULL) {
         print_directive(instructionLine->directive);
     }
 }
@@ -162,15 +145,18 @@ char* extract_numbers(const char *input, int length) {
     return numbers;
 }
 
+
 int char_to_int(char *str) {
     int sign = 1;
     int num = 0;
 
+    // Check for optional negative sign
     if (*str == '-') {
         sign = -1;
         str++;
     }
 
+    // Convert string to integer
     while (*str >= '0' && *str <= '9') {
         num = num * 10 + (*str - '0');
         str++;
@@ -208,26 +194,25 @@ void add_number_to_string(char *buffer, const char* source, size_t buffer_size, 
     snprintf(buffer, buffer_size, source, number);
 }
 
-
-bool is_directive_data(Directive *directive){
-    if (directive->type == DATA){
-        printf("The directive is data directive!\n");
+bool is_directive_data(Directive *directive) {
+    if (directive->type == DATA) {
+        printf("The directive is a data directive!\n");
         return true;
     }
     return false;
 }
 
-bool is_directive_string(Directive *directive){
-    if (directive->type == STRING){
-        printf("The directive is string directive!\n");
+bool is_directive_string(Directive *directive) {
+    if (directive->type == STRING) {
+        printf("The directive is a string directive!\n");
         return true;
     }
     return false;
 }
 
 void fill_octal_string_from_binary(const char *binary_string, int number_of_binary_bits, int offset, char *octal_string) {
-    char octal_value[6] = {0};  // Initialize and ensure it's null-terminated
-    char extracted_binary[17] = {0};  // Assuming maximum 15 bits + null terminator
+    char octal_value[6] = {0};  // Buffer for octal value (assuming up to 4 octal digits)
+    char extracted_binary[17] = {0};  // Buffer for extracted binary portion (up to 16 bits)
 
     // Check for invalid input
     if (number_of_binary_bits <= 0 || offset < 0 || offset + number_of_binary_bits > strlen(binary_string)) {
@@ -241,9 +226,9 @@ void fill_octal_string_from_binary(const char *binary_string, int number_of_bina
         return;
     }
 
-    // Extract the desired portion
+    // Extract the desired portion of the binary string
     strncpy(extracted_binary, binary_string + offset, number_of_binary_bits);
-    extracted_binary[number_of_binary_bits] = '\0';  // Ensure it's null-terminated
+    extracted_binary[number_of_binary_bits] = '\0';  // Null-terminate the extracted portion
     printf("Extracted binary string: %s\n", extracted_binary);
 
     // Convert binary to octal
@@ -262,17 +247,20 @@ void binary_to_octal(const char *binary_string, char *octal_string) {
         fprintf(stderr, "Invalid binary string\n");
         return;
     }
-    int i, j, value = 0;
-    // Initialize octal_string with '0's
+
+    int i, value = 0;
+    // Initialize octal_string with '0's and null-terminate
     memset(octal_string, '0', OCTAL_LENGTH);
     octal_string[OCTAL_LENGTH] = '\0';
-    // Convert binary to decimal
+
+    // Convert binary string to decimal
     for (i = 0; i < BINARY_WORD_LENGTH; i++) {
         value = (value << 1) | (binary_string[i] - '0');
     }
+
     // Convert decimal to octal
     for (i = OCTAL_LENGTH - 1; i >= 0; i--) {
-        octal_string[i] = (value & 7) + '0';  // Get the last 3 bits and convert to octal digit
+        octal_string[i] = (value & 7) + '0';  // Extract the last 3 bits and convert to octal
         value >>= 3; // Shift right by 3 bits (1 octal digit)
     }
 }
@@ -310,29 +298,30 @@ void int_to_binary_string(int num, char *binary_string, int offset, int num_bits
 
     // Handle negative numbers
     if (num < 0) {
-        binary_string[offset] = '1';
+        binary_string[offset] = '1';  // Sign bit for negative numbers
         num = -num;
     } else {
-        binary_string[offset] = '0';
+        binary_string[offset] = '0';  // Sign bit for non-negative numbers
     }
 
-    // Convert to binary
+    // Convert to binary representation
     for (i = 0; i < num_bits; i++) {
-        binary_string[offset + num_bits - i - 1] = (num & (1 << i)) ? '1' : '0';
+        binary_string[offset + num_bits - i] = (num & (1 << i)) ? '1' : '0';
     }
 }
+
 
 void char_to_binary_string(char c, char *binary_string, int offset, int num_bits) {
     int i;
 
-    // Ensure binary_string is large enough to hold the result
-    if (binary_string == NULL || offset + num_bits >  sizeof(char) * strlen(binary_string)) {
+    // Ensure binary_string is large enough
+    if (binary_string == NULL || offset + num_bits > sizeof(char) * strlen(binary_string)) {
         fprintf(stderr, "Invalid binary string buffer\n");
         return;
     }
-    // Convert character to unsigned char for positive representation
-    unsigned char uc = (unsigned char) c;
-    // Convert to binary
+
+    // Convert character to binary representation
+    unsigned char uc = (unsigned char)c;
     for (i = offset + num_bits - 1; i >= offset; i--) {
         binary_string[i] = (uc & 1) + '0';
         uc >>= 1;
