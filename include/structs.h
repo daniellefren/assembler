@@ -92,7 +92,6 @@ void free_symbol_table(SymbolTable *symbol_table);
  */
 void free_binary_instruction(InstructionLine *p_line);
 
-void free_binary_instruction(InstructionLine *p_line); //TODO
 
 void addInstructionLine(LinesArray *lines_array, InstructionLine *instruction_line);
 void add_new_symbol(SymbolTable *symbol_table, Symbol *new_symbol);

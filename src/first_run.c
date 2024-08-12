@@ -139,17 +139,14 @@ void add_macro(MacroTable *macro_table, Macro new_macro) {
     macro_table->macros[macro_table->count++] = new_macro;
 }
 
-// Return 1 if macro definition start, 0 if not
 int is_macro_definition_start(char *line) {
     return strstr(line, "macr ") != NULL;
 }
 
-// Return 1 if macro definition end, 0 if not
 int is_macro_definition_end(char *line) {
     return strstr(line, "endmacr") != NULL;
 }
 
-//Return if the line represents a macro invocation
 int is_macro_invocation(char *line, char *macro_name, char **macro_names) {
     int i;
     // Extract potential macro name
@@ -167,13 +164,6 @@ int is_macro_invocation(char *line, char *macro_name, char **macro_names) {
     return 0; // Not a macro invocation or name not found
 }
 
-/**
- * Processes a macro definition from the assembly source file and adds it to the macro table.
- * @param file A pointer to the `FILE` object representing the assembly source file.
- * @param macro_table A pointer to the `MacroTable` structure that stores the names and bodies of all macros encountered during the pre-run.
- * @param firstLine A string containing the first line of the macro definition, typically the line that begins with "%macro".
- * @return Returns `0` if the macro definition is complete, or `1` if the end of the file is reached before completing the macro.
- */
 int handle_macro_definition(FILE *file, MacroTable *macro_table, const char *firstLine) {
     Macro macro;
     char line[MAX_LINE_LENGTH];
@@ -196,7 +186,6 @@ int handle_macro_definition(FILE *file, MacroTable *macro_table, const char *fir
     return 1;
 }
 
-//Insert to file expanded macro
 void expand_macro(const Macro *macro, FILE *outputFile) {
     int i;
     for (i = 0; i < macro->lineCount; ++i) {
@@ -309,7 +298,6 @@ int handle_command(char *line, SymbolTable *symbol_table, MacroTable *macro_tabl
     return success;
 }
 
-// Get all operands from the current line and insert the data to operands in new_command
 void define_operands_from_line(Command *new_command, char* line){
     // Skip leading spaces
     while (*line == ' ' || *line == '\t') {
@@ -348,7 +336,6 @@ void define_operands_from_line(Command *new_command, char* line){
     }
 }
 
-// Get second operand from line (if exists)
 void extract_second_operand_from_line(char* line, Command *new_command){
     // Move past the first operand and the comma
     line = strchr(line, ',');
@@ -364,7 +351,6 @@ void extract_second_operand_from_line(char* line, Command *new_command){
     // Extract the second operand
     sscanf(line, "%s", new_command->dst_operand->value);
 }
-
 
 int define_operand_types(Operand *operand, MacroTable *macro_table){
     int length;
@@ -400,7 +386,6 @@ int define_operand_types(Operand *operand, MacroTable *macro_table){
 }
 
 
-// Function to check if a string is a valid symbol name
 int is_valid_symbol(const char *symbol, MacroTable *macro_table) {
     int i;
     size_t length;
@@ -438,7 +423,6 @@ int is_valid_symbol(const char *symbol, MacroTable *macro_table) {
     return 1; // Valid symbol
 }
 
-// Get number of binary lines for command based on the classification types of the operands
 int find_number_of_lines_in_binary(Command *new_command){
     int number_of_binary_lines = new_command->operand_number + 1; //The default for number of binary lines for data word is the operand number
 
@@ -453,7 +437,6 @@ int find_number_of_lines_in_binary(Command *new_command){
     return number_of_binary_lines;
 }
 
-//classify the operand classification mode
 int classify_operand(Operand *new_operand) {
     new_operand->classification_type = METHOD_UNKNOWN; // set default
 
@@ -485,7 +468,6 @@ int classify_operand(Operand *new_operand) {
 
 }
 
-// Get the number of operands and opcode for the given command
 void get_operands_data_for_command(char* command_name, Command *new_command){
     int i;
     int command_opcode;
@@ -502,7 +484,6 @@ void get_operands_data_for_command(char* command_name, Command *new_command){
 }
 
 
-// Function to check if a line is a symbol
 int find_symbol(char *line, char *symbol) {
     char *start;
     size_t len;
@@ -532,7 +513,6 @@ int find_symbol(char *line, char *symbol) {
     return 0;
 }
 
-// Return 1 if symbol is an assembly keyword, else 0
 int is_known_assembly_keyword(const char *key) {
     int i;
 
@@ -553,7 +533,6 @@ int is_known_assembly_keyword(const char *key) {
     return 0;
 }
 
-// Function to check if a line is a command
 int is_command(char *line) {
     int i;
     while (*line && isspace((unsigned char)*line)) {
@@ -567,7 +546,6 @@ int is_command(char *line) {
     return 0;
 }
 
-//Check if given symbol name already exists in symbol_table
 int symbol_exists(SymbolTable *symbol_table, char *symbol_name) {
     int i;
     for (i = 0; i < symbol_table->size; ++i) {
@@ -578,7 +556,6 @@ int symbol_exists(SymbolTable *symbol_table, char *symbol_name) {
     return 0;
 }
 
-// Function to check if the line contains a data directive
 int is_directive(char *line) {
     int i;
     size_t len;
@@ -640,7 +617,6 @@ void handle_directives(char *line, int *dc, SymbolTable *symbol_table, int* ic, 
     new_instruction_line->directive = new_directive;
 }
 
-//Mark symbol as entry in symbol table and add to entries file
 void handle_entry_directive(Directive *new_directive, int file_number, SymbolTable *symbol_table, char* line){
     char *ptr = line;
     Symbol* symbol;
@@ -652,7 +628,6 @@ void handle_entry_directive(Directive *new_directive, int file_number, SymbolTab
     add_entry_to_entries_file(new_directive->symbol, file_number, symbol->address);
 }
 
-//Add extern symbol to symbol table and add to externals file
 void handle_extern_directive(char *line, Directive *new_directive, SymbolTable *symbol_table, int file_number, int *ic){
     Symbol* symbol;
     char *ptr = line;
@@ -767,7 +742,6 @@ void handle_data_directive(char *line, Directive *new_directive, InstructionLine
 }
 
 
-//Return the symbol with the given name
 Symbol *find_symbol_by_name(SymbolTable* symbol_table, char* symbol_name){
     int i;
     for(i=0;i<symbol_table->size;i++){
