@@ -15,6 +15,9 @@
 #define MAX_LINE_LENGTH 80
 #define SRC_OPERAND_NUMBER 1
 #define DST_OPERAND_NUMBER 2
+#define ARE_STARTING_OFFSET 11
+#define SRC_REGISTER_OFFSET 6
+#define DST_REGISTER_OFFSET 9
 //#define EXTERNALS_FILE_NAME "output_files/externals.txt";
 
 static const char *COMMANDS[] = {

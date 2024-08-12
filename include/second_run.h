@@ -106,7 +106,48 @@ void set_binary_string_operand_representation(int first_operand_classification_t
  * @param operand_number Indicates whether the operand is the source (1) or destination (2) operand.
  */
 void fill_operand_binary(Operand *operand, Operand *second_operand, char *binary_string, int operand_number);
+
+/**
+ * Sets the ARE (Absolute/Relative/External) representation bit in a binary string.
+ *
+ * Updates a specific position in the `binary_string` based on the given `ARE` character.
+ * The position is calculated based on the binary string number and the ARE character
+ *
+ * @param binary_string The binary string to update.
+ * @param binary_string_number The index of the binary string (1-based).
+ * @param ARE The ARE character indicating the type ('a', 'r', or 'e').
+ *
+ * @note The function calculates the offset in the binary string where the ARE bit should be set.
+ *       It exits with an error if the ARE character is not 'a', 'r', or 'e'.
+ */
 void set_binary_string_ARE_representation(char *binary_string, int number_of_binary_string, char ARE);
+
+/**
+ * Fills a binary string representation based on the directive type in an InstructionLine.
+ *
+ * Updates `binary_string` based on the type of directive (DATA or STRING) associated with
+ * the `instruction_line`. For DATA directives, it converts integer values to binary. For
+ * STRING directives, it converts each character to binary.
+ *
+ * @param instruction_line The InstructionLine structure containing the directive.
+ * @param binary_string The buffer to store the resulting binary string.
+ *
+ */
 void fill_binary_directive(InstructionLine *instruction_line, char *binary_string);
+
+/**
+ * Converts a register value to its binary representation and stores it in a binary string.
+ *
+ * Updates a portion of the `binary_string` based on the register value and the operand number.
+ * The register number is converted to binary and placed in the appropriate bit positions:
+ * - For `operand_number` 1 (source), it is placed in bits 6-8.
+ * - For `operand_number` 2 (destination), it is placed in bits 9-11.
+ *
+ * @param register_value The string representation of the register number.
+ * @param operand_number Indicates whether the register is a source (1) or destination (2).
+ * @param binary_string The buffer to store the binary representation.
+ * @param offset The starting position in `binary_string` for storing the result.
+ *
+ */
 void register_to_binary_string(char *register_value, int operand_number, char *binary_string, int offset);
 #endif //ASSEMBLER_SECOND_RUN_H
