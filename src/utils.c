@@ -356,3 +356,18 @@ void add_output_directory(){
         printf("Directory '%s' already exists.\n", dirName);
     }
 }
+
+//Skip spaces in line
+char* skip_spaces(char *line) {
+    if (line == NULL) return NULL;
+    while (*line && isspace((unsigned char)*line)) {
+        line++;
+    }
+    return line;
+}
+
+// Ignore line when going through the assembly line when a comment ';' or an empty line
+int ignore_line(char *line) {
+    line = skip_spaces(line);
+    return (*line == ';' || *line == '\0' || *line == '\n');
+}

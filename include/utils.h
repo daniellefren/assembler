@@ -23,4 +23,6 @@ void int_to_binary_string(int num, char *binary_string, int offset, int num_bits
 void char_to_binary_string(char c, char *binary_string, int offset, int num_bits);
 int check_if_valid_integer(char *str);
 void add_output_directory();
+char* skip_spaces(char *line);
+int ignore_line(char *line);
 #endif //ASSEMBLER_UTILS_H
