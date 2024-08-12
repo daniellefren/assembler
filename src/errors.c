@@ -4,7 +4,7 @@
 Error errors[] = {
         {ERROR_CODE_0,  "No Error"},
 
-        // Readind assembly lines
+        // Reading assembly lines
         {ERROR_CODE_1,  "Macro is a known assembly keyword"},
         {ERROR_CODE_2,  "Symbol is not valid -- a space between the symbol and the ':'"},
         {ERROR_CODE_3,  "Symbol is not valid -- is a known assembly word"},
@@ -40,17 +40,17 @@ Error errors[] = {
         {ERROR_CODE_28,  "Lines array is NULL"},
         {ERROR_CODE_29,  "Line number in lines array is NULL"},
         {ERROR_CODE_30,  "Line number in lines array is NULL"},
-        {ERROR_CODE_31,  "Error: Opcode not found in the instruction set"},
+        {ERROR_CODE_31,  "Opcode not found in the instruction set"},
         {ERROR_CODE_32,  "Failed to read directive type"},
         {ERROR_CODE_33,  "Trying to access a directive->value but the value is NULL"},
         {ERROR_CODE_34,  "Trying to access a directive->value[i] but the value is NULL"},
         {ERROR_CODE_35,  "0 lines of binary for the instruction line"},
         {ERROR_CODE_36,  "Character is not 'a', 'r', or 'e'"},
-        {ERROR_CODE_37,  "trying to fill the binary with zero but the length <= 0"},
+        {ERROR_CODE_37,  "Trying to fill the binary with zero but the length <= 0"},
         {ERROR_CODE_38,  "The binary string is null"},
         {ERROR_CODE_39,  "Error finding symbol"},
-        {ERROR_CODE_40,  "insufficient space to append both strings"},
-        {ERROR_CODE_41,  "there are no values in the directive"},
+        {ERROR_CODE_40,  "Insufficient space to append both strings"},
+        {ERROR_CODE_41,  "There are no values in the directive"},
         {ERROR_CODE_42,  "Invalid input parameters"},
         {ERROR_CODE_43,  "Number of bits must be a multiple of 3"},
         {ERROR_CODE_44,  "Invalid binary string"},
@@ -66,6 +66,7 @@ Error errors[] = {
 };
 
 void print_internal_error(int error_code, char* data) {
+
     if(data){
         fprintf(stderr, "~~ERROR: ID:%d~~ | %s - %s\n", error_code, errors[error_code].error_msg, data);
     }
