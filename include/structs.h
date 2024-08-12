@@ -6,83 +6,124 @@
 #define INITIAL_IC 100
 #define MAX_MACRO_LENGTH 100
 
+/**
+ * Struct representing a directive in the assembly code.
+ */
 typedef struct {
-    char symbol[MAX_SYMBOL_LENGTH];
-    enum directives type; //.data or .string
-    char **value;
-    size_t data_values_count; // count of data values
+    char symbol[MAX_SYMBOL_LENGTH];          /**< The symbol name associated with the directive. */
+    enum directives type;                    /**< The type of directive (.data or .string or .extern ot .entry). */
+    char **value;                            /**< Pointer to an array of strings representing the values of the directive. */
+    size_t data_values_count;                /**< The number of data values associated with the directive. */
 } Directive;
-//} Symbol;
 
+/**
+ * Struct representing a symbol in the assembly code.
+ */
 typedef struct {
-    char name[MAX_SYMBOL_LENGTH];
-    enum instruction_types type; //command or data directive
-    int address;
-    int is_extern;
-    int is_entry;
+    char name[MAX_SYMBOL_LENGTH];            /**< The name of the symbol. */
+    enum instruction_types type;             /**< The type of the symbol */
+    int address;                             /**< The address of the symbol in the memory. */
+    int is_extern;                           /**< Flag indicating if the symbol is external. */
+    int is_entry;                            /**< Flag indicating if the symbol is an entry. */
 } Symbol;
 
+/**
+ * Struct representing a symbol table.
+ */
 typedef struct {
-    Symbol *symbols;
-    size_t size;
-    size_t capacity;
+    Symbol *symbols;                         /**< Pointer to an array of Symbol structs. */
+    size_t size;                             /**< The current number of symbols in the table. */
+    size_t capacity;                         /**< The maximum capacity of the symbol table. */
 } SymbolTable;
 
+/**
+ * Struct representing an operand in an assembly command.
+ */
 typedef struct {
-    char *value;
-    enum operand_types type; // symbol or register or number
-    enum operand_classification_type classification_type; // int containing enum values for first operand classification type
-    Symbol *symbol;
+    char *value;                             /**< The value of the operand as a string. */
+    enum operand_types type;                 /**< The type of operand (symbol, register, or number). */
+    enum operand_classification_type classification_type; /**< The classification type of the operand. */
+    Symbol *symbol;                          /**< Pointer to the Symbol struct associated with the operand, if applicable. */
 } Operand;
 
+/**
+ * Struct representing a command in the assembly code.
+ */
 typedef struct {
-    char *command_name;
-    enum opcode_command opcode_command_type; // enum containing enum values for opcode command types if it's an opcode
-    unsigned int operand_number; //int containing the operand number
-    Operand *src_operand;
-    Operand *dst_operand;
+    char *command_name;                      /**< The name of the command. */
+    enum opcode_command opcode_command_type; /**< The type of opcode command. */
+    unsigned int operand_number;             /**< The number of operands associated with the command. */
+    Operand *src_operand;                    /**< Pointer to the source operand struct. */
+    Operand *dst_operand;                    /**< Pointer to the destination operand struct. */
 } Command;
 
+/**
+ * Struct representing an instruction line in the assembly code.
+ */
 typedef struct {
-    char *line_content; // String containing the assembly instruction (content of the line)
-    size_t length;  // Length of the line (excluding null terminator)
-    enum instruction_types instruction_type; //is it data directive or command
-    int is_symbol; // is there a symbol with the command
-    Command *command;
-    Directive *directive;
-    Symbol *symbol;
-    int starting_address;
-    int binary_line_count; // the number of binary lines
-    char *binary_instruction; //the line in binary instruction
+    char *line_content;                      /**< The content of the assembly instruction line. */
+    size_t length;                           /**< The length of the line content (excluding the null terminator). */
+    enum instruction_types instruction_type; /**< The type of instruction. */
+    int is_symbol;                           /**< Flag indicating if the line contains a symbol. */
+    Command *command;                        /**< Pointer to the Command struct associated with the line, if applicable. */
+    Directive *directive;                    /**< Pointer to the Directive struct associated with the line, if applicable. */
+    Symbol *symbol;                          /**< Pointer to the Symbol struct associated with the line, if applicable. */
+    int starting_address;                    /**< The starting address of the instruction in memory. */
+    int binary_line_count;                   /**< The number of binary lines generated for the instruction. */
+    char *binary_instruction;                /**< Pointer to the binary representation of the instruction. */
 } InstructionLine;
 
-
+/**
+ * Struct representing an array of instruction lines.
+ */
 typedef struct {
-    //struct of an array of line after the first run
-    InstructionLine *lines;  // Pointer to an array of Line structs
-    unsigned int number_of_line;  // Number of lines currently stored
-    size_t capacity;  // Maximum capacity of the lines array
-    int ic;
-    int dc;
+    InstructionLine *lines;                  /**< Pointer to an array of InstructionLine structs. */
+    unsigned int number_of_line;             /**< The number of lines currently stored in the array. */
+    size_t capacity;                         /**< The maximum capacity of the lines array. */
+    int ic;                                  /**< Instruction counter (IC), tracking the memory address for instructions. */
+    int dc;                                  /**< Data counter (DC), tracking the memory address for data. */
 } LinesArray;
 
-
+/**
+ * Struct representing a macro in the assembly code.
+ */
 typedef struct {
-    char name[MAX_SYMBOL_LENGTH];
-    char body[MAX_MACRO_LENGTH][MAX_LINE_LENGTH];
-    int lineCount;
+    char name[MAX_SYMBOL_LENGTH];            /**< The name of the macro. */
+    char body[MAX_MACRO_LENGTH][MAX_LINE_LENGTH]; /**< The body of the macro, stored as an array of lines. */
+    int lineCount;                           /**< The number of lines in the macro body. */
 } Macro;
 
+/**
+ * Struct representing a table of macros.
+ */
 typedef struct {
-    Macro *macros;
-    int count;
-    int capacity;
+    Macro *macros;                           /**< Pointer to an array of Macro structs. */
+    int count;                               /**< The current number of macros stored in the table. */
+    int capacity;                            /**< The maximum capacity of the macro table. */
 } MacroTable;
 
-
+/**
+ * Free the memory allocated for a LinesArray structure.
+ * @param lines_array_pointer - Pointer to the LinesArray structure to be freed.
+ */
 void free_lines_array(LinesArray *lines_array_pointer);
+
+/**
+ * Free the memory allocated for an InstructionLine structure.
+ * @param instruction_line_pointer - Pointer to the InstructionLine structure to be freed.
+ */
 void free_instruction_line(InstructionLine *instruction_line_pointer);
+
+/**
+ * Free the memory allocated for a MacroTable structure.
+ * @param macro_table - Pointer to the MacroTable structure to be freed.
+ */
 void free_macro_table(MacroTable *macro_table);
+
+/**
+ * Free the memory allocated for a SymbolTable structure.
+ * @param symbol_table - Pointer to the SymbolTable structure to be freed.
+ */
 void free_symbol_table(SymbolTable *symbol_table);
 
 /**
@@ -92,16 +133,71 @@ void free_symbol_table(SymbolTable *symbol_table);
  */
 void free_binary_instruction(InstructionLine *p_line);
 
-
+/**
+ * Add a new instruction line to the LinesArray.
+ * The array is resized if needed.
+ * @param lines_array - Pointer to the LinesArray structure.
+ * @param instruction_line - Pointer to the InstructionLine structure to be added.
+ */
 void addInstructionLine(LinesArray *lines_array, InstructionLine *instruction_line);
+
+/**
+ * Add a new symbol to the SymbolTable.
+ * The array is resized if needed.
+ * @param symbol_table - Pointer to the SymbolTable structure.
+ * @param new_symbol - Pointer to the Symbol structure to be added.
+ */
 void add_new_symbol(SymbolTable *symbol_table, Symbol *new_symbol);
+
+/**
+ * Initialize a LinesArray structure with a given initial capacity.
+ * @param initial_capacity - The initial capacity of the array.
+ * @return A pointer to the initialized LinesArray structure.
+ */
 LinesArray *init_lines_array(int initial_capacity);
+
+/**
+ * Initialize a SymbolTable structure with a given initial capacity.
+ * @param initial_capacity - The initial capacity of the array.
+ * @return A pointer to the initialized SymbolTable structure.
+ */
 SymbolTable * init_symbol_table(int initial_capacity);
+
+/**
+ * Initialize a MacroTable structure with a default capacity.
+ * @param table - Pointer to the MacroTable structure to initialize.
+ */
 void init_macro_table(MacroTable *table);
+
+/**
+ * Initialize an InstructionLine structure with a given line of text.
+ * @param line - The line of text to initialize the InstructionLine with.
+ * @return A pointer to the initialized InstructionLine structure.
+ */
 InstructionLine *init_instruction_line(char* line);
+
+/**
+ * Initialize a Command structure.
+ * @return A pointer to the initialized Command structure.
+ */
 Command *init_command();
+
+/**
+ * Initialize an Operand structure.
+ * @return A pointer to the initialized Operand structure.
+ */
 Operand *init_operand();
+
+/**
+ * Initialize a Directive structure.
+ * @return A pointer to the initialized Directive structure.
+ */
 Directive *init_directive();
+
+/**
+ * Initialize an array of macro names.
+ * @param macroNames - The array of strings to hold macro names.
+ */
 void init_macro_name_array(char **macroNames);
 
 /**

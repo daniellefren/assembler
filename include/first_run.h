@@ -57,7 +57,7 @@ int is_macro_definition_end(char *line);
  * Return if the line represents a macro invocation
  * @param line The line of assembly code to be processed.
  * @param macroName macro invocation name
- * @param macroNames aAn array with all existed macro names
+ * @param macroNames - The array of strings to hold macro names.
  * @return 1 if True, else 0
  */
 int is_macro_invocation(char *line, char *macroName, char **macroNames);
