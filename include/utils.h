@@ -5,70 +5,13 @@
 
 void lower_string(char *string);
 char *trim_spaces(char *str);
+char* itoa(int val, int base);
+void string_append(const char *first_string, const char *second_String, char *appended_string, size_t appended_string_size);
+void print_command(Command *command);
+void print_instruction_line(InstructionLine *instructionLine);
+void print_directive(Directive *directive);
 void erase_file_data(const char *filename);
 char* extract_numbers(const char *input, int length);
-void extract_word_after_keyword(const char *input, char *output, const char *keyword);
-void remove_first_character(char *str);
-void add_number_to_string(char *buffer, const char* source, size_t buffer_size, int number);
-int check_if_valid_integer(char *str);
-void add_output_directory();
-
-/**
- * Appends two strings into a pre-allocated buffer.
- *
- * Concatenates `first_string` and `second_string`, storing the result in `appended_string`.
- * Ensures that the buffer `appended_string` is large enough to hold the combined strings
- * plus the null terminator. If the buffer is too small, an error message is printed and
- * the program exits.
- *
- * @param first_string The first string to append.
- * @param second_string The second string to append.
- * @param appended_string The buffer to store the concatenated result.
- * @param appended_string_size The size of the buffer `appended_string`.
- *
- */
-void string_append(const char *first_string, const char *second_String, char *appended_string, size_t appended_string_size);
-
-/**
- * Prints the details of a Command structure.
- *
- * Displays the command's name, source operand (if present), and destination operand (if present).
- *
- * @param command Pointer to the Command structure to be printed.
- */
-void print_command(Command *command);
-
-/**
- * Prints the details of an InstructionLine structure.
- *
- * Displays the content of the line, its starting address, and prints additional
- * information depending on whether it contains a command or a directive.
- * Calls `print_command` if a command is present, or `print_directive` if a directive is present.
- *
- * @param instructionLine Pointer to the InstructionLine structure to be printed.
- */
-void print_instruction_line(InstructionLine *instructionLine);
-
-/**
- * Prints the details of a Directive structure.
- *
- * Displays the length of the directive and its values. If the directive contains data values,
- * all values are printed. If it contains a single value, that value is printed.
- *
- * @param directive Pointer to the Directive structure to be printed.
- */
-void print_directive(Directive *directive);
-
-/**
- * Converts a string representation of an integer to an integer value.
- *
- * Parses the input string `str` to convert it into an integer. Handles optional
- * leading negative sign to support negative numbers. Assumes that the string
- * contains valid integer characters (digits) and may start with a '-' for negative values.
- *
- * @param str Pointer to the null-terminated string to convert.
- * @return The integer value represented by the string.
- */
 int char_to_int(char *c);
 
 /**
@@ -148,5 +91,11 @@ void int_to_binary_string(int num, char *binary_string, int offset, int num_bits
  *
  */
 void char_to_binary_string(char c, char *binary_string, int offset, int num_bits);
-
+int check_if_valid_integer(char *str);
+void add_output_directory();
+char* skip_spaces(char *line);
+int ignore_line(char *line);
+void extract_word_after_keyword(const char *input, char *output, const char *keyword);
+void remove_first_character(char *str);
+void add_number_to_string(char *buffer, const char* source, size_t buffer_size, int number);
 #endif //ASSEMBLER_UTILS_H
