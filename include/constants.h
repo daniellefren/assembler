@@ -12,6 +12,7 @@
 #define IS_DIRECTIVE 1
 #define OPCODE_SIZE 4
 #define MAX_OPERAND_SIZE 10
+#define MAX_LINE_LENGTH 80
 //#define EXTERNALS_FILE_NAME "output_files/externals.txt";
 
 static const char *COMMANDS[] = {

@@ -5,13 +5,10 @@
 
 #include "../include/structs.h"
 #include "../include/first_run.h"
-#include "../include/assembler.h"
 #include "../include/constants.h"
 #include "../include/utils.h"
 #include "../include/files_handler.h"
 
-
-//TODO - get all errors from code and not exit after one and return also the line number
 
 Command commands_struct[] = {
         {"mov", MOV, 2},
@@ -440,7 +437,6 @@ int define_operand_types(Operand *operand, MacroTable *macro_table){
         }
     }
     else if (operand->value[0] == '*') {
-        //TODO - the operand should be the register number (page 40)
         if (operand->value[1] == 'r' && operand->value[2] >= '1' && operand->value[2] <= '7'){
             operand->type = REGISTER;
             strcpy(operand->value, extract_numbers(operand->value, length));
@@ -451,7 +447,6 @@ int define_operand_types(Operand *operand, MacroTable *macro_table){
         strcpy(operand->value, extract_numbers(operand->value, length));
     }
     else if(is_valid_symbol(operand->value, macro_table)){
-        printf("valid symbol %s\n", operand->value);
         operand->type = SYMBOL;
     }
     else{
@@ -740,7 +735,7 @@ void handle_entry_directive(Directive *new_directive, int file_number, SymbolTab
 void handle_extern_directive(char *line, Directive *new_directive, SymbolTable *symbol_table, int file_number, int *ic){
     Symbol* symbol;
     char *ptr = line;
-    new_directive->type = EXTERN; //TODO - maybe dont create directive
+    new_directive->type = EXTERN;
 
     symbol = (Symbol *)malloc(10 * sizeof(Symbol));
     if (symbol == NULL) {

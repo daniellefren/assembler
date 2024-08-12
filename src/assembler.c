@@ -1,31 +1,15 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <stdio.h>
+#include <errno.h>
+
 #include "../include/first_run.h"
 #include "../include/second_run.h"
 #include "../include/test_first_run.h"
+#include "../include/utils.h"
 
-void add_output_directory();
 
-void add_output_directory(){
-    const char *dirName = OUTPUT_DIRECTORY_NAME;
-    struct stat st = {0};
-
-    // Check if the directory exists
-    if (stat(dirName, &st) == -1) {
-        // Directory does not exist, create it
-        if (mkdir(dirName, 0755) == 0) {
-            printf("Directory '%s' created successfully.\n", dirName);
-        } else {
-            perror("Error creating directory");
-            exit(EXIT_FAILURE);
-        }
-    } else {
-        printf("Directory '%s' already exists.\n", dirName);
-    }
-}
-
-//TODO - get over al the todos
 int main(int argc, char *argv[]) {
     LinesArray *assembly_lines_array;
     SymbolTable *symbol_table;
@@ -74,3 +58,4 @@ int main(int argc, char *argv[]) {
 
     return EXIT_SUCCESS;
 }
+

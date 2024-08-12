@@ -1,7 +1,6 @@
 #ifndef ASSEMBLER_STRUCTS_H
 #define ASSEMBLER_STRUCTS_H
 #include "constants.h"
-#include "assembler.h"
 
 
 #define INITIAL_IC 100
