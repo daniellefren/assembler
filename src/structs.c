@@ -84,35 +84,18 @@ void free_instruction_line(InstructionLine *instruction_line) {
     }
 }
 
-void allocate_binary_instruction(InstructionLine *p_line, size_t binary_line_count, size_t binary_line_length) {
-    size_t count_to_allocate = binary_line_count * binary_line_length + 1; // Calculate total size in bytes
-    printf("The binary line count - %lu\n", binary_line_count);
-    if (binary_line_count == 0){//TODO - delete after danielle add binary_line_count logic
-        fprintf(stderr, "Error: 0 lines of binary for the instruction line\n");
-        return;
-    }
-    p_line->binary_instruction = (char*) malloc(count_to_allocate);
-    printf("The size wanted to allocate is %lu\n", count_to_allocate);
-    if (p_line->binary_instruction == NULL) {
-        fprintf(stderr, "Memory allocation failed for binary instruction\n");
-        exit(1);
-    }
-}
+
 
 void free_binary_instruction(InstructionLine *p_line) {
     free(p_line->binary_instruction);
 }
 
 void free_symbol_table(SymbolTable *symbol_table) {
-    for (int i = 0; i < symbol_table->size; ++i) {
-        free(symbol_table->symbols[i].name); // If the name was dynamically allocated
+    if (symbol_table->symbols != NULL) {
+        free(symbol_table->symbols);
     }
-    free(symbol_table->symbols);
 }
 
-char *get_instruction_line_binary(LinesArray *linesArray, int number_of_line){
-    return linesArray->lines[number_of_line].binary_instruction;
-}
 
 // Function to add an instruction line to the LinesArray
 void addInstructionLine(LinesArray *lines_array, InstructionLine *instruction_line) {
@@ -243,3 +226,24 @@ void init_macro_name_array(char **macroNames) {
 }
 
 
+void allocate_binary_instruction(InstructionLine *p_line, size_t binary_line_count, size_t binary_line_length) {
+    size_t count_to_allocate;
+    // Calculate the total size needed in bytes, adding 1 for the null terminator.
+    count_to_allocate= binary_line_count * binary_line_length + 1;
+    printf("The binary line count - %lu\n", binary_line_count);
+
+    if (binary_line_count == 0){
+        fprintf(stderr, "Error: 0 lines of binary for the instruction line\n");
+        return;
+    }
+    p_line->binary_instruction = (char*) malloc(count_to_allocate);
+    if (p_line->binary_instruction == NULL) {
+        fprintf(stderr, "Memory allocation failed for binary instruction\n");
+        exit(EXIT_FAILURE);
+    }
+}
+
+
+char *get_instruction_line_binary(LinesArray *linesArray, int number_of_line) {
+    return linesArray->lines[number_of_line].binary_instruction;
+}
