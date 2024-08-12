@@ -7,10 +7,6 @@
 #include "../include/files_handler.h"
 
 
-#define BINARY_INSTRUCTION_MAX_LENGTH 46
-#define BINARY_LINE_LENGTH 15
-
-
 void start_second_run(LinesArray *assembly_lines_array, int file_number){
     InstructionLine *p_line;
 
