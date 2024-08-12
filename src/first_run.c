@@ -443,22 +443,22 @@ int define_operand_types(Operand *operand, MacroTable *macro_table){
         //TODO - the operand should be the register number (page 40)
         if (operand->value[1] == 'r' && operand->value[2] >= '1' && operand->value[2] <= '7'){
             operand->type = REGISTER;
+            strcpy(operand->value, extract_numbers(operand->value, length));
         }
     }
-
     else if (operand->value[0] == 'r' && operand->value[1] >= '1' && operand->value[1] <= '7'){
-            operand->type = REGISTER;
+        operand->type = REGISTER;
+        strcpy(operand->value, extract_numbers(operand->value, length));
     }
-
     else if(is_valid_symbol(operand->value, macro_table)){
         printf("valid symbol %s\n", operand->value);
-        //TODO - check in page 40 if the operand should be the address
         operand->type = SYMBOL;
     }
     else{
         fprintf(stderr, "Not valid operand type. %s\n", operand->value);
         return 0;
     }
+    return 1;
 }
 
 
@@ -466,8 +466,7 @@ int define_operand_types(Operand *operand, MacroTable *macro_table){
 int is_valid_symbol(const char *symbol, MacroTable *macro_table) {
     int i;
     size_t length;
-    //TODO - add exit when not valid
-   
+
     //Check length of the symbol
     length = strlen(symbol);
     if (length == 0 || length > MAX_SYMBOL_LENGTH) {
@@ -612,18 +611,17 @@ int find_symbol(char *line, char *symbol) {
 // Return 1 if symbol is an assembly keyword, else 0
 int is_known_assembly_keyword(const char *symbol) {
     int i;
-    //TODO - Know if symbol or macro
-    // Copy commands into all_instructions
+
     for (i = 0; i < COMMANDS_COUNT; ++i) {
         if (strcmp(symbol, COMMANDS[i]) == 0) {
-            fprintf(stderr, "symbol is not valid -- A known assembly keyword\n");
+            fprintf(stderr, "symbol is not valid -- %s is a known assembly keyword (Command) \n", symbol);
             return 1; //symbol is a known command
         }
     }
 
     for (i = 0; i < DIRECTIVES_COUNT; ++i) {
         if (strcmp(symbol, DIRECTIVES[i]) == 0) {
-            fprintf(stderr, "symbol is not valid -- A known assembly keyword\n");
+            fprintf(stderr, "symbol is not valid -- %s is a known assembly keyword (Directory)\n", symbol);
             return 1; //symbol is a known directive
         }
     }
@@ -742,7 +740,7 @@ void handle_entry_directive(Directive *new_directive, int file_number, SymbolTab
 void handle_extern_directive(char *line, Directive *new_directive, SymbolTable *symbol_table, int file_number, int *ic){
     Symbol* symbol;
     char *ptr = line;
-    new_directive->type = EXTERN;
+    new_directive->type = EXTERN; //TODO - maybe dont create directive
 
     symbol = (Symbol *)malloc(10 * sizeof(Symbol));
     if (symbol == NULL) {
