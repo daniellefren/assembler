@@ -16,7 +16,6 @@ void lower_string(char *string){
     }
 }
 
-// Function to trim leading and trailing spaces
 char *trim_spaces(char *str) {
     char *end;
 
@@ -114,7 +113,6 @@ void erase_file_data(const char *filename) {
     fclose(file); // Closing the file truncates it to zero length
 }
 
-// Function to extract numeric characters, including negative numbers, from a string
 char* extract_numbers(const char *input, int length) {
     // Allocate memory for the new string
     char *numbers = (char *)malloc(length + 1);
@@ -183,7 +181,6 @@ void extract_word_after_keyword(const char *input, char *output, const char *key
     }
 }
 
-// Function to remove the first character from a string
 void remove_first_character(char *str) {
     if (str != NULL && strlen(str) > 0) {
         memmove(str, str + 1, strlen(str));
@@ -265,8 +262,6 @@ void binary_to_octal(const char *binary_string, char *octal_string) {
     }
 }
 
-/* Check if given string is integer
- Return 0 if no or the length if yes */
 int check_if_valid_integer(char *str) {
     printf("strrrr %s", str);
     int i = 0;
@@ -346,7 +341,6 @@ void add_output_directory(){
     }
 }
 
-//Skip spaces in line
 char* skip_spaces(char *line) {
     if (line == NULL) return NULL;
     while (*line && isspace((unsigned char)*line)) {
@@ -355,7 +349,6 @@ char* skip_spaces(char *line) {
     return line;
 }
 
-// Ignore line when going through the assembly line when a comment ';' or an empty line
 int ignore_line(char *line) {
     line = skip_spaces(line);
     return (*line == ';' || *line == '\0' || *line == '\n');

@@ -3,10 +3,39 @@
 #define ASSEMBLER_FILES_HANDLER_H
 #include "../include/utils.h"
 
+/**
+ * Add an external symbol to the externals file.
+ *
+ * @param symbol - Pointer to the Symbol struct representing the external symbol.
+ * @param file_number - The file number used to generate the externals file name.
+ * @param ic - Pointer to the instruction counter (IC) which indicates the address of the symbol.
+ */
 void add_extern_to_externals_file(Symbol *symbol, int file_number, int *ic);
+
+/**
+ * Add an entry symbol to the entries file.
+ *
+ * @param symbol_name - The name of the symbol to add as an entry.
+ * @param file_number - The file number used to generate the entries file name.
+ * @param symbol_address - The memory address of the entry symbol.
+ */
 void add_entry_to_entries_file(char *symbol, int file_number, int symbol_address);
 
+/**
+ * Write a line of text to a file.
+ *
+ * @param line - The line of text to write to the file.
+ * @param new_file_name - The name of the file to write the line to.
+ * @return int - Returns 0 to indicate success.
+ */
 int write_line_to_file(char *line, char* new_file_name);
+
+/**
+ * Write the expanded macros from the MacroTable to a file.
+ *
+ * @param macro_table - Pointer to the MacroTable containing the expanded macros.
+ * @param new_file_name - The name of the file to write the expanded macros to.
+ */
 void write_expanded_macros_to_file(MacroTable *macro_table, char* new_file_name);
 
 /**
