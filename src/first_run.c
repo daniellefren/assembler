@@ -30,17 +30,7 @@ Command commands_struct[] = {
         {"not_opcode", NOT_OPCODE, 0}
 };
 
-/**
- * Performs the first pass over the assembly source file.
- * The function processes the assembly source file to handle macro expansion, symbol handling, Commands and directive processing in the provided assembly file
- * This function also updates the instruction counter (IC) and data counter (DC) based on the processed lines.
- * @param file The input assembly source file to be processed.
- * @param ic Pointer to the instruction counter, which tracks the memory address of the commands.
- * @param dc Pointer to the data counter, which tracks the memory address of the data items.
- * @param lines_array A pointer to the LinesArray structure that stores all lines of the source file after processing.
- * @param symbol_table A pointer to the SymbolTable structure that stores all symbols encountered in the source file.
- * @param file_number An integer representing the number of the current file being processed, used for generating unique output file names.
- */
+
 void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTable *symbol_table, int file_number) {
     int success;
     char line[MAX_LINE_LENGTH];
@@ -99,19 +89,7 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
     free_macro_table(&macro_table);
 }
 
-/**
- * Pre-processes the assembly source file to expand macros.
- * performs the first pass over the assembly source file. It identifies macro definitions, stores them in a `MacroTable`,
- * and expands any macro invocations found in the source code. The expanded code is written to a new output file, which will be used in subsequent
- * assembly processing stages.
- * @param macro_table A pointer to the `MacroTable` structure that stores the names and bodies of all macros encountered during the pre-run.
- * @param macro_names An array of strings that keeps track of all macro names encountered in the source file.
- * @param file The input assembly source file to be processed.
- * @param new_file_name The name of the output file where the expanded assembly code (with macros expanded) will be written.
- */
 int pre_run(MacroTable *macro_table, char **macro_names, FILE *file, char* new_file_name) {
-    // Run and expand all macros in the program.
-    // Return number of macros
     int is_in_macro = 0;
     int macroCount = 0;
     char macro_name[MAX_SYMBOL_LENGTH];
@@ -149,11 +127,6 @@ int pre_run(MacroTable *macro_table, char **macro_names, FILE *file, char* new_f
 
 }
 
-/**
- * Adds a new macro to the macro table, expanding the table if necessary.
- * @param macro_table A pointer to the `MacroTable` structure that stores the names and bodies of all macros encountered during the pre-run.
- * @param new_macro The `Macro` structure to be added to the macro table.
- */
 void add_macro(MacroTable *macro_table, Macro new_macro) {
     if (macro_table->count >= macro_table->capacity) {
         macro_table->capacity *= 2;
@@ -231,15 +204,6 @@ void expand_macro(const Macro *macro, FILE *outputFile) {
     }
 }
 
-/**
- * Processes a single line of assembly code, handling symbols, commands, and directives.
- * @param line The line of assembly code to be processed.
- * @param ic Pointer to the instruction counter, which tracks the memory address of the commands.
- * @param dc Pointer to the data counter, which tracks the memory address of the data items.
- * @param lines_array A pointer to the LinesArray structure that stores all lines of the source file after processing.
- * @param macro_table A pointer to the `MacroTable` structure that stores the names and bodies of all macros encountered during the pre-run.
- * @param file_number An integer representing the number of the current file being processed, used for generating unique output file names.
- */
 int read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, LinesArray *lines_array, MacroTable *macro_table, int file_number) {
     char symbol_name[MAX_SYMBOL_LENGTH] = "";
     int has_symbol;
@@ -299,12 +263,6 @@ int read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, LinesArra
     return success;
 }
 
-/**
- * @brief Allocates memory and initializes a new symbol for the current instruction line.
- * @param new_instruction_line A pointer to the `InstructionLine` structure that the symbol will be associated with.
- * @param symbol_name The name of the symbol to be assigned to the new `symbol` structure.
- * @return A pointer to the newly created `symbol` structure.
- */
 Symbol* handle_symbol(InstructionLine *new_instruction_line, char* symbol_name){
     Symbol *new_symbol;
     new_symbol = (Symbol *)malloc(10 * sizeof(Symbol));
@@ -324,17 +282,6 @@ Symbol* handle_symbol(InstructionLine *new_instruction_line, char* symbol_name){
     return new_symbol;
 }
 
-/**
- * Processes a command line from the assembly source, extracting and classifying its operands.
- * The `handle_command` function analyzes a command line from the assembly source code, identifies the command,
- * extracts its operands, and classifies them according to their types.
- * The function updates the `InstructionLine` structure with the command information and calculates the number
- * of binary lines required for the instruction.
- * @param line The line of assembly code containing the command to be processed.
- * @param symbol_table A pointer to the SymbolTable structure that stores all symbols encountered in the source file.
- * @param macro_table A pointer to the `MacroTable` structure that stores the names and bodies of all macros encountered during the pre-run.
- * @param new_instruction_line A pointer to the `InstructionLine` structure that the symbol will be associated with.
- */
 int handle_command(char *line, SymbolTable *symbol_table, MacroTable *macro_table, InstructionLine *new_instruction_line) {
     int success;
     Command *new_command;
@@ -418,11 +365,7 @@ void extract_second_operand_from_line(char* line, Command *new_command){
     sscanf(line, "%s", new_command->dst_operand->value);
 }
 
-/**
- * Defines the type of an operand based on its value.
- * @param operand A pointer to the `Operand` structure that contains the operand's value and type.
- * @param macro_table A pointer to the `MacroTable` structure that stores the names and bodies of all macros encountered during the pre-run.
- */
+
 int define_operand_types(Operand *operand, MacroTable *macro_table){
     int length;
 
@@ -558,20 +501,6 @@ void get_operands_data_for_command(char* command_name, Command *new_command){
     exit(EXIT_FAILURE);
 }
 
-// Ignore line when going through the assembly line when a comment ';' or an empty line
-int ignore_line(char *line) {
-    line = skip_spaces(line);
-    return (*line == ';' || *line == '\0' || *line == '\n');
-}
-
-//Skip spaces in line
-char* skip_spaces(char *line) {
-    if (line == NULL) return NULL;
-    while (*line && isspace((unsigned char)*line)) {
-        line++;
-    }
-    return line;
-}
 
 // Function to check if a line is a symbol
 int find_symbol(char *line, char *symbol) {
@@ -604,20 +533,20 @@ int find_symbol(char *line, char *symbol) {
 }
 
 // Return 1 if symbol is an assembly keyword, else 0
-int is_known_assembly_keyword(const char *symbol) {
+int is_known_assembly_keyword(const char *key) {
     int i;
 
     for (i = 0; i < COMMANDS_COUNT; ++i) {
-        if (strcmp(symbol, COMMANDS[i]) == 0) {
-            fprintf(stderr, "symbol is not valid -- %s is a known assembly keyword (Command) \n", symbol);
-            return 1; //symbol is a known command
+        if (strcmp(key, COMMANDS[i]) == 0) {
+            fprintf(stderr, "key is not valid -- %s is a known assembly keyword (Command) \n", key);
+            return 1; //key is a known command
         }
     }
 
     for (i = 0; i < DIRECTIVES_COUNT; ++i) {
-        if (strcmp(symbol, DIRECTIVES[i]) == 0) {
-            fprintf(stderr, "symbol is not valid -- %s is a known assembly keyword (Directory)\n", symbol);
-            return 1; //symbol is a known directive
+        if (strcmp(key, DIRECTIVES[i]) == 0) {
+            fprintf(stderr, "key is not valid -- %s is a known assembly keyword (Directory)\n", key);
+            return 1; //key is a known directive
         }
     }
 
@@ -672,15 +601,7 @@ int is_directive(char *line) {
     return 0;
 }
 
-/**
- * Processes an assembly directive and updates the instruction line accordingly.
- * @param line The line of assembly code containing the directive to be processed.
- * @param dc Pointer to the data counter, which tracks the memory address of the data items.
- * @param symbol_table A pointer to the SymbolTable structure that stores all symbols encountered in the source file.
- * @param ic Pointer to the instruction counter, which tracks the memory address of the commands.
- * @param file_number An integer representing the number of the current file being processed, used for generating unique output file names.
- * @param new_instruction_line A pointer to the `InstructionLine` structure that the symbol will be associated with.
- */
+
 void handle_directives(char *line, int *dc, SymbolTable *symbol_table, int* ic, int file_number, InstructionLine *new_instruction_line) {
     char directive_type[MAX_LINE_LENGTH];
     Directive *new_directive;
@@ -752,12 +673,7 @@ void handle_extern_directive(char *line, Directive *new_directive, SymbolTable *
     add_extern_to_externals_file(symbol, file_number, ic);
 }
 
-/**
- * Processes a `.string` directive and extracts the string value into the directive structure.
- * @param line The line of assembly code containing the `.string` directive.
- * @param new_directive A pointer to the `Directive` structure to be populated with the extracted string data.
- * @param instruction_line A pointer to the `InstructionLine` structure that will be updated with the binary line count for the string.
- */
+
 void handle_string_directive(char *line, Directive *new_directive, InstructionLine *instruction_line) {
     char *start;
     char *end;
@@ -798,12 +714,7 @@ void handle_string_directive(char *line, Directive *new_directive, InstructionLi
     }
 }
 
-/**
- * Processes a `.data` directive and extracts the integer values into the directive structure.
- * @param line The line of assembly code containing the `.data` directive.
- * @param new_directive A pointer to the `Directive` structure to be populated with the extracted data values.
- * @param instruction_line A pointer to the `InstructionLine` structure that will be updated with the binary line count for the data.
- */
+
 void handle_data_directive(char *line, Directive *new_directive, InstructionLine *instruction_line) {
     char *ptr;
     char *values[MAX_LINE_LENGTH];
