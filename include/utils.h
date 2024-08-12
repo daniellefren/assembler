@@ -3,10 +3,33 @@
 #define ASSEMBLER_UTILS_H
 #include "../include/structs.h"
 #include <stdbool.h>
+
+/**
+ * Convert a string to lowercase.
+ * @param string - The string to be converted to lowercase.
+ */
 void lower_string(char *string);
+
+/**
+ * Trim leading and trailing spaces from a string.
+ * @param str - The string to be trimmed.
+ * @return A pointer to the trimmed string.
+ */
 char *trim_spaces(char *str);
+
+
 char* itoa(int val, int base);
+
+/**
+ * Append one string to another, ensuring the destination buffer is large enough.
+ * @param first_string - The first string to append.
+ * @param second_string - The second string to append.
+ * @param appended_string - The destination buffer for the appended string.
+ * @param appended_string_size - The size of the destination buffer.
+ */
 void string_append(const char *first_string, const char *second_String, char *appended_string, size_t appended_string_size);
+
+
 void print_command(Command *command);
 void print_instruction_line(InstructionLine *instructionLine);
 void print_directive(Directive *directive);
