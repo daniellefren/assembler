@@ -11,13 +11,11 @@
 LinesArray *init_lines_array(int initial_capacity) {
     LinesArray *lines_array = (LinesArray *)malloc(sizeof(LinesArray));
     if (!lines_array) {
-//        fprintf(stderr, "Error: LinesArray pointer is NULL\n");
         print_internal_error(ERROR_CODE_46, "");
         exit(EXIT_FAILURE);
     }
     lines_array->lines = (InstructionLine *)malloc(initial_capacity * sizeof(InstructionLine));
     if (!lines_array->lines) {
-//        fprintf(stderr, "Memory allocation failed for lines array\n");
         print_internal_error(ERROR_CODE_15, "");
         exit(EXIT_FAILURE);
     }
@@ -30,13 +28,11 @@ LinesArray *init_lines_array(int initial_capacity) {
 SymbolTable *init_symbol_table(int initial_capacity) {
     SymbolTable *symbol_table = (SymbolTable *)malloc(sizeof(SymbolTable));
     if (!symbol_table) {
-//        fprintf(stderr, "Error: SymbolTable pointer is NULL\n");
         print_internal_error(ERROR_CODE_27, "");
         exit(EXIT_FAILURE);
     }
     symbol_table->symbols = (Symbol *)malloc(initial_capacity * sizeof(Symbol));
     if (!symbol_table->symbols) {
-//        fprintf(stderr, "Memory allocation failed for symbols array\n");
         print_internal_error(ERROR_CODE_14, "");
         exit(EXIT_FAILURE);
     }
@@ -110,7 +106,6 @@ void addInstructionLine(LinesArray *lines_array, InstructionLine *instruction_li
         size_t new_capacity = (lines_array->capacity == 0) ? 10 : lines_array->capacity * 2;
         InstructionLine *new_lines = realloc(lines_array->lines, new_capacity * sizeof(InstructionLine));
         if (!new_lines) {
-//            fprintf(stderr, "Error: Unable to allocate memory for lines array\n");
             print_internal_error(ERROR_CODE_15, "");
             exit(EXIT_FAILURE);
         }
@@ -130,7 +125,6 @@ void add_new_symbol(SymbolTable *symbol_table, Symbol *symbol) {
         size_t new_capacity = (symbol_table->capacity == 0) ? 10 : symbol_table->capacity * 2;
         Symbol *new_symbols = realloc(symbol_table->symbols, new_capacity * sizeof(Symbol));
         if (!new_symbols) {
-//            fprintf(stderr, "Error: Unable to allocate memory for lines array\n");
             print_internal_error(ERROR_CODE_15, "");
             exit(EXIT_FAILURE);
         }
@@ -147,7 +141,6 @@ void add_new_symbol(SymbolTable *symbol_table, Symbol *symbol) {
 void init_macro_table(MacroTable *table) {
     table->macros = (Macro *)malloc(10 * sizeof(Macro));
     if (!table->macros) {
-//        fprintf(stderr, "Error: Memory allocation failed for macro table\n");
         print_internal_error(ERROR_CODE_10, "");
         exit(EXIT_FAILURE);
     }
@@ -159,7 +152,6 @@ InstructionLine *init_instruction_line(char* line){
     // Allocate memory for instruction line
     InstructionLine *new_instruction_line = (InstructionLine *)malloc(sizeof(InstructionLine));
     if (new_instruction_line == NULL) {
-//        fprintf(stderr, "Memory allocation error for InstructionLine\n");
         print_internal_error(ERROR_CODE_16, "");
         exit(EXIT_FAILURE);
     }
@@ -167,7 +159,6 @@ InstructionLine *init_instruction_line(char* line){
     new_instruction_line->line_content = strdup(line);
 
     if (new_instruction_line->line_content == NULL) {
-//        fprintf(stderr, "Memory allocation error for line content\n");
         print_internal_error(ERROR_CODE_17, "");
         free(new_instruction_line);
         exit(EXIT_FAILURE);
@@ -182,7 +173,6 @@ InstructionLine *init_instruction_line(char* line){
 Command *init_command(){
     Command *new_command = (Command *)malloc(10 * sizeof(Command));
     if (new_command == NULL) {
-//        fprintf(stderr, "Memory allocation error for directive\n");
         print_internal_error(ERROR_CODE_18, "");
         exit(EXIT_FAILURE);
     }
@@ -194,7 +184,6 @@ Command *init_command(){
     //Allocate memory for command name
     new_command->command_name = malloc(MAX_COMMAND_LEN * sizeof(char));
     if (new_command->command_name == NULL) {
-//        fprintf(stderr, "Memory allocation error for command name in command\n");
         print_internal_error(ERROR_CODE_19, "");
         exit(EXIT_FAILURE);
     }
@@ -205,7 +194,6 @@ Command *init_command(){
 Operand *init_operand(){
     Operand *operand = (Operand *)malloc(sizeof(Operand));
     if (operand == NULL) {
-//        fprintf(stderr, "Memory allocation error for operands\n");
         print_internal_error(ERROR_CODE_20, "");
         free(operand);
         exit(EXIT_FAILURE);
@@ -220,7 +208,6 @@ Operand *init_operand(){
 Directive *init_directive(){
     Directive *new_directive = (Directive *)malloc(10 * sizeof(Directive));
     if (new_directive == NULL) {
-//        fprintf(stderr, "Memory allocation error for directive\n");
         print_internal_error(ERROR_CODE_18, "");
         exit(EXIT_FAILURE);
     }
@@ -232,7 +219,6 @@ void init_macro_name_array(char **macroNames) {
     for (int i = 0; i < MAX_MACRO_NAMES; ++i) {
         macroNames[i] = malloc(MAX_SYMBOL_LENGTH * sizeof(char));
         if (!macroNames[i]) {
-//            fprintf(stderr, "Error: Memory allocation failed for macro name %d\n", i);
             print_internal_error(ERROR_CODE_21, "");
             exit(EXIT_FAILURE);
         }
@@ -248,13 +234,11 @@ void allocate_binary_instruction(InstructionLine *p_line, size_t binary_line_cou
     printf("The binary line count - %lu\n", binary_line_count);
 
     if (binary_line_count == 0){
-//        fprintf(stderr, "Error: 0 lines of binary for the instruction line\n");
         print_internal_error(ERROR_CODE_35, "");
         exit(EXIT_FAILURE);
     }
     p_line->binary_instruction = (char*) malloc(count_to_allocate);
     if (p_line->binary_instruction == NULL) {
-//        fprintf(stderr, "Memory allocation failed for binary instruction\n");
         print_internal_error(ERROR_CODE_22, "");
         exit(EXIT_FAILURE);
     }

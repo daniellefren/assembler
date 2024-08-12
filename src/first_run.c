@@ -84,7 +84,6 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
     lines_array->dc = *dc;
 
     if(!success){
-//        fprintf(stderr, "Program stopped running because of incorrect given assembly code");
         print_internal_error(ERROR_CODE_8, "");
         exit(EXIT_FAILURE);
     }
@@ -112,7 +111,6 @@ int pre_run(MacroTable *macro_table, char **macro_names, FILE *file, char* new_f
                 if (macroCount < MAX_MACRO_NAMES) {
                     strcpy(macro_names[macroCount++], macro_name);
                 } else {
-//                    fprintf(stderr, "Warning: Reached maximum number of macro names (%d)\n", MAX_MACRO_NAMES);
                     print_internal_error(ERROR_CODE_26, int_to_string(MAX_MACRO_NAMES));
                 }
                 is_in_macro = handle_macro_definition(file, macro_table, line); // Pass macro_table directly
@@ -265,7 +263,6 @@ Symbol* handle_symbol(InstructionLine *new_instruction_line, char* symbol_name){
     Symbol *new_symbol;
     new_symbol = (Symbol *)malloc(10 * sizeof(Symbol));
     if (new_symbol == NULL) {
-//        fprintf(stderr, "Memory allocation error for symbol\n");
         print_internal_error(ERROR_CODE_11, "");
         exit(EXIT_FAILURE);
     }
@@ -341,7 +338,6 @@ void define_operands_from_line(Command *new_command, char* line){
             return;
 
         default:
-//            fprintf(stderr, "Invalid number of operands: %d\n", new_command->operand_number);
             print_internal_error(ERROR_CODE_23, int_to_string(new_command->operand_number));
             exit(EXIT_FAILURE);
     }
@@ -390,7 +386,6 @@ int define_operand_types(Operand *operand, MacroTable *macro_table){
         operand->type = SYMBOL;
     }
     else{
-//        fprintf(stderr, "Not valid operand type. %s\n", operand->value);
         print_internal_error(ERROR_CODE_24, operand->value);
         return 0;
     }
@@ -478,7 +473,6 @@ int classify_operand(Operand *new_operand) {
         new_operand->classification_type = DIRECT_REGISTER; // Direct Register addressing
     }
     else{
-//        fprintf(stderr, "Not valid classification type");
         print_internal_error(ERROR_CODE_25, "");
         return 0;
     }
@@ -496,7 +490,6 @@ void get_operands_data_for_command(char* command_name, Command *new_command){
             return;
         }
     }
-//    fprintf(stderr, "Error: Opcode %d not found in the instruction set.\n", command_opcode);
     print_internal_error(ERROR_CODE_31, command_name);
     exit(EXIT_FAILURE);
 }
@@ -525,7 +518,6 @@ int find_symbol(char *line, char *symbol) {
         return 1;
     }
     if(((*start == ' ') && *(start + 1) == ':')){
-//        fprintf(stderr, "Symbol is not valid -- a space between the symbol and the ':'\n");
         print_internal_error(ERROR_CODE_2, "");
         exit(EXIT_FAILURE);
     }
@@ -533,21 +525,16 @@ int find_symbol(char *line, char *symbol) {
 }
 
 int is_known_assembly_keyword(const char *key) {
-    printf("is_known_assembly_keyword\n");
     int i;
 
     for (i = 0; i < COMMANDS_COUNT; ++i) {
         if (strcmp(key, COMMANDS[i]) == 0) {
-//            fprintf(stderr, "key is not valid -- %s is a known assembly keyword (Command) \n", key);
-            printf("?????\n");
             return 1; //key is a known command
         }
     }
 
     for (i = 0; i < DIRECTIVES_COUNT; ++i) {
         if (strcmp(key, DIRECTIVES[i]) == 0) {
-//            fprintf(stderr, "key is not valid -- %s is a known assembly keyword (Directory)\n", key);
-
             return 1; //key is a known directive
         }
     }
@@ -611,7 +598,6 @@ void handle_directives(char *line, int *dc, SymbolTable *symbol_table, int* ic, 
 
     // Read the directive type from the line
     if (sscanf(line, "%s", directive_type) != 1) {
-//        fprintf(stderr, "Error: Failed to read directive type\n");
         print_internal_error(ERROR_CODE_32, "");
         new_directive->type = NOT_DIRECTIVE;
         exit(EXIT_FAILURE);
@@ -632,7 +618,6 @@ void handle_directives(char *line, int *dc, SymbolTable *symbol_table, int* ic, 
 
     } else {
         new_directive->type = NOT_DIRECTIVE;
-//        fprintf(stderr, "Error: Unknown directive %s\n", directive_type);
         print_internal_error(ERROR_CODE_47, directive_type);
         exit(EXIT_FAILURE);
     }
@@ -659,7 +644,6 @@ void handle_extern_directive(char *line, Directive *new_directive, SymbolTable *
 
     symbol = (Symbol *)malloc(10 * sizeof(Symbol));
     if (symbol == NULL) {
-//        fprintf(stderr, "Memory allocation error for directive\n");
         print_internal_error(ERROR_CODE_12, "");
         exit(EXIT_FAILURE);
     }
@@ -752,7 +736,6 @@ void handle_data_directive(char *line, Directive *new_directive, InstructionLine
     // Allocate memory for the values in the directive
     new_directive->value = (char **)malloc(values_count * sizeof(char *));
     if (new_directive->value == NULL) {
-//        fprintf(stderr, "Memory allocation error\n");
         print_internal_error(ERROR_CODE_13, "");
         exit(EXIT_FAILURE);
     }
@@ -775,7 +758,6 @@ Symbol *find_symbol_by_name(SymbolTable* symbol_table, char* symbol_name){
             return &symbol_table->symbols[i];
         }
     }
-//    fprintf(stderr, "Error finding symbol %s", symbol_name);
     print_internal_error(ERROR_CODE_39, symbol_name);
     exit(EXIT_FAILURE);
 }
