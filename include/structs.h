@@ -1,7 +1,7 @@
 #ifndef ASSEMBLER_STRUCTS_H
 #define ASSEMBLER_STRUCTS_H
 #include "constants.h"
-
+#include <stdbool.h>
 
 #define INITIAL_IC 100
 #define MAX_MACRO_LENGTH 100
@@ -133,5 +133,44 @@ void allocate_binary_instruction(InstructionLine *p_line, size_t binary_line_cou
  */
 char *get_instruction_line_binary(LinesArray *linesArray, int number_of_line);
 
+/**
+ * Checks if the given instruction line represents a directive.
+ * This function determines if the `InstructionLine` contains a non-NULL `directive` field,
+ * indicating that the instruction is a directive rather than an opcode.
+ *
+ * @param instructionLine The `InstructionLine` structure to be checked. This structure includes
+ *                        the `directive` field that is used to determine if the instruction
+ *                        is a directive.
+ *
+ * @return `true` if the `directive` field is non-NULL, indicating the instruction is a directive,
+ *         otherwise `false`.
+ */
+bool is_instruction_line_directive(InstructionLine instructionLine);
 
+/**
+ * Checks if the given instruction line represents an opcode.
+ * This function determines if the `InstructionLine` contains a non-NULL `command` field,
+ * indicating that the instruction is an opcode rather than a directive.
+ *
+ * @param instructionLine The `InstructionLine` structure to be checked. This structure includes
+ *                        the `command` field that is used to determine if the instruction
+ *                        is an opcode.
+ *
+ * @return `true` if the `command` field is non-NULL, indicating the instruction is an opcode,
+ *         otherwise `false`.
+ */
+bool is_instruction_line_opcode(InstructionLine instructionLine);
+
+/**
+ * Checks if the given operand classification type is valid.
+ * This function verifies whether the `operandClassificationType` falls within the valid range
+ * of `operand_classification_type` enumeration values. The valid range is from `IMMEDIATE` to
+ * `DIRECT_REGISTER`.
+ *
+ * @param operandClassificationType The `operand_classification_type` value to be checked. This
+ *                                   enumeration represents the classification of an operand.
+ *
+ * @return `1` (true) if the `operandClassificationType` is within the valid range, otherwise `0` (false).
+ */
+int is_operand_classification_type_valid(enum operand_classification_type operandClassificationType);
 #endif
