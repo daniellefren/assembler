@@ -4,6 +4,9 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <math.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+
 #include "../include/utils.h"
 
 
@@ -323,7 +326,7 @@ void char_to_binary_string(char c, char *binary_string, int offset, int num_bits
     int i;
 
     // Ensure binary_string is large enough to hold the result
-    if (binary_string == NULL || offset + num_bits > CHAR_BIT * sizeof(char) * strlen(binary_string)) {
+    if (binary_string == NULL || offset + num_bits >  sizeof(char) * strlen(binary_string)) {
         fprintf(stderr, "Invalid binary string buffer\n");
         return;
     }
@@ -333,5 +336,23 @@ void char_to_binary_string(char c, char *binary_string, int offset, int num_bits
     for (i = offset + num_bits - 1; i >= offset; i--) {
         binary_string[i] = (uc & 1) + '0';
         uc >>= 1;
+    }
+}
+
+void add_output_directory(){
+    const char *dirName = OUTPUT_DIRECTORY_NAME;
+    struct stat st = {0};
+
+    // Check if the directory exists
+    if (stat(dirName, &st) == -1) {
+        // Directory does not exist, create it
+        if (mkdir(dirName, 0755) == 0) {
+            printf("Directory '%s' created successfully.\n", dirName);
+        } else {
+            perror("Error creating directory");
+            exit(EXIT_FAILURE);
+        }
+    } else {
+        printf("Directory '%s' already exists.\n", dirName);
     }
 }

@@ -22,4 +22,5 @@ void binary_to_octal(const char *binary_string, char *octal_string);
 void int_to_binary_string(int num, char *binary_string, int offset, int num_bits);
 void char_to_binary_string(char c, char *binary_string, int offset, int num_bits);
 int check_if_valid_integer(char *str);
+void add_output_directory();
 #endif //ASSEMBLER_UTILS_H
