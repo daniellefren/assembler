@@ -2,7 +2,6 @@
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
-#include <stdbool.h>
 
 #include "../include/structs.h"
 #include "../include/constants.h"

@@ -3,7 +3,6 @@
 
 #include <stdio.h>
 #include <ctype.h>
-#include <stdbool.h>
 #include <string.h>
 #include "structs.h"
 

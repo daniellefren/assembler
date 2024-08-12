@@ -250,20 +250,20 @@ char *get_instruction_line_binary(LinesArray *linesArray, int number_of_line) {
     return linesArray->lines[number_of_line].binary_instruction;
 }
 
-bool is_instruction_line_directive(InstructionLine instructionLine){
+int is_instruction_line_directive(InstructionLine instructionLine){
     // Check if the `directive` field is not NULL
     if (instructionLine.directive != NULL){
-        return true;
+        return 1;
     }
-    return false;
+    return 0;
 }
 
-bool is_instruction_line_opcode(InstructionLine instructionLine){
+int is_instruction_line_opcode(InstructionLine instructionLine){
     // Check if the `command` field is not NULL
     if (instructionLine.command != NULL){
-        return true;
+        return 1;
     }
-    return false;
+    return 0;
 }
 
 int is_operand_classification_type_valid(enum operand_classification_type operandClassificationType){

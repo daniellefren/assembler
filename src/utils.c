@@ -250,7 +250,7 @@ void binary_to_octal(const char *binary_string, char *octal_string) {
         return;
     }
 
-    i, value = 0;
+    value = 0;
 
     // Initialize octal_string with '0's and null-terminate
     memset(octal_string, '0', OCTAL_LENGTH);
