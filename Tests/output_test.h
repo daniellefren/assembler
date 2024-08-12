@@ -3,9 +3,6 @@
 #define ASSEMBLER_OUTPUT_TEST_H
 
 
-class output_test {
-
-};
-
+int output_test(char *test_input_file_name, char *test_output_file_name);
 
 #endif //ASSEMBLER_OUTPUT_TEST_H

@@ -1,11 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-
-#include "../include/first_run.h"
-#include "../include/second_run.h"
-#include "../include/test_first_run.h"
-#include "../include/errors.h"
-#include "../include/files_handler.h"
+#include "../include/assembler.h"
 
 /**
  * Run the assembler on a given assembly source file.
@@ -22,8 +17,6 @@
  * @param filename - The name of the assembly source file to be processed.
  * @param file_number - An identifier number used to generate output file names.
  */
-void run_assembler_on_file(LinesArray *assembly_lines_array, SymbolTable *symbol_table, char* filename, int file_number);
-
 
 int main(int argc, char *argv[]) {
     LinesArray *assembly_lines_array = NULL;
@@ -31,7 +24,7 @@ int main(int argc, char *argv[]) {
     int file_number;
     int number_of_files;
     number_of_files = argc - 1;
-
+  
     // Check if the correct number of arguments is provided
     if (argc < 2) {
         fprintf(stderr, "Usage: %s <file_path>\n", argv[0]);
@@ -40,11 +33,13 @@ int main(int argc, char *argv[]) {
 
     add_output_directory();
 
+    output_test("","");
+    /*
     //Run assembler on all files
     for(file_number=1;file_number<=number_of_files;file_number++){
         run_assembler_on_file(assembly_lines_array, symbol_table, argv[file_number], file_number);
     }
-
+    */
     return EXIT_SUCCESS;
 }
 

@@ -1,3 +1,4 @@
+; file ps.as
 .entry LIST
 .extern fn1
 MAIN: add r3, LIST
