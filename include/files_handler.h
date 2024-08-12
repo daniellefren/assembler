@@ -3,6 +3,13 @@
 #define ASSEMBLER_FILES_HANDLER_H
 #include "../include/utils.h"
 
+
+/**
+ * Create an output directory if it does not already exist.
+ */
+void add_output_directory();
+
+
 /**
  * Add an external symbol to the externals file.
  *
@@ -122,3 +129,5 @@ void add_command_line_to_ob_file(InstructionLine *instructionLine, FILE *object_
  */
 void add_directive_line_to_ob_file(InstructionLine *instructionLine, FILE *object_file);
 #endif //ASSEMBLER_FILES_HANDLER_H
+
+

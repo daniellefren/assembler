@@ -8,6 +8,7 @@
 #include <sys/types.h>
 
 #include "../include/utils.h"
+#include "../include/errors.h"
 
 void lower_string(char *string){
 // Convert command_name to lowercase
@@ -39,7 +40,8 @@ void string_append(const char *first_string, const char *second_string, char *ap
     size_t first_string_size = strlen(first_string);
     size_t second_string_size = strlen(second_string);
     if (first_string_size + second_string_size + 1 > appended_string_size) {
-        fprintf(stderr, "Error: insufficient space to append both strings\n");
+//        fprintf(stderr, "Error: insufficient space to append both strings\n");
+        print_internal_error(ERROR_CODE_40, "");
         exit(EXIT_FAILURE);
     }
 
@@ -84,7 +86,8 @@ void print_directive(Directive *directive) {
             printf("The length of the directive is %zu and the value is %s\n",
                    directive->data_values_count, directive->value[0]);
         } else {
-            fprintf(stderr, "Error: there are no values in the directive\n");
+//            fprintf(stderr, "Error: there are no values in the directive\n");
+            print_internal_error(ERROR_CODE_41, "");
         }
     }
 }
@@ -213,13 +216,15 @@ void fill_octal_string_from_binary(const char *binary_string, int number_of_bina
 
     // Check for invalid input
     if (number_of_binary_bits <= 0 || offset < 0 || offset + number_of_binary_bits > strlen(binary_string)) {
-        fprintf(stderr, "Invalid input parameters\n");
+//        fprintf(stderr, "Invalid input parameters\n");
+        print_internal_error(ERROR_CODE_42, "");
         return;
     }
 
     // Ensure the number of bits is a multiple of 3
     if (number_of_binary_bits % 3 != 0) {
-        fprintf(stderr, "Number of bits must be a multiple of 3\n");
+//        fprintf(stderr, "Number of bits must be a multiple of 3\n");
+        print_internal_error(ERROR_CODE_43, int_to_string(number_of_binary_bits));
         return;
     }
 
@@ -241,7 +246,8 @@ void fill_octal_string_from_binary(const char *binary_string, int number_of_bina
 
 void binary_to_octal(const char *binary_string, char *octal_string) {
     if (binary_string == NULL || strlen(binary_string) != BINARY_WORD_LENGTH) {
-        fprintf(stderr, "Invalid binary string\n");
+//        fprintf(stderr, "Invalid binary string\n");
+        print_internal_error(ERROR_CODE_44, "");
         return;
     }
 
@@ -263,7 +269,6 @@ void binary_to_octal(const char *binary_string, char *octal_string) {
 }
 
 int check_if_valid_integer(char *str) {
-    printf("strrrr %s", str);
     int i = 0;
     int length = 0;
 
@@ -311,7 +316,8 @@ void char_to_binary_string(char c, char *binary_string, int offset, int num_bits
 
     // Ensure binary_string is large enough
     if (binary_string == NULL || offset + num_bits > sizeof(char) * strlen(binary_string)) {
-        fprintf(stderr, "Invalid binary string buffer\n");
+//        fprintf(stderr, "Invalid binary string buffer\n");
+        print_internal_error(ERROR_CODE_45, "");
         return;
     }
 
@@ -320,24 +326,6 @@ void char_to_binary_string(char c, char *binary_string, int offset, int num_bits
     for (i = offset + num_bits - 1; i >= offset; i--) {
         binary_string[i] = (uc & 1) + '0';
         uc >>= 1;
-    }
-}
-
-void add_output_directory(){
-    const char *dirName = OUTPUT_DIRECTORY_NAME;
-    struct stat st = {0};
-
-    // Check if the directory exists
-    if (stat(dirName, &st) == -1) {
-        // Directory does not exist, create it
-        if (mkdir(dirName, 0755) == 0) {
-            printf("Directory '%s' created successfully.\n", dirName);
-        } else {
-            perror("Error creating directory");
-            exit(EXIT_FAILURE);
-        }
-    } else {
-        printf("Directory '%s' already exists.\n", dirName);
     }
 }
 
@@ -352,4 +340,15 @@ char* skip_spaces(char *line) {
 int ignore_line(char *line) {
     line = skip_spaces(line);
     return (*line == ';' || *line == '\0' || *line == '\n');
+}
+
+char* int_to_string(int number) {
+    char *str = (char *)malloc(20 * sizeof(char)); // Allocate memory on the heap
+    if (str == NULL) {
+//        perror("Unable to allocate memory");
+        print_internal_error(ERROR_CODE_9, "");
+        exit(EXIT_FAILURE);
+    }
+    sprintf(str, "%d", number);
+    return str;
 }
