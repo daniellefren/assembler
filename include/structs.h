@@ -85,6 +85,7 @@ void free_lines_array(LinesArray *lines_array_pointer);
 void free_instruction_line(InstructionLine *instruction_line_pointer);
 void free_macro_table(MacroTable *macro_table);
 void free_symbol_table(SymbolTable *symbol_table);
+void free_binary_instruction(InstructionLine *p_line);
 char *get_instruction_line_binary(LinesArray *linesArray, int number_of_line);
 void addInstructionLine(LinesArray *lines_array, InstructionLine *instruction_line);
 void add_new_symbol(SymbolTable *symbol_table, Symbol *new_symbol);
@@ -96,6 +97,6 @@ Command *init_command();
 Operand *init_operand();
 Directive *init_directive();
 void init_macro_name_array(char **macroNames);
-
+void allocate_binary_instruction(InstructionLine *p_line, size_t binary_line_count, size_t binary_line_length);
 
 #endif

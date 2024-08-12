@@ -10,55 +10,83 @@
 #define BINARY_INSTRUCTION_MAX_LENGTH 46
 #define BINARY_LINE_LENGTH 15
 
-void start_second_run(LinesArray *assembly_lines_array){
+/**
+ * Performs the second pass over the assembly lines stored in `assembly_lines_array`.
+ * This function processes each line by allocating memory for binary instructions,
+ * filling in the binary representation, and printing the instruction details.
+ * After processing all lines, it creates an object file with the processed instructions.
+ *
+ * @param assembly_lines_array A pointer to the `LinesArray` structure that contains
+ *                             the assembly lines to be processed. This structure holds
+ *                             all the lines of code, along with associated metadata like
+ *                             starting addresses and binary content.
+ * @param file_number An integer representing the file number to be appended.
+ */
+void start_second_run(LinesArray *assembly_lines_array, int file_number){
+    InstructionLine *p_line;
+
     printf("Starting Second run \n");
     printf("The number of lines in the struct is %d \n \n", assembly_lines_array->number_of_line);
     printf("Starting to print The lines Binary: \n");
 
+    // Iterate over each line in the assembly lines array
     for (int i = 0; i < assembly_lines_array->number_of_line; ++i){
-        InstructionLine *p_line = &assembly_lines_array->lines[i];
+        p_line = &assembly_lines_array->lines[i];
         printf("\n****Line number %d Address %d *****  \n\n", i, p_line->starting_address);
         allocate_binary_instruction(p_line, p_line->binary_line_count, BINARY_LINE_LENGTH);
-        print_instruction_line(p_line);
         fill_instruction_line_binary(p_line);
-
-    }
-    create_ob_file(assembly_lines_array, 1);
-    for (int j = 0; j < assembly_lines_array->number_of_line; ++j) {
-        free_binary_instruction(&assembly_lines_array->lines[j]);
-    }
+        print_instruction_line(p_line);
     }
 
+    create_ob_file(assembly_lines_array, file_number);
+}
 
+
+
+/**
+ * Fills the binary representation for an instruction line. Depending on whether the instruction
+ * is an opcode or a directive, it creates the appropriate binary format. For opcodes, it generates
+ * the binary for the first word, and additional words if needed, and appends them.
+ * For directives, it generates the binary format specific to the directive type.
+ *
+ * @param instruction_line A pointer to the `InstructionLine` structure that contains the
+ *                         instruction line to be converted into its binary form.
+ */
 void fill_instruction_line_binary(InstructionLine *instruction_line){
-    // check if it's an opcode or directive if it's an opcode
-    // create first word binary (15)
-    // check how many word needed
-    // to create second word and third word if needed binary (15 + 15)
-    // append the binary words
-    // if it's directive .....
-    char *binary_instruction_p = instruction_line->binary_instruction;
-    int binary_line_count = instruction_line->binary_line_count;
+    // Pointer to the binary instruction array within the instruction line
+    char *binary_instruction_p;
+    int binary_line_count;
+
+    binary_instruction_p = instruction_line->binary_instruction;
+    binary_line_count = instruction_line->binary_line_count;
+
     if (binary_line_count == 0){
         fprintf(stderr, "Error: 0 lines of binary for the instruction line\n");
         return;
     }
+
     printf("The number of lines in the binary is: %d \n", binary_line_count);
-    fill_the_binary_with_zero(binary_instruction_p, BINARY_LINE_LENGTH*binary_line_count);
+
+    // Initialize the binary instruction array with zeros
+    fill_the_binary_with_zero(binary_instruction_p, BINARY_LINE_LENGTH * binary_line_count);
+
 
     if (is_instruction_line_opcode(*instruction_line)){
+
         fill_first_part_binary_opcode(instruction_line, binary_instruction_p);
         printf("First part binary -                                      %s \n\n", binary_instruction_p);
-        if (binary_line_count >1){
+        if (binary_line_count > 1){
             fill_second_part_binary_opcode(instruction_line, binary_instruction_p);
             printf("Second part binary -                                     %s \n", binary_instruction_p);
         }
     }
-    else if(is_instruction_line_directive(*instruction_line)){
+    else if (is_instruction_line_directive(*instruction_line)){
         fill_binary_directive(instruction_line, binary_instruction_p);
     }
+
     printf("***The binary representation of the line is %s \n", instruction_line->binary_instruction);
 }
+
 
 void fill_first_part_binary_opcode(InstructionLine *instruction_line, char *binary_string) {
     // Convert the opcode value to binary opcode - 0 1 2 3, first_classification - 4 5 6 7, second_classification - 8 9 10 11, ARE - 12 13 14
@@ -252,7 +280,7 @@ void fill_operand_binary(Operand *operand,Operand *second_operand, char *binary_
 void register_to_binary_string(char *register_value, int operand_number, char *binary_string, int offset){
     //src its 8-6 and dst its 3-5 012345 678 91011 121314
     int register_number;
-    register_number = char_to_int(register_value + 1);
+    register_number = char_to_int(register_value);
     if (operand_number == 2) { //dst bit 91011
         int_to_binary_string(register_number, binary_string,offset +9, 3);
     }
@@ -295,43 +323,6 @@ void fill_binary_directive(InstructionLine *instruction_line, char *binary_strin
         }
     }
 
-}
-
-void int_to_binary_string(int num, char *binary_string, int offset, int num_bits) {
-    int i;
-
-    // Handle negative numbers
-    if (num < 0) {
-        binary_string[offset] = '1';
-        num = -num;
-    } else {
-        binary_string[offset] = '0';
-    }
-
-    // Convert to binary
-    for (i = 0; i < num_bits; i++) {
-        binary_string[offset + num_bits - i - 1] = (num & (1 << i)) ? '1' : '0';
-    }
-}
-
-void char_to_binary_string(char c, char *binary_string, int offset, int num_bits) {
-    int i;
-
-    // Ensure binary_string is large enough to hold the result
-    if (binary_string == NULL || offset + num_bits > CHAR_BIT * sizeof(char) * strlen(binary_string)) {
-        fprintf(stderr, "Invalid binary string buffer\n");
-        return;
-    }
-    // Convert character to unsigned char for positive representation
-    unsigned char uc = (unsigned char) c;
-    // Convert to binary
-    for (i = offset + num_bits - 1; i >= offset; i--) {
-        binary_string[i] = (uc & 1) + '0';
-        uc >>= 1;
-    }
-}
-bool instruction_line_has_three_binary_words(InstructionLine instructionLine) {
-    return false;
 }
 
 int is_operand_classification_type_valid(enum operand_classification_type operandClassificationType){

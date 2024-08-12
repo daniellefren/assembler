@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
 
 
         //call the second_run function with the LinesArray table
-        start_second_run(assembly_lines_array);
+        start_second_run(assembly_lines_array, file_number);
         printf("end %d file\n", file_number);
 
 

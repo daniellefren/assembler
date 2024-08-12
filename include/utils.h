@@ -6,8 +6,6 @@ void lower_string(char *string);
 char *trim_spaces(char *str);
 char* itoa(int val, int base);
 void string_append(const char *first_string, const char *second_String, char *appended_string, size_t appended_string_size);
-void free_binary_instruction(InstructionLine *p_line);
-void allocate_binary_instruction(InstructionLine *p_line, size_t binary_line_count, size_t binary_line_length);
 void print_command(Command *command);
 void print_instruction_line(InstructionLine *instructionLine);
 void print_directive(Directive *directive);
@@ -21,5 +19,7 @@ bool is_directive_string(Directive *directive);
 void add_number_to_string(char *buffer, const char* source, size_t buffer_size, int number);
 void fill_octal_string_from_binary(const char *binary_string, int number_of_binary_bits, int offset, char *octal_string);
 void binary_to_octal(const char *binary_string, char *octal_string);
+void int_to_binary_string(int num, char *binary_string, int offset, int num_bits);
+void char_to_binary_string(char c, char *binary_string, int offset, int num_bits);
 int check_if_valid_integer(char *str);
 #endif //ASSEMBLER_UTILS_H
