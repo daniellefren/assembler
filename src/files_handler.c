@@ -5,45 +5,99 @@
 #include <stdbool.h>
 #include "../include/files_handler.h"
 
-
+/**
+ * Creates an object file based on the lines of assembly code provided in `linesArray`.
+ * The function generates the file name, opens the file, and then writes the commands and directives
+ * from the `linesArray` to the object file. The file includes a header with the count of commands
+ * and directives.
+ *
+ * @param linesArray A pointer to the `LinesArray` structure containing the lines of assembly code.
+ *                   This structure holds the instruction counter (IC) and directive counter (DC)
+ *                   along with the actual lines of code.
+ * @param file_number An integer representing the file number to be appended to the object file name.
+ */
 void create_ob_file(LinesArray *linesArray, int file_number){
-    // TODO - add if condition when lines_array is empty
     char ob_file_name[100];
     int number_of_command;
     int number_of_directive;
-    InstructionLine *p_line;
-    add_number_to_string(ob_file_name, OBJECTS_FILE_NAME, sizeof(ob_file_name), file_number);
-    FILE *object_file = open_ob_file(ob_file_name);
+    FILE *object_file;
 
-    number_of_command = linesArray->ic - STARTING_IC; //TODO problem with the ic and dc
+    if (linesArray == NULL){
+        fprintf(stderr, "Error: Lines array is NULL\n");
+        exit(EXIT_FAILURE);
+    }
+
+    // Generate the object file name with the file number appended
+    add_number_to_string(ob_file_name, OBJECTS_FILE_NAME, sizeof(ob_file_name), file_number);
+    object_file = open_ob_file(ob_file_name);
+    number_of_command = linesArray->ic - STARTING_IC;
     number_of_directive = linesArray->dc;
 
-    add_first_line_to_ob_file(number_of_command, number_of_directive,object_file);
+    add_first_line_to_ob_file(number_of_command, number_of_directive, object_file);
+    add_all_command_lines_to_ob_file(linesArray, object_file);
+    add_all_directive_lines_to_ob_file(linesArray, object_file);
+    printf("Finished creating object file\n");
+}
 
-    for (int i = 0; i < linesArray->number_of_line-1; ++i) {
-         p_line = &linesArray->lines[i];
+/**
+ * Adds all command lines from the `lines_array` to the object file.
+ * The function iterates over each line in the `lines_array`, checks if it is a command,
+ * and if so, writes the command details (starting address, binary content, etc.) to the object file.
+ *
+ * @param lines_array A pointer to the `LinesArray` structure that contains all lines of code to be processed.
+ * @param object_file A pointer to the open object file where the command lines will be written.
+ */
+void add_all_command_lines_to_ob_file(LinesArray *lines_array, FILE *object_file){
+    InstructionLine *p_line;
+
+    for (int i = 0; i < lines_array->number_of_line; ++i) {
+        p_line = &lines_array->lines[i];
         if (p_line == NULL) {
-            exit(EXIT_FAILURE);
-        }
-        if (p_line->instruction_type == COMMAND){
-            printf("Starting to insert command to object file address=%d, binary=%d, content=%s \n", p_line->starting_address, p_line->binary_line_count, p_line->line_content);
-            add_command_lines_to_ob_file(p_line, object_file);
+            fprintf(stderr, "Error: Line number %d in lines array is NULL\n", i);
+            continue;
         }
 
-    }
-    for (int j = 0; j < linesArray->number_of_line-1; ++j) {
-        p_line = &linesArray->lines[j];
-        if (linesArray->lines[j].instruction_type == DATA_DIRECTIVE){
-            printf("Starting to insert directive to object file address=%d, binary=%d, content=%s \n", p_line->starting_address, p_line->binary_line_count, p_line->line_content);
-            add_directive_lines_to_ob_file(&linesArray->lines[j], object_file);
+        if (p_line->instruction_type == COMMAND) {
+            printf("Starting to insert command to object file address=%d, binary=%d, content=%s\n",
+                   p_line->starting_address, p_line->binary_line_count, p_line->line_content);
+            add_command_line_to_ob_file(p_line, object_file);
         }
     }
 }
 
+/**
+ * Adds all directive lines from the `lines_array` to the object file.
+ * The function iterates over each line in the `lines_array`, checks if it is a data directive,
+ * and if so, writes the directive details (starting address, binary content, etc.) to the object file.
+ *
+ * @param lines_array A pointer to the `LinesArray` structure that contains all lines of code to be processed.
+ * @param object_file A pointer to the open object file where the directive lines will be written.
+ */
+void add_all_directive_lines_to_ob_file(LinesArray *lines_array, FILE *object_file){
+    InstructionLine *p_line;
+
+    for (int i = 0; i < lines_array->number_of_line; ++i) {
+        p_line = &lines_array->lines[i];
+        if (p_line == NULL) {
+            fprintf(stderr, "Error: Line number %d in lines array is NULL\n", i);
+            continue;
+        }
+
+        if (lines_array->lines[i].instruction_type == DATA_DIRECTIVE) {
+           printf("Starting to insert directive to object file address=%d, binary=%d, content=%s\n",
+                   p_line->starting_address, p_line->binary_line_count, p_line->line_content);
+           add_directive_line_to_ob_file(p_line, object_file);
+        }
+    }
+}
+
+
 void add_entry_to_entries_file(char *symbol_name, int file_number, int symbol_address){
     char entries_file_name[100];
+    FILE *file;
+
     add_number_to_string(entries_file_name, ENTRIES_FILE_NAME, sizeof(entries_file_name), file_number);
-    FILE *file = fopen(entries_file_name, "w");
+    file = fopen(entries_file_name, "w");
     if (file == NULL) {
         perror("Unable to open entries file");
         exit(EXIT_FAILURE);
@@ -84,7 +138,7 @@ void add_first_line_to_ob_file(int number_of_command, int number_of_directive, F
     fprintf(object_file, "%d %d\n", number_of_command, number_of_directive);
 }
 
-void add_command_lines_to_ob_file(InstructionLine *instructionLine, FILE *object_file){
+void add_command_line_to_ob_file(InstructionLine *instructionLine, FILE *object_file){
     char *octal_number;
     int instruction_address;
 
@@ -107,7 +161,7 @@ void add_command_lines_to_ob_file(InstructionLine *instructionLine, FILE *object
     free(octal_number);
 }
 
-void add_directive_lines_to_ob_file(InstructionLine *instructionLine, FILE *object_file){
+void add_directive_line_to_ob_file(InstructionLine *instructionLine, FILE *object_file){
     char *octal_number;
     int instruction_address;
 
@@ -135,7 +189,6 @@ int write_line_to_file(char *line, char* new_file_name) {
         fprintf(stderr, "Error: Could not open file '%s' for writing\n", new_file_name);
         exit(EXIT_FAILURE);
     }
-//    lower_string(line);
     // Write the string to the file
     fprintf(outputFile, "%s", line);
 

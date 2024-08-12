@@ -67,25 +67,6 @@ void string_append(const char *first_string, const char *second_String, char *ap
     strcat(appended_string, second_String);
 }
 
-void allocate_binary_instruction(InstructionLine *p_line, size_t binary_line_count, size_t binary_line_length) {
-    size_t count_to_allocate = binary_line_count * binary_line_length + 1; // Calculate total size in bytes
-    printf("The binary line count - %lu\n", binary_line_count);
-    if (binary_line_count == 0){//TODO - delete after danielle add binary_line_count logic
-        fprintf(stderr, "Error: 0 lines of binary for the instruction line\n");
-        return;
-    }
-    p_line->binary_instruction = (char*) malloc(count_to_allocate);
-    printf("The size wanted to allocate is %lu\n", count_to_allocate);
-    if (p_line->binary_instruction == NULL) {
-        fprintf(stderr, "Memory allocation failed for binary instruction\n");
-        exit(1);
-    }
-}
-
-void free_binary_instruction(InstructionLine *p_line) {
-    free(p_line->binary_instruction);
-}
-
 void print_command(Command *command){
     printf("Command name is %s\n", command->command_name);
     if (command->operand_number > 0){
@@ -319,4 +300,38 @@ int check_if_valid_integer(char *str) {
     }
 
     return length;  // All checks passed, valid integer
+}
+
+void int_to_binary_string(int num, char *binary_string, int offset, int num_bits) {
+    int i;
+
+    // Handle negative numbers
+    if (num < 0) {
+        binary_string[offset] = '1';
+        num = -num;
+    } else {
+        binary_string[offset] = '0';
+    }
+
+    // Convert to binary
+    for (i = 0; i < num_bits; i++) {
+        binary_string[offset + num_bits - i - 1] = (num & (1 << i)) ? '1' : '0';
+    }
+}
+
+void char_to_binary_string(char c, char *binary_string, int offset, int num_bits) {
+    int i;
+
+    // Ensure binary_string is large enough to hold the result
+    if (binary_string == NULL || offset + num_bits > CHAR_BIT * sizeof(char) * strlen(binary_string)) {
+        fprintf(stderr, "Invalid binary string buffer\n");
+        return;
+    }
+    // Convert character to unsigned char for positive representation
+    unsigned char uc = (unsigned char) c;
+    // Convert to binary
+    for (i = offset + num_bits - 1; i >= offset; i--) {
+        binary_string[i] = (uc & 1) + '0';
+        uc >>= 1;
+    }
 }
