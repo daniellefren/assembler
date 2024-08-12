@@ -242,15 +242,13 @@ void fill_octal_string_from_binary(const char *binary_string, int number_of_bina
 
 
 void binary_to_octal(const char *binary_string, char *octal_string) {
-    int i, value;
-    value = 0;
+    int i;
+    int value;
 
     if (binary_string == NULL || strlen(binary_string) != BINARY_WORD_LENGTH) {
         print_internal_error(ERROR_CODE_44, "");
         return;
     }
-
-    int i, value;
 
     i, value = 0;
 
