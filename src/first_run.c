@@ -213,7 +213,7 @@ int read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, LinesArra
 
 
     if (has_symbol) {
-        if(!is_valid_symbol(symbol_name, macro_table)){
+        if(!is_valid_symbol(symbol_name, macro_table, symbol_table)){
             return 0;
         }
         line = strchr(line, ':') + 1;
@@ -291,10 +291,10 @@ int handle_command(char *line, SymbolTable *symbol_table, MacroTable *macro_tabl
 
     define_operands_from_line(new_command, line);
     if(new_command->operand_number >= 1){
-        success = define_operand_types(new_command->src_operand, macro_table);
+        success = define_operand_types(new_command->src_operand, macro_table, symbol_table);
         success &= classify_operand(new_command->src_operand);
         if(new_command->operand_number == 2){
-            success &= define_operand_types(new_command->dst_operand, macro_table);
+            success &= define_operand_types(new_command->dst_operand, macro_table, symbol_table);
             success &= classify_operand(new_command->dst_operand);
         }
     }
@@ -359,7 +359,7 @@ void extract_second_operand_from_line(char* line, Command *new_command){
     sscanf(line, "%s", new_command->dst_operand->value);
 }
 
-int define_operand_types(Operand *operand, MacroTable *macro_table){
+int define_operand_types(Operand *operand, MacroTable *macro_table, SymbolTable *symbol_table){
     int length;
 
     operand->type = INVALID;
@@ -382,7 +382,7 @@ int define_operand_types(Operand *operand, MacroTable *macro_table){
         operand->type = REGISTER;
         strcpy(operand->value, extract_numbers(operand->value, length));
     }
-    else if(is_valid_symbol(operand->value, macro_table)){
+    else if(is_valid_symbol(operand->value, macro_table, symbol_table)){
         operand->type = SYMBOL;
     }
     else{
@@ -393,7 +393,7 @@ int define_operand_types(Operand *operand, MacroTable *macro_table){
 }
 
 
-int is_valid_symbol(const char *symbol_name, MacroTable *macro_table) {
+int is_valid_symbol(const char *symbol_name, MacroTable *macro_table, SymbolTable *symbol_table) {
     int i;
     size_t length;
 
@@ -430,6 +430,10 @@ int is_valid_symbol(const char *symbol_name, MacroTable *macro_table) {
             print_internal_error(ERROR_CODE_7, symbol_name);
             return 0;
         }
+    }
+
+    if(symbol_exists(symbol_table, symbol_name)){
+        print_internal_error(ERROR_CODE_50, symbol_name);
     }
 
     return 1; // Valid symbol

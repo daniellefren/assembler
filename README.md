@@ -17,7 +17,7 @@ This assembler handles various assembly directives and commands. It also support
 ## Features
 - **Macro Expansion**: The assembler expands macros found in the source files.
 - **Symbol Handling**: The assembler manages symbols for both commands and data directives.
-- **Error Handling**: The assembler is designed to handle errors gracefully, but TODO: Ensure that all errors are captured, including line numbers, without exiting prematurely.
+- **Error Handling**: The assembler is designed to handle errors gracefully
 - **Multiple Source Files**: Supports processing multiple source files by generating separate expanded macro files.
 - **Directives Support**: Handles `.data`, `.string`, `.extern`, and `.entry` directives.
 - **Command Support**: Implements various assembly commands with proper operand handling.
