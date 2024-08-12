@@ -1,7 +1,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+
 #include "../include/files_handler.h"
+#include "../include/errors.h"
 
 void create_ob_file(LinesArray *linesArray, int file_number){
     char ob_file_name[100];
@@ -10,7 +14,8 @@ void create_ob_file(LinesArray *linesArray, int file_number){
     FILE *object_file;
 
     if (linesArray == NULL){
-        fprintf(stderr, "Error: Lines array is NULL\n");
+//        fprintf(stderr, "Error: Lines array is NULL\n");
+        print_internal_error(ERROR_CODE_28, "");
         exit(EXIT_FAILURE);
     }
 
@@ -56,7 +61,8 @@ void add_all_command_lines_to_ob_file(LinesArray *lines_array, FILE *object_file
     for (int i = 0; i < lines_array->number_of_line; ++i) {
         p_line = &lines_array->lines[i];
         if (p_line == NULL) {
-            fprintf(stderr, "Error: Line number %d in lines array is NULL\n", i);
+//            fprintf(stderr, "Error: Line number %d in lines array is NULL\n", i);
+            print_internal_error(ERROR_CODE_29, int_to_string(i));
             continue;
         }
 
@@ -75,7 +81,8 @@ void add_all_directive_lines_to_ob_file(LinesArray *lines_array, FILE *object_fi
     for (int i = 0; i < lines_array->number_of_line; ++i) {
         p_line = &lines_array->lines[i];
         if (p_line == NULL) {
-            fprintf(stderr, "Error: Line number %d in lines array is NULL\n", i);
+//            fprintf(stderr, "Error: Line number %d in lines array is NULL\n", i);
+            print_internal_error(ERROR_CODE_30, int_to_string(i));
             continue;
         }
 
@@ -182,7 +189,8 @@ void add_extern_to_externals_file(Symbol *symbol, int file_number, int *ic){
 int write_line_to_file(char *line, char* new_file_name) {
     FILE *outputFile = fopen(new_file_name, "a"); // Open in append mode
     if (!outputFile) {
-        fprintf(stderr, "Error: Could not open file '%s' for writing\n", new_file_name);
+//        fprintf(stderr, "Error: Could not open file '%s' for writing\n", new_file_name);
+        print_internal_error(ERROR_CODE_48, new_file_name);
         exit(EXIT_FAILURE);
     }
     // Write the string to the file
@@ -197,7 +205,8 @@ void write_expanded_macros_to_file(MacroTable *macro_table, char* new_file_name)
     int j;
     FILE *outputFile = fopen(new_file_name, "a"); // Open in append mode
     if (!outputFile) {
-        fprintf(stderr, "Error: Could not open file '%s' for writing macros\n", new_file_name);
+//        fprintf(stderr, "Error: Could not open file '%s' for writing macros\n", new_file_name);
+        print_internal_error(ERROR_CODE_49, new_file_name);
         exit(EXIT_FAILURE);
     }
 
@@ -209,4 +218,22 @@ void write_expanded_macros_to_file(MacroTable *macro_table, char* new_file_name)
     }
 
     fclose(outputFile);
+}
+
+void add_output_directory(){
+    const char *dirName = OUTPUT_DIRECTORY_NAME;
+    struct stat st = {0};
+
+    // Check if the directory exists
+    if (stat(dirName, &st) == -1) {
+        // Directory does not exist, create it
+        if (mkdir(dirName, 0755) == 0) {
+            printf("Directory '%s' created successfully.\n", dirName);
+        } else {
+            perror("Error creating directory");
+            exit(EXIT_FAILURE);
+        }
+    } else {
+        printf("Directory '%s' already exists.\n", dirName);
+    }
 }

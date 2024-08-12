@@ -8,6 +8,7 @@
 #include "../include/constants.h"
 #include "../include/utils.h"
 #include "../include/files_handler.h"
+#include "../include/errors.h"
 
 
 Command commands_struct[] = {
@@ -32,6 +33,7 @@ Command commands_struct[] = {
 
 
 void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTable *symbol_table, int file_number) {
+    printf("first_run\n");
     int success;
     char line[MAX_LINE_LENGTH];
     char *macro_names[MAX_MACRO_NAMES];  // Array to store pointers to macro names
@@ -82,7 +84,8 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
     lines_array->dc = *dc;
 
     if(!success){
-        fprintf(stderr, "Program stopped running because of incorrect given assembly code");
+//        fprintf(stderr, "Program stopped running because of incorrect given assembly code");
+        print_internal_error(ERROR_CODE_8, "");
         exit(EXIT_FAILURE);
     }
 
@@ -103,13 +106,14 @@ int pre_run(MacroTable *macro_table, char **macro_names, FILE *file, char* new_f
             if (is_macro_definition_start(line)) {
                 sscanf(line, "%*s %s", macro_name);  // Skip "%macro" and capture the name
                 if(is_known_assembly_keyword(macro_name)){
-                    fprintf(stderr, "Macro %s is known assembly keyword\n", macro_name);
+                    print_internal_error(ERROR_CODE_1, macro_name);
                     return 0;
                 }
                 if (macroCount < MAX_MACRO_NAMES) {
                     strcpy(macro_names[macroCount++], macro_name);
                 } else {
-                    fprintf(stderr, "Warning: Reached maximum number of macro names (%d)\n", MAX_MACRO_NAMES);
+//                    fprintf(stderr, "Warning: Reached maximum number of macro names (%d)\n", MAX_MACRO_NAMES);
+                    print_internal_error(ERROR_CODE_26, int_to_string(MAX_MACRO_NAMES));
                 }
                 is_in_macro = handle_macro_definition(file, macro_table, line); // Pass macro_table directly
             } else if (is_macro_invocation(line, macro_name, macro_names)) {
@@ -132,7 +136,7 @@ void add_macro(MacroTable *macro_table, Macro new_macro) {
         macro_table->capacity *= 2;
         macro_table->macros = (Macro *)realloc(macro_table->macros, macro_table->capacity * sizeof(Macro));
         if (!macro_table->macros) {
-            fprintf(stderr, "Error: Memory allocation failed while expanding macro table\n");
+            print_internal_error(ERROR_CODE_10, "");
             exit(EXIT_FAILURE);
         }
     }
@@ -194,6 +198,7 @@ void expand_macro(const Macro *macro, FILE *outputFile) {
 }
 
 int read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, LinesArray *lines_array, MacroTable *macro_table, int file_number) {
+    printf("read_line\n");
     char symbol_name[MAX_SYMBOL_LENGTH] = "";
     int has_symbol;
     Symbol *new_symbol;
@@ -208,7 +213,11 @@ int read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, LinesArra
 
     has_symbol = find_symbol(line, symbol_name);
 
+
     if (has_symbol) {
+        if(!is_valid_symbol(symbol_name, macro_table)){
+            return 0;
+        }
         line = strchr(line, ':') + 1;
 //      Skip spaces after .data directive
         while (*line && isspace((unsigned char)*line)) {
@@ -256,7 +265,8 @@ Symbol* handle_symbol(InstructionLine *new_instruction_line, char* symbol_name){
     Symbol *new_symbol;
     new_symbol = (Symbol *)malloc(10 * sizeof(Symbol));
     if (new_symbol == NULL) {
-        fprintf(stderr, "Memory allocation error for directive\n");
+//        fprintf(stderr, "Memory allocation error for symbol\n");
+        print_internal_error(ERROR_CODE_11, "");
         exit(EXIT_FAILURE);
     }
 
@@ -331,7 +341,8 @@ void define_operands_from_line(Command *new_command, char* line){
             return;
 
         default:
-            fprintf(stderr, "Invalid number of operands: %d\n", new_command->operand_number);
+//            fprintf(stderr, "Invalid number of operands: %d\n", new_command->operand_number);
+            print_internal_error(ERROR_CODE_23, int_to_string(new_command->operand_number));
             exit(EXIT_FAILURE);
     }
 }
@@ -379,43 +390,49 @@ int define_operand_types(Operand *operand, MacroTable *macro_table){
         operand->type = SYMBOL;
     }
     else{
-        fprintf(stderr, "Not valid operand type. %s\n", operand->value);
+//        fprintf(stderr, "Not valid operand type. %s\n", operand->value);
+        print_internal_error(ERROR_CODE_24, operand->value);
         return 0;
     }
     return 1;
 }
 
 
-int is_valid_symbol(const char *symbol, MacroTable *macro_table) {
+int is_valid_symbol(const char *symbol_name, MacroTable *macro_table) {
     int i;
     size_t length;
 
     //Check length of the symbol
-    length = strlen(symbol);
+    length = strlen(symbol_name);
     if (length == 0 || length > MAX_SYMBOL_LENGTH) {
+        print_internal_error(ERROR_CODE_5, symbol_name);
         return 0;
     }
 
     //check if not assembly keyword
-    if(is_known_assembly_keyword(symbol)){
+    if(is_known_assembly_keyword(symbol_name)){
+        print_internal_error(ERROR_CODE_3, symbol_name);
         return 0;
     }
 
     //check if symbol matches an existing macro name
     for (i = 0; i < macro_table->count; i++) {
-        if (strcmp(symbol, macro_table->macros[i].name) == 0) {
+        if (strcmp(symbol_name, macro_table->macros[i].name) == 0) {
+            print_internal_error(ERROR_CODE_4, symbol_name);
             return 0; // symbol matches an existing macro name
         }
     }
 
     //Check if the first character is a letter
-    if (!isalpha((unsigned char)symbol[0])) {
+    if (!isalpha((unsigned char)symbol_name[0])) {
+        print_internal_error(ERROR_CODE_6, symbol_name);
         return 0;
     }
 
     //  Check if other characters are letters/numbers
     for (i = 1; i < length; ++i) {
-        if (!isalnum((unsigned char)symbol[i])) {
+        if (!isalnum((unsigned char)symbol_name[i])) {
+            print_internal_error(ERROR_CODE_7, symbol_name);
             return 0;
         }
     }
@@ -461,7 +478,8 @@ int classify_operand(Operand *new_operand) {
         new_operand->classification_type = DIRECT_REGISTER; // Direct Register addressing
     }
     else{
-        fprintf(stderr, "Not valid classification type");
+//        fprintf(stderr, "Not valid classification type");
+        print_internal_error(ERROR_CODE_25, "");
         return 0;
     }
     return 1;
@@ -478,8 +496,8 @@ void get_operands_data_for_command(char* command_name, Command *new_command){
             return;
         }
     }
-    // Handle the case where the opcode is not found
-    fprintf(stderr, "Error: Opcode %d not found in the instruction set.\n", command_opcode);
+//    fprintf(stderr, "Error: Opcode %d not found in the instruction set.\n", command_opcode);
+    print_internal_error(ERROR_CODE_31, command_name);
     exit(EXIT_FAILURE);
 }
 
@@ -507,25 +525,29 @@ int find_symbol(char *line, char *symbol) {
         return 1;
     }
     if(((*start == ' ') && *(start + 1) == ':')){
-        fprintf(stderr, "Symbol is not valid -- a space between the symbol and the :\n");
+//        fprintf(stderr, "Symbol is not valid -- a space between the symbol and the ':'\n");
+        print_internal_error(ERROR_CODE_2, "");
         exit(EXIT_FAILURE);
     }
     return 0;
 }
 
 int is_known_assembly_keyword(const char *key) {
+    printf("is_known_assembly_keyword\n");
     int i;
 
     for (i = 0; i < COMMANDS_COUNT; ++i) {
         if (strcmp(key, COMMANDS[i]) == 0) {
-            fprintf(stderr, "key is not valid -- %s is a known assembly keyword (Command) \n", key);
+//            fprintf(stderr, "key is not valid -- %s is a known assembly keyword (Command) \n", key);
+            printf("?????\n");
             return 1; //key is a known command
         }
     }
 
     for (i = 0; i < DIRECTIVES_COUNT; ++i) {
         if (strcmp(key, DIRECTIVES[i]) == 0) {
-            fprintf(stderr, "key is not valid -- %s is a known assembly keyword (Directory)\n", key);
+//            fprintf(stderr, "key is not valid -- %s is a known assembly keyword (Directory)\n", key);
+
             return 1; //key is a known directive
         }
     }
@@ -589,7 +611,8 @@ void handle_directives(char *line, int *dc, SymbolTable *symbol_table, int* ic, 
 
     // Read the directive type from the line
     if (sscanf(line, "%s", directive_type) != 1) {
-        fprintf(stderr, "Error: Failed to read directive type\n");
+//        fprintf(stderr, "Error: Failed to read directive type\n");
+        print_internal_error(ERROR_CODE_32, "");
         new_directive->type = NOT_DIRECTIVE;
         exit(EXIT_FAILURE);
     }
@@ -608,9 +631,10 @@ void handle_directives(char *line, int *dc, SymbolTable *symbol_table, int* ic, 
         handle_entry_directive(new_directive, file_number, symbol_table, line);
 
     } else {
-            new_directive->type = NOT_DIRECTIVE;
-            fprintf(stderr, "Error: Unknown directive %s\n", directive_type);
-            exit(EXIT_FAILURE);
+        new_directive->type = NOT_DIRECTIVE;
+//        fprintf(stderr, "Error: Unknown directive %s\n", directive_type);
+        print_internal_error(ERROR_CODE_47, directive_type);
+        exit(EXIT_FAILURE);
     }
 
     (*dc) += new_instruction_line->binary_line_count;
@@ -635,7 +659,8 @@ void handle_extern_directive(char *line, Directive *new_directive, SymbolTable *
 
     symbol = (Symbol *)malloc(10 * sizeof(Symbol));
     if (symbol == NULL) {
-        fprintf(stderr, "Memory allocation error for directive\n");
+//        fprintf(stderr, "Memory allocation error for directive\n");
+        print_internal_error(ERROR_CODE_12, "");
         exit(EXIT_FAILURE);
     }
     extract_word_after_keyword(ptr, symbol->name, ".extern");
@@ -727,7 +752,8 @@ void handle_data_directive(char *line, Directive *new_directive, InstructionLine
     // Allocate memory for the values in the directive
     new_directive->value = (char **)malloc(values_count * sizeof(char *));
     if (new_directive->value == NULL) {
-        fprintf(stderr, "Memory allocation error\n");
+//        fprintf(stderr, "Memory allocation error\n");
+        print_internal_error(ERROR_CODE_13, "");
         exit(EXIT_FAILURE);
     }
 
@@ -749,6 +775,7 @@ Symbol *find_symbol_by_name(SymbolTable* symbol_table, char* symbol_name){
             return &symbol_table->symbols[i];
         }
     }
-    fprintf(stderr, "Error finding symbol %s", symbol_name);
+//    fprintf(stderr, "Error finding symbol %s", symbol_name);
+    print_internal_error(ERROR_CODE_39, symbol_name);
     exit(EXIT_FAILURE);
 }

@@ -32,6 +32,8 @@ static const char *DIRECTIVES[] = {
 };
 
 static const char *OUTPUT_DIRECTORY_NAME = "output_files";
+static const char *ERROR_FILE_NAME = "output_files/error_logs%d";
+
 
 static const char *EXTERNALS_FILE_NAME = "output_files/ps%d.ext";
 static const char *ENTRIES_FILE_NAME = "output_files/ps%d.ent";

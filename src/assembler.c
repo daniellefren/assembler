@@ -1,15 +1,29 @@
 #include <stdlib.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 #include <stdio.h>
-#include <errno.h>
 
 #include "../include/first_run.h"
 #include "../include/second_run.h"
 #include "../include/test_first_run.h"
-#include "../include/utils.h"
+#include "../include/errors.h"
+#include "../include/files_handler.h"
 
+/**
+ * Run the assembler on a given assembly source file.
+ *
+ * This function performs the following steps:
+ * 1. Initializes the LinesArray and SymbolTable structures.
+ * 2. Opens the specified assembly source file for reading.
+ * 3. Executes the first run of the assembler to parse the file and populate the LinesArray and SymbolTable.
+ * 6. Executes the second run of the assembler to generate the final output files (e.g., object file, externals, entries).
+ * 7. Frees the memory allocated for the LinesArray and SymbolTable.
+ *
+ * @param assembly_lines_array - Pointer to the LinesArray structure that will hold the parsed assembly lines.
+ * @param symbol_table - Pointer to the SymbolTable structure that will hold the symbols found during parsing.
+ * @param filename - The name of the assembly source file to be processed.
+ * @param file_number - An identifier number used to generate output file names.
+ */
 void run_assembler_on_file(LinesArray *assembly_lines_array, SymbolTable *symbol_table, char* filename, int file_number);
+
 
 int main(int argc, char *argv[]) {
     LinesArray *assembly_lines_array;
@@ -23,6 +37,8 @@ int main(int argc, char *argv[]) {
     }
 
     add_output_directory();
+    char specific_error_file_name[100];
+
 
     //Run assembler on all files
     for(int file_number=1;file_number<=number_of_files;file_number++){
@@ -33,6 +49,7 @@ int main(int argc, char *argv[]) {
 }
 
 void run_assembler_on_file(LinesArray *assembly_lines_array, SymbolTable *symbol_table, char* filename, int file_number){
+    printf("filee %d\n", file_number);
     FILE *file;
     int ic, dc = 0;
     assembly_lines_array = init_lines_array(10);
@@ -41,7 +58,7 @@ void run_assembler_on_file(LinesArray *assembly_lines_array, SymbolTable *symbol
     // Open the file in read mode
     file = fopen(filename, "r");
     if (file == NULL) {
-        fprintf(stderr, "Error opening file %s\n", filename);
+        print_internal_error(ERROR_CODE_4, filename);
         exit(EXIT_FAILURE);
     }
 

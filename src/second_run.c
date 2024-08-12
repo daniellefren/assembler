@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include "../include/second_run.h"
 #include "../include/files_handler.h"
+#include "../include/errors.h"
 
 
 void start_second_run(LinesArray *assembly_lines_array, int file_number){
@@ -34,7 +35,8 @@ void fill_instruction_line_binary(InstructionLine *instruction_line){
     binary_instruction_p = instruction_line->binary_instruction;
     binary_line_count = instruction_line->binary_line_count;
     if (binary_line_count == 0){
-        fprintf(stderr, "Error: 0 lines of binary for the instruction line\n");
+//        fprintf(stderr, "Error: 0 lines of binary for the instruction line\n");
+        print_internal_error(ERROR_CODE_35, "");
         return;
     }
 
@@ -117,7 +119,8 @@ void set_binary_string_ARE_representation(char *binary_string, int binary_string
             offset += 3;
             break;
         default:
-            fprintf(stderr,"Error - Character is not 'a', 'r', or 'e'\n");
+//            fprintf(stderr,"Error - Character is not 'a', 'r', or 'e'\n");
+            print_internal_error(ERROR_CODE_36, ""); //TODO - find more indecative warning
             exit(EXIT_FAILURE);
     }
 
@@ -129,7 +132,8 @@ void set_binary_string_ARE_representation(char *binary_string, int binary_string
 void fill_the_binary_with_zero(char *binary_string, size_t length) {
     // Check if the length is valid to avoid unnecessary operations or buffer overflows
     if (length <= 0) {
-        fprintf(stderr, "Error - trying to fill the binary with zero but the length <= 0\n");
+//        fprintf(stderr, "Error - trying to fill the binary with zero but the length <= 0\n");
+        print_internal_error(ERROR_CODE_37, "");
         exit(EXIT_FAILURE);
     }
 
@@ -145,7 +149,8 @@ void set_binary_string_opcode_representation(int opcode_number, char *binary_str
     printf("The opcode is %d \n", opcode_number);
 
     if (binary_string == NULL) {
-        fprintf(stderr, "Error - The binary string is null\n");
+//        fprintf(stderr, "Error - The binary string is null\n");
+        print_internal_error(ERROR_CODE_38, "");
         exit(EXIT_FAILURE);
     }
 
@@ -266,12 +271,14 @@ void fill_binary_directive(InstructionLine *instruction_line, char *binary_strin
     // Process DATA directive
     if (is_directive_data(directive)) {
         if (directive->value == NULL) {
-            fprintf(stderr, "Error - trying to access a directive->value but the value is NULL\n");
+            print_internal_error(ERROR_CODE_33, "");
+//            fprintf(stderr, "Error - trying to access a directive->value but the value is NULL\n");
             return;
         }
         for (int i = 0; i < directive->data_values_count; ++i) {
             if (directive->value[i] == NULL) {
-                fprintf(stderr, "Error - trying to access a directive->value[i] but the value is NULL\n");
+                print_internal_error(ERROR_CODE_34, "");
+//                fprintf(stderr, "Error - trying to access a directive->value[i] but the value is NULL\n");
                 return;
             }
             number_value = char_to_int(directive->value[i]);
@@ -281,11 +288,13 @@ void fill_binary_directive(InstructionLine *instruction_line, char *binary_strin
     // Process STRING directive
     else if (is_directive_string(directive)) {
         if (directive->value == NULL) {
-            fprintf(stderr, "Error - trying to access a directive->value but the value is NULL\n");
+            print_internal_error(ERROR_CODE_33, "");
+//            fprintf(stderr, "Error - trying to access a directive->value but the value is NULL\n");
             return;
         }
         if (directive->value[0] == NULL) {
-            fprintf(stderr, "Error - trying to access a directive->value[i] but the value is NULL\n");
+            print_internal_error(ERROR_CODE_34, "");
+//            fprintf(stderr, "Error - trying to access a directive->value[i] but the value is NULL\n");
             return;
         }
         for (int i = 0; i < strlen(directive->value[0]); ++i) {

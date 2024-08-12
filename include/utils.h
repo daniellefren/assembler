@@ -154,11 +154,6 @@ void char_to_binary_string(char c, char *binary_string, int offset, int num_bits
 int check_if_valid_integer(char *str);
 
 /**
- * Create an output directory if it does not already exist.
- */
-void add_output_directory();
-
-/**
  * Skip leading spaces in a string.
  * @param line - The string to process.
  * @return A pointer to the first non-space character in the string.
@@ -194,4 +189,15 @@ void remove_first_character(char *str);
  * @param number - The number to add to the string.
  */
 void add_number_to_string(char *buffer, const char* source, size_t buffer_size, int number);
+
+/**
+ * Converts an integer to a string representation.
+ * @param number - The integer value to convert to a string.
+ * @param str - The character array (buffer) where the resulting string will be stored.
+ *              Ensure that the buffer is large enough to hold the string representation
+ *              of the number, including the null terminator.
+ */
+char* int_to_string(int number);
+
+
 #endif //ASSEMBLER_UTILS_H
