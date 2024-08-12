@@ -2,16 +2,70 @@
 #ifndef ASSEMBLER_UTILS_H
 #define ASSEMBLER_UTILS_H
 #include "../include/structs.h"
+#include <stdbool.h>
 
+/**
+ * Convert a string to lowercase.
+ * @param string - The string to be converted to lowercase.
+ */
 void lower_string(char *string);
+
+/**
+ * Trim leading and trailing spaces from a string.
+ * @param str - The string to be trimmed.
+ * @return A pointer to the trimmed string.
+ */
 char *trim_spaces(char *str);
+
+
 char* itoa(int val, int base);
+
+/**
+ * Append one string to another, ensuring the destination buffer is large enough.
+ * @param first_string - The first string to append.
+ * @param second_string - The second string to append.
+ * @param appended_string - The destination buffer for the appended string.
+ * @param appended_string_size - The size of the destination buffer.
+ */
 void string_append(const char *first_string, const char *second_String, char *appended_string, size_t appended_string_size);
+
+/**
+ * Print the details of a command structure.
+ * @param command - A pointer to the Command structure to print.
+ */
 void print_command(Command *command);
+
+/**
+ * Print the details of an instruction line structure.
+ * @param instructionLine - A pointer to the InstructionLine structure to print.
+ */
 void print_instruction_line(InstructionLine *instructionLine);
+
+/**
+ * Print the details of a directive structure.
+ * @param directive - A pointer to the Directive structure to print.
+ */
 void print_directive(Directive *directive);
+
+/**
+ * Erase the contents of a file by truncating it.
+ * @param filename - The name of the file to erase.
+ */
 void erase_file_data(const char *filename);
+
+/**
+ * Extract numeric characters, including negative numbers, from a string.
+ * @param input - The input string to extract numbers from.
+ * @param length - The length of the input string.
+ * @return A pointer to the string containing extracted numbers.
+ */
 char* extract_numbers(const char *input, int length);
+
+/**
+ * Convert a string to an integer.
+ * @param str - The string to convert.
+ * @return The integer value of the string.
+ */
 int char_to_int(char *c);
 
 /**
@@ -91,11 +145,53 @@ void int_to_binary_string(int num, char *binary_string, int offset, int num_bits
  *
  */
 void char_to_binary_string(char c, char *binary_string, int offset, int num_bits);
+
+/**
+ * Check if a given string is a valid integer.
+ * @param str - The string to check.
+ * @return 0 if the string is not a valid integer, or the length of the integer if valid.
+ */
 int check_if_valid_integer(char *str);
+
+/**
+ * Create an output directory if it does not already exist.
+ */
 void add_output_directory();
+
+/**
+ * Skip leading spaces in a string.
+ * @param line - The string to process.
+ * @return A pointer to the first non-space character in the string.
+ */
 char* skip_spaces(char *line);
+
+/**
+ * Ignore a line if it is a comment (starting with ';') or empty.
+ * @param line - The line to check.
+ * @return 1 if the line should be ignored, otherwise 0.
+ */
 int ignore_line(char *line);
+
+/**
+ * Extract the word that follows a specific keyword in a string.
+ * @param input - The input string to search.
+ * @param output - The buffer to store the extracted word.
+ * @param keyword - The keyword to search for in the input string.
+ */
 void extract_word_after_keyword(const char *input, char *output, const char *keyword);
+
+/**
+ * Remove the first character from a string.
+ * @param str - The string from which the first character will be removed.
+ */
 void remove_first_character(char *str);
+
+/**
+ * Add a number to a formatted string.
+ * @param buffer - The buffer where the result will be stored.
+ * @param source - The source format string.
+ * @param buffer_size - The size of the buffer.
+ * @param number - The number to add to the string.
+ */
 void add_number_to_string(char *buffer, const char* source, size_t buffer_size, int number);
 #endif //ASSEMBLER_UTILS_H
