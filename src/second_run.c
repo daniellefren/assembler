@@ -105,10 +105,11 @@ void set_binary_string_operand_representation(int first_operand_classification_t
     }
 }
 
-void set_binary_string_ARE_representation(char *binary_string, int binary_string_number, char ARE){
-    //number of binary string - is it the first binary string, second or third
-    //First word always A = 1
-    int offset = 11 + (15 * (binary_string_number-1));
+void set_binary_string_ARE_representation(char *binary_string, int binary_string_number, char ARE) {
+    // Calculate the offset based on binary string number
+    int offset = ARE_STARTING_OFFSET + (BINARY_WORD_LENGTH * (binary_string_number - 1));
+
+    // Adjust the offset based on ARE character
     switch (ARE) {
         case 'a':
             offset += 1;
@@ -120,9 +121,11 @@ void set_binary_string_ARE_representation(char *binary_string, int binary_string
             offset += 3;
             break;
         default:
-            printf("Exception Character is not a/r/e\n");
+            fprintf(stderr,"Error - Character is not 'a', 'r', or 'e'\n");
             exit(EXIT_FAILURE);
     }
+
+    // Set the ARE bit in the binary string
     binary_string[offset] = '1';
 }
 
@@ -247,49 +250,50 @@ void fill_operand_binary(Operand *operand, Operand *second_operand, char *binary
     }
 }
 
-void register_to_binary_string(char *register_value, int operand_number, char *binary_string, int offset){
-    //src its 8-6 and dst its 3-5 012345 678 91011 121314
-    int register_number;
-    register_number = char_to_int(register_value);
-    if (operand_number == 2) { //dst bit 91011
-        int_to_binary_string(register_number, binary_string,offset +9, 3);
-    }
-    else if(operand_number == 1) {//src bit 678
-        int_to_binary_string(register_number, binary_string,offset +6, 3);
+void register_to_binary_string(char *register_value, int operand_number, char *binary_string, int offset) {
+    int register_number = char_to_int(register_value);
+
+    // Convert register number to binary and place in the correct bit positions
+    if (operand_number == 2) { // Destination register (bits 9-11)
+        int_to_binary_string(register_number, binary_string, offset + DST_REGISTER_OFFSET, 3);
+    } else if (operand_number == 1) { // Source register (bits 6-8)
+        int_to_binary_string(register_number, binary_string, offset + SRC_REGISTER_OFFSET, 3);
     }
 }
 
 
-void fill_binary_directive(InstructionLine *instruction_line, char *binary_string){
+void fill_binary_directive(InstructionLine *instruction_line, char *binary_string) {
     int number_value;
-    Directive *directive = instruction_line->directive;
+    Directive *directive;
+    directive = instruction_line->directive;
 
-    if (is_directive_data(directive)){
-        if (directive->value == NULL){
+    // Process DATA directive
+    if (is_directive_data(directive)) {
+        if (directive->value == NULL) {
             fprintf(stderr, "Error - trying to access a directive->value but the value is NULL\n");
             return;
         }
         for (int i = 0; i < directive->data_values_count; ++i) {
-            if (directive->value[i] == NULL){
+            if (directive->value[i] == NULL) {
                 fprintf(stderr, "Error - trying to access a directive->value[i] but the value is NULL\n");
                 return;
             }
             number_value = char_to_int(directive->value[i]);
-            int_to_binary_string(number_value, binary_string,i *BINARY_LINE_LENGTH, BINARY_LINE_LENGTH);
+            int_to_binary_string(number_value, binary_string, i * BINARY_LINE_LENGTH, BINARY_LINE_LENGTH);
         }
     }
-
-    else if (is_directive_string(directive)){
-        if (directive->value == NULL){
+    // Process STRING directive
+    else if (is_directive_string(directive)) {
+        if (directive->value == NULL) {
             fprintf(stderr, "Error - trying to access a directive->value but the value is NULL\n");
             return;
         }
-        if (directive->value[0] == NULL){
+        if (directive->value[0] == NULL) {
             fprintf(stderr, "Error - trying to access a directive->value[i] but the value is NULL\n");
             return;
         }
         for (int i = 0; i < strlen(directive->value[0]); ++i) {
-            char_to_binary_string(directive->value[0][i], binary_string,i*BINARY_LINE_LENGTH, BINARY_LINE_LENGTH);
+            char_to_binary_string(directive->value[0][i], binary_string, i * BINARY_LINE_LENGTH, BINARY_LINE_LENGTH);
         }
     }
 }
