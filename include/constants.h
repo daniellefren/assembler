@@ -23,6 +23,8 @@ static const char *DIRECTIVES[] = {
         "data", "string", "struct", "entry", "extern"
 };
 
+static const char *OUTPUT_DIRECTORY_NAME = "output_files";
+
 static const char *EXTERNALS_FILE_NAME = "output_files/ps%d.ext";
 static const char *ENTRIES_FILE_NAME = "output_files/ps%d.ent";
 static const char *EXPANDED_MACRO_FILE_NAME = "output_files/expanded_macros%d.am";
@@ -32,6 +34,7 @@ static const char *OBJECTS_FILE_NAME = "output_files/ps%d.ob";
 #define COMMANDS_COUNT (sizeof(COMMANDS) / sizeof(COMMANDS[0]))
 #define DIRECTIVES_COUNT (sizeof(DIRECTIVES) / sizeof(DIRECTIVES[0]))
 #define TOTAL_ASSEMBLY_KEYWORDS_COUNT (COMMANDS_COUNT + DIRECTIVES_COUNT)
+
 
 /* A/R/E modes ordered by their numerical value */
 enum ARE {ABSOLUTE, EXTERNAL, RELOCATABLE};

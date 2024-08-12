@@ -1,9 +1,30 @@
 #include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include "../include/first_run.h"
 #include "../include/second_run.h"
 #include "../include/test_first_run.h"
 
-// TODO - Add function that read from directory and not files
+void add_output_directory();
+
+void add_output_directory(){
+    const char *dirName = OUTPUT_DIRECTORY_NAME;
+    struct stat st = {0};
+
+    // Check if the directory exists
+    if (stat(dirName, &st) == -1) {
+        // Directory does not exist, create it
+        if (mkdir(dirName, 0755) == 0) {
+            printf("Directory '%s' created successfully.\n", dirName);
+        } else {
+            perror("Error creating directory");
+            exit(EXIT_FAILURE);
+        }
+    } else {
+        printf("Directory '%s' already exists.\n", dirName);
+    }
+}
+
 //TODO - get over al the todos
 int main(int argc, char *argv[]) {
     LinesArray *assembly_lines_array;
@@ -15,7 +36,9 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "Usage: %s <file_path>\n", argv[0]);
         return EXIT_FAILURE;
     }
-    printf("number_of_files %d\n", number_of_files);
+
+    add_output_directory();
+
     //Run assembler on all files
     for(int file_number=1;file_number<=number_of_files;file_number++){
         FILE *file;
@@ -34,8 +57,7 @@ int main(int argc, char *argv[]) {
         // Call the first_run function with the file pointer
         first_run(file, &ic, &dc, assembly_lines_array, symbol_table, file_number);
 
-
-        test_all_run(assembly_lines_array);
+        test_all_run(assembly_lines_array); //TODO - delete
 
         // Close the file
         fclose(file);
@@ -50,6 +72,5 @@ int main(int argc, char *argv[]) {
         free_symbol_table(symbol_table);
     }
 
-    //return EXIT_SUCCESS;
-    return 1;
+    return EXIT_SUCCESS;
 }
