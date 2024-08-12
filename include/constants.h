@@ -13,6 +13,8 @@
 #define OPCODE_SIZE 4
 #define MAX_OPERAND_SIZE 10
 #define MAX_LINE_LENGTH 80
+#define SRC_OPERAND_NUMBER 1
+#define DST_OPERAND_NUMBER 2
 //#define EXTERNALS_FILE_NAME "output_files/externals.txt";
 
 static const char *COMMANDS[] = {
