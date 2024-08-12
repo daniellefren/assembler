@@ -1,0 +1,5 @@
+MOV 2, ir
+stop
+dec a
+ inc r2
+ mov a,r1

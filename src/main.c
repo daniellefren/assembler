@@ -41,7 +41,6 @@ int main(int argc, char *argv[]) {
 
     //Run assembler on all files
     for(int file_number=1;file_number<=number_of_files;file_number++){
-        //TODO - create directory for each run (?)
         FILE *file;
         int ic, dc = 0;
         assembly_lines_array = init_lines_array(10);
@@ -63,11 +62,14 @@ int main(int argc, char *argv[]) {
         // Close the file
         fclose(file);
 
-        //call the second_run function with the LinesArray table
-//        start_second_run(assembly_lines_array);
 
-//        free_lines_array(assembly_lines_array);
-//        free_symbol_table(symbol_table);
+        //call the second_run function with the LinesArray table
+        start_second_run(assembly_lines_array, file_number);
+        printf("end %d file\n", file_number);
+
+
+        free_lines_array(assembly_lines_array);
+        free_symbol_table(symbol_table);
     }
 
     return EXIT_SUCCESS;
