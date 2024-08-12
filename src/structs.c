@@ -58,7 +58,7 @@ void free_macro_table(MacroTable *macro_table) {
 
 
 void free_instruction_line(InstructionLine *instruction_line) {
-
+    size_t i;
     if (instruction_line->line_content) {
         free(instruction_line->line_content);
     }
@@ -73,7 +73,7 @@ void free_instruction_line(InstructionLine *instruction_line) {
                 instruction_line->instruction_type == ENTRY_DIRECTIVE){
         // Assuming that `directive->value` is allocated dynamically and needs to be freed
         if (instruction_line->directive->value) {
-            for (size_t i = 0; i < instruction_line->directive->data_values_count; i++) {
+            for (i = 0; i < instruction_line->directive->data_values_count; i++) {
                 free(instruction_line->directive->value[i]);
             }
             free(instruction_line->directive->value);
@@ -216,7 +216,8 @@ Directive *init_directive(){
 
 // Initialize macro name array
 void init_macro_name_array(char **macroNames) {
-    for (int i = 0; i < MAX_MACRO_NAMES; ++i) {
+    int i;
+    for (i = 0; i < MAX_MACRO_NAMES; ++i) {
         macroNames[i] = malloc(MAX_SYMBOL_LENGTH * sizeof(char));
         if (!macroNames[i]) {
             print_internal_error(ERROR_CODE_21, "");

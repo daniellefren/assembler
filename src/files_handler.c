@@ -55,9 +55,10 @@ void add_first_line_to_ob_file(int number_of_command, int number_of_directive, F
 
 
 void add_all_command_lines_to_ob_file(LinesArray *lines_array, FILE *object_file){
+    int i;
     InstructionLine *p_line;
     // Iterate over all lines in the lines array
-    for (int i = 0; i < lines_array->number_of_line; ++i) {
+    for (i = 0; i < lines_array->number_of_line; ++i) {
         p_line = &lines_array->lines[i];
         if (p_line == NULL) {
             print_internal_error(ERROR_CODE_29, int_to_string(i));
@@ -74,9 +75,10 @@ void add_all_command_lines_to_ob_file(LinesArray *lines_array, FILE *object_file
 
 
 void add_all_directive_lines_to_ob_file(LinesArray *lines_array, FILE *object_file){
+    int i;
     InstructionLine *p_line;
     // Iterate over all lines in the lines array
-    for (int i = 0; i < lines_array->number_of_line; ++i) {
+    for (i = 0; i < lines_array->number_of_line; ++i) {
         p_line = &lines_array->lines[i];
         if (p_line == NULL) {
             print_internal_error(ERROR_CODE_30, int_to_string(i));
@@ -94,6 +96,7 @@ void add_all_directive_lines_to_ob_file(LinesArray *lines_array, FILE *object_fi
 
 
 void add_command_line_to_ob_file(InstructionLine *instructionLine, FILE *object_file){
+    int i;
     char *octal_number;            // Pointer to hold the octal string representation of the binary instruction
     int instruction_address;       // Variable to store the starting address of the instruction
 
@@ -111,7 +114,7 @@ void add_command_line_to_ob_file(InstructionLine *instructionLine, FILE *object_
     }
 
     // Loop through each binary line in the instruction
-    for (int i = 0; i < instructionLine->binary_line_count; ++i) {
+    for (i = 0; i < instructionLine->binary_line_count; ++i) {
         // Convert the binary instruction to an octal string
         fill_octal_string_from_binary(instructionLine->binary_instruction, BINARY_WORD_LENGTH, i * BINARY_WORD_LENGTH, octal_number);
         printf("The address is %d and the octal number is %s\n", instruction_address, octal_number);
@@ -122,6 +125,7 @@ void add_command_line_to_ob_file(InstructionLine *instructionLine, FILE *object_
 }
 
 void add_directive_line_to_ob_file(InstructionLine *instructionLine, FILE *object_file){
+    int i;
     char *octal_number;            // Pointer to hold the octal string representation of the binary instruction
     int instruction_address;       // Variable to store the starting address of the instruction
 
@@ -139,7 +143,7 @@ void add_directive_line_to_ob_file(InstructionLine *instructionLine, FILE *objec
     }
 
     // Loop through each binary line in the instruction
-    for (int i = 0; i < instructionLine->binary_line_count; ++i) {
+    for (i = 0; i < instructionLine->binary_line_count; ++i) {
         // Convert the binary instruction to an octal string
         fill_octal_string_from_binary(instructionLine->binary_instruction, BINARY_WORD_LENGTH, i * BINARY_WORD_LENGTH, octal_number);
         printf("The address is %d and the octal number is %s\n", instruction_address, octal_number);
