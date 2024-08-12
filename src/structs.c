@@ -247,3 +247,24 @@ void allocate_binary_instruction(InstructionLine *p_line, size_t binary_line_cou
 char *get_instruction_line_binary(LinesArray *linesArray, int number_of_line) {
     return linesArray->lines[number_of_line].binary_instruction;
 }
+
+bool is_instruction_line_directive(InstructionLine instructionLine){
+    // Check if the `directive` field is not NULL
+    if (instructionLine.directive != NULL){
+        return true;
+    }
+    return false;
+}
+
+bool is_instruction_line_opcode(InstructionLine instructionLine){
+    // Check if the `command` field is not NULL
+    if (instructionLine.command != NULL){
+        return true;
+    }
+    return false;
+}
+
+int is_operand_classification_type_valid(enum operand_classification_type operandClassificationType){
+    // Check if the operand classification type is within the valid range
+    return (operandClassificationType >= IMMEDIATE) && (operandClassificationType <= DIRECT_REGISTER);
+}

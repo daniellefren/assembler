@@ -2,7 +2,7 @@
 #ifndef ASSEMBLER_UTILS_H
 #define ASSEMBLER_UTILS_H
 #include "../include/structs.h"
-#include <stdbool.h>
+
 void lower_string(char *string);
 char *trim_spaces(char *str);
 void erase_file_data(const char *filename);
