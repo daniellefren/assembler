@@ -95,5 +95,7 @@ int check_if_valid_integer(char *str);
 void add_output_directory();
 char* skip_spaces(char *line);
 int ignore_line(char *line);
-
+void extract_word_after_keyword(const char *input, char *output, const char *keyword);
+void remove_first_character(char *str);
+void add_number_to_string(char *buffer, const char* source, size_t buffer_size, int number);
 #endif //ASSEMBLER_UTILS_H
