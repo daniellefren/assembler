@@ -2,7 +2,6 @@
 #ifndef ASSEMBLER_UTILS_H
 #define ASSEMBLER_UTILS_H
 #include "../include/structs.h"
-#include <stdbool.h>
 
 /**
  * Convert a string to lowercase.
@@ -75,9 +74,9 @@ int char_to_int(char *c);
  * if the directive type is DATA.
  *
  * @param directive Pointer to the Directive structure to check.
- * @return True if the directive type is DATA, false otherwise.
+ * @return 1 if the directive type is DATA, 0 otherwise.
  */
-bool is_directive_data(Directive *directive);
+int is_directive_data(Directive *directive);
 
 /**
  * Checks if the directive is of type STRING.
@@ -86,9 +85,9 @@ bool is_directive_data(Directive *directive);
  * if the directive type is STRING.
  *
  * @param directive Pointer to the Directive structure to check.
- * @return True if the directive type is STRING, false otherwise.
+ * @return 1 if the directive type is STRING, 0 otherwise.
  */
-bool is_directive_string(Directive *directive);
+int is_directive_string(Directive *directive);
 
 /**
  * Converts a portion of a binary string to an octal string.

@@ -19,11 +19,12 @@
  */
 
 int main(int argc, char *argv[]) {
-    LinesArray *assembly_lines_array;
-    SymbolTable *symbol_table;
-    int number_of_files = argc - 1;
-    char specific_error_file_name[100];
-
+    LinesArray *assembly_lines_array = NULL;
+    SymbolTable *symbol_table = NULL;
+    int file_number;
+    int number_of_files;
+    number_of_files = argc - 1;
+  
     // Check if the correct number of arguments is provided
     if (argc < 2) {
         fprintf(stderr, "Usage: %s <file_path>\n", argv[0]);
@@ -31,10 +32,11 @@ int main(int argc, char *argv[]) {
     }
 
     add_output_directory();
+
     output_test("","");
     /*
     //Run assembler on all files
-    for(int file_number=1;file_number<=number_of_files;file_number++){
+    for(file_number=1;file_number<=number_of_files;file_number++){
         run_assembler_on_file(assembly_lines_array, symbol_table, argv[file_number], file_number);
     }
     */
@@ -42,9 +44,12 @@ int main(int argc, char *argv[]) {
 }
 
 void run_assembler_on_file(LinesArray *assembly_lines_array, SymbolTable *symbol_table, char* filename, int file_number){
-    printf("file %d\n", file_number);
     FILE *file;
-    int ic, dc = 0;
+    int ic, dc;
+
+    ic = 0;
+    dc = 0;
+
     assembly_lines_array = init_lines_array(10);
     symbol_table = init_symbol_table(10);
 

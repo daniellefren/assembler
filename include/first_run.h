@@ -3,7 +3,6 @@
 
 #include <stdio.h>
 #include <ctype.h>
-#include <stdbool.h>
 #include <string.h>
 #include "structs.h"
 
@@ -129,16 +128,17 @@ void extract_second_operand_from_line(char* line, Command *new_command);
  * Defines the type of an operand based on its value.
  * @param operand A pointer to the `Operand` structure that contains the operand's value and type.
  * @param macro_table A pointer to the `MacroTable` structure that stores the names and bodies of all macros encountered during the pre-run.
+ * @param symbol_table A pointer to the SymbolTable structure that stores all symbols encountered in the source file.
  */
-int define_operand_types(Operand *operand, MacroTable *macro_table);
-
+int define_operand_types(Operand *operand, MacroTable *macro_table, SymbolTable *symbol_table);
 /**
  * Function to check if a string is a valid symbol name
  * @param symbol Given symbol to check
  * @param macro_table A pointer to the `MacroTable` structure that stores the names and bodies of all macros encountered during the pre-run.
+ * @param symbol_table A pointer to the SymbolTable structure that stores all symbols encountered in the source file.
  * @return 1 if valid, else 0
  */
-int is_valid_symbol(const char *symbol, MacroTable *macro_table);
+int is_valid_symbol(const char *symbol, MacroTable *macro_table, SymbolTable *symbol_table);
 
 /**
  * Get number of binary lines for command based on the classification types of the operands

@@ -1,7 +1,6 @@
 #ifndef ASSEMBLER_STRUCTS_H
 #define ASSEMBLER_STRUCTS_H
 #include "constants.h"
-#include <stdbool.h>
 
 #define INITIAL_IC 100
 #define MAX_MACRO_LENGTH 100
@@ -180,19 +179,19 @@ InstructionLine *init_instruction_line(char* line);
  * Initialize a Command structure.
  * @return A pointer to the initialized Command structure.
  */
-Command *init_command();
+Command *init_command(void);
 
 /**
  * Initialize an Operand structure.
  * @return A pointer to the initialized Operand structure.
  */
-Operand *init_operand();
+Operand *init_operand(void);
 
 /**
  * Initialize a Directive structure.
  * @return A pointer to the initialized Directive structure.
  */
-Directive *init_directive();
+Directive *init_directive(void);
 
 /**
  * Initialize an array of macro names.
@@ -237,10 +236,10 @@ char *get_instruction_line_binary(LinesArray *linesArray, int number_of_line);
  *                        the `directive` field that is used to determine if the instruction
  *                        is a directive.
  *
- * @return `true` if the `directive` field is non-NULL, indicating the instruction is a directive,
- *         otherwise `false`.
+ * @return `1 if the `directive` field is non-NULL, indicating the instruction is a directive,
+ *         otherwise 0.
  */
-bool is_instruction_line_directive(InstructionLine instructionLine);
+int is_instruction_line_directive(InstructionLine instructionLine);
 
 /**
  * Checks if the given instruction line represents an opcode.
@@ -251,10 +250,10 @@ bool is_instruction_line_directive(InstructionLine instructionLine);
  *                        the `command` field that is used to determine if the instruction
  *                        is an opcode.
  *
- * @return `true` if the `command` field is non-NULL, indicating the instruction is an opcode,
- *         otherwise `false`.
+ * @return 1 if the `command` field is non-NULL, indicating the instruction is an opcode,
+ *         otherwise 0.
  */
-bool is_instruction_line_opcode(InstructionLine instructionLine);
+int is_instruction_line_opcode(InstructionLine instructionLine);
 
 /**
  * Checks if the given operand classification type is valid.
