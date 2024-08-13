@@ -51,7 +51,7 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
     rewind(file); // Reset file pointer to the beginning before calling pre_run
 
     //add file num to expended_macro_file_name to make new file for the assembly input file
-    add_number_to_string(expended_macro_file_name, EXPANDED_MACRO_FILE_NAME, file_number);
+    add_number_to_string(expended_macro_file_name, sizeof(expended_macro_file_name), EXPANDED_MACRO_FILE_NAME, file_number);
 
     //Pre run in order to expand macros from asse,bly input file
     success = pre_run(&macro_table, macro_names, file, expended_macro_file_name); // Keeps track of the number of encountered macros
