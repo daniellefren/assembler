@@ -63,15 +63,15 @@ void run_assembler_on_file(LinesArray *assembly_lines_array, SymbolTable *symbol
     // Call the first_run function with the file pointer
     first_run(file, &ic, &dc, assembly_lines_array, symbol_table, file_number);
 
-    test_all_run(assembly_lines_array); //TODO - delete
+//    test_all_run(assembly_lines_array); //TODO - delete
 
     // Close the file
     fclose(file);
 
     //call the second_run function with the LinesArray table
-    start_second_run(assembly_lines_array, file_number);
+//    start_second_run(assembly_lines_array, file_number);
 
-    free_lines_array(assembly_lines_array);
-    free_symbol_table(symbol_table);
+//    free_lines_array(assembly_lines_array);
+//    free_symbol_table(symbol_table);
 }
 

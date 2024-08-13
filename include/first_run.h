@@ -93,9 +93,10 @@ int read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, LinesArra
  * @brief Allocates memory and initializes a new symbol for the current instruction line.
  * @param new_instruction_line A pointer to the `InstructionLine` structure that the symbol will be associated with.
  * @param symbol_name The name of the symbol to be assigned to the new `symbol` structure.
+ * @param symbol_table A pointer to the SymbolTable structure that stores all symbols encountered in the source file.
  * @return A pointer to the newly created `symbol` structure.
  */
-Symbol* handle_symbol(InstructionLine *instruction_line, char *symbol_name);
+Symbol* handle_symbol(InstructionLine *instruction_line, char *symbol_name, SymbolTable *symbol_table);
 
 /**
  * Processes a command line from the assembly source, extracting and classifying its operands.
@@ -185,14 +186,6 @@ int is_known_assembly_keyword(const char *key);
 int is_command(char *line);
 
 /**
- * Check if given symbol name already exists in symbol_table
- * @param symbol_table A pointer to the SymbolTable structure that stores all symbols encountered in the source file.
- * @param symbol Given symbol to check
- * @return 1 if exist, else 0
- */
-int symbol_exists(SymbolTable *symbol_table, char *symbol); // TODO - check if relevant
-
-/**
  * Function to check if the line contains a data directive
  * @param line The line of assembly code containing the directive to be processed.
  * @return 1 if directive, else 0
@@ -208,7 +201,7 @@ int is_directive(char *line);
  * @param file_number An integer representing the number of the current file being processed, used for generating unique output file names.
  * @param new_instruction_line A pointer to the `InstructionLine` structure that the symbol will be associated with.
  */
-void handle_directives(char *line, int *dc, SymbolTable *symbol_table, int* ic, int file_number, InstructionLine *new_instruction_line);
+int handle_directives(char *line, int *dc, SymbolTable *symbol_table, int* ic, int file_number, InstructionLine *new_instruction_line);
 
 /**
  * handle entry directive line - Mark symbol as entry in symbol table and add to entries file
@@ -216,8 +209,9 @@ void handle_directives(char *line, int *dc, SymbolTable *symbol_table, int* ic, 
  * @param file_number An integer representing the number of the current file being processed, used for generating unique output file names.
  * @param symbol_table A pointer to the SymbolTable structure that stores all symbols encountered in the source file.
  * @param line The line of assembly code containing the directive to be processed.
+ * @return 1 if succefully ran, else 0
  */
-void handle_entry_directive(Directive *new_directive, int file_number, SymbolTable *symbol_table, char* line);
+int handle_entry_directive(Directive *new_directive, int file_number, SymbolTable *symbol_table, char* line);
 
 /**
  * handle extern directive line - Add extern symbol to symbol table and add to externals file
@@ -226,8 +220,9 @@ void handle_entry_directive(Directive *new_directive, int file_number, SymbolTab
  * @param symbol_table A pointer to the SymbolTable structure that stores all symbols encountered in the source file.
  * @param file_number An integer representing the number of the current file being processed, used for generating unique output file names.
  * @param ic Pointer to the instruction counter, which tracks the memory address of the commands.
+ * @return 1 if successfully ran, else 0
  */
-void handle_extern_directive(char *line, Directive *new_directive, SymbolTable *symbol_table, int file_number, int *ic);
+int handle_extern_directive(char *line, Directive *new_directive, SymbolTable *symbol_table, int file_number, int *ic);
 
 /**
  * Processes a `.string` directive and extracts the string value into the directive structure.
@@ -254,5 +249,12 @@ void handle_data_directive(char *line, Directive *new_directive, InstructionLine
  */
 Symbol *find_symbol_by_name(SymbolTable* symbol_table, char* symbol_name);
 
+/**
+ * Add a new symbol to the SymbolTable.
+ * The array is resized if needed.
+ * @param symbol_table - Pointer to the SymbolTable structure.
+ * @param symbol_name - Symbol name for given new symbol
+ */
+Symbol *add_new_symbol(SymbolTable *symbol_table, char* symbol_name);
 
 #endif //ASSEMBLER_FIRST_RUN_H

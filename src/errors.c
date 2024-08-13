@@ -12,7 +12,6 @@ Error errors[] = {
         {ERROR_CODE_5,  "Symbol is not valid -- too long"},
         {ERROR_CODE_6,  "Symbol is not valid -- should start with a letter"},
         {ERROR_CODE_7,  "Symbol is not valid -- should only contain with letters and numbers"},
-        {ERROR_CODE_50, "Symbol is not valid -- Already exists"},
         {ERROR_CODE_8,  "Program stopped running because of incorrect given assembly code"},
 
 
@@ -49,7 +48,7 @@ Error errors[] = {
         {ERROR_CODE_36,  "Character is not 'a', 'r', or 'e'"},
         {ERROR_CODE_37,  "Trying to fill the binary with zero but the length <= 0"},
         {ERROR_CODE_38,  "The binary string is null"},
-        {ERROR_CODE_39,  "Error finding symbol"},
+        {ERROR_CODE_39,  ""},
         {ERROR_CODE_40,  "Insufficient space to append both strings"},
         {ERROR_CODE_41,  "There are no values in the directive"},
         {ERROR_CODE_42,  "Invalid input parameters"},
@@ -62,7 +61,11 @@ Error errors[] = {
 
         // File related errors
         {ERROR_CODE_48,  "Could not open file for writing"},
-        {ERROR_CODE_49,  "Could not open file for writing macros"}
+        {ERROR_CODE_49,  "Could not open file for writing macros"},
+
+        //Additional errors
+        {ERROR_CODE_50, "Symbol is not valid -- Already exists"},
+
 
 };
 

@@ -30,7 +30,7 @@ typedef struct {
  * Struct representing a symbol table.
  */
 typedef struct {
-    Symbol *symbols;                         /**< Pointer to an array of Symbol structs. */
+    Symbol **symbols;                         /**< Pointer to an array of Symbol structs. */
     size_t size;                             /**< The current number of symbols in the table. */
     size_t capacity;                         /**< The maximum capacity of the symbol table. */
 } SymbolTable;
@@ -76,7 +76,7 @@ typedef struct {
  * Struct representing an array of instruction lines.
  */
 typedef struct {
-    InstructionLine *lines;                  /**< Pointer to an array of InstructionLine structs. */
+    InstructionLine **lines;                  /**< Pointer to an array of InstructionLine structs. */
     unsigned int number_of_line;             /**< The number of lines currently stored in the array. */
     size_t capacity;                         /**< The maximum capacity of the lines array. */
     int ic;                                  /**< Instruction counter (IC), tracking the memory address for instructions. */
@@ -139,14 +139,6 @@ void free_binary_instruction(InstructionLine *p_line);
  * @param instruction_line - Pointer to the InstructionLine structure to be added.
  */
 void addInstructionLine(LinesArray *lines_array, InstructionLine *instruction_line);
-
-/**
- * Add a new symbol to the SymbolTable.
- * The array is resized if needed.
- * @param symbol_table - Pointer to the SymbolTable structure.
- * @param new_symbol - Pointer to the Symbol structure to be added.
- */
-void add_new_symbol(SymbolTable *symbol_table, Symbol *new_symbol);
 
 /**
  * Initialize a LinesArray structure with a given initial capacity.

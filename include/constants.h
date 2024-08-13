@@ -20,6 +20,7 @@
 #define DST_REGISTER_OFFSET 9
 #define BINARY_INSTRUCTION_MAX_LENGTH 46
 #define BINARY_LINE_LENGTH 15
+#define SYMBOL_NAME_LEN 15
 //#define EXTERNALS_FILE_NAME "output_files/externals.txt";
 
 static const char *COMMANDS[] = {

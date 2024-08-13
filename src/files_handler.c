@@ -59,7 +59,7 @@ void add_all_command_lines_to_ob_file(LinesArray *lines_array, FILE *object_file
     InstructionLine *p_line;
     // Iterate over all lines in the lines array
     for (i = 0; i < lines_array->number_of_line; ++i) {
-        p_line = &lines_array->lines[i];
+        p_line = lines_array->lines[i];
         if (p_line == NULL) {
             print_internal_error(ERROR_CODE_29, int_to_string(i));
             continue;
@@ -79,13 +79,13 @@ void add_all_directive_lines_to_ob_file(LinesArray *lines_array, FILE *object_fi
     InstructionLine *p_line;
     // Iterate over all lines in the lines array
     for (i = 0; i < lines_array->number_of_line; ++i) {
-        p_line = &lines_array->lines[i];
+        p_line = lines_array->lines[i];
         if (p_line == NULL) {
             print_internal_error(ERROR_CODE_30, int_to_string(i));
             continue;
         }
 
-        if (lines_array->lines[i].instruction_type == DATA_DIRECTIVE) {
+        if (lines_array->lines[i]->instruction_type == DATA_DIRECTIVE) {
            printf("Starting to insert directive to object file address=%d, binary=%d, content=%s\n",
                    p_line->starting_address, p_line->binary_line_count, p_line->line_content);
            add_directive_line_to_ob_file(p_line, object_file);

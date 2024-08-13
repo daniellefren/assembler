@@ -18,7 +18,7 @@ void start_second_run(LinesArray *assembly_lines_array, int file_number){
 
     // Iterate over each line in the assembly lines array
     for (i = 0; i < assembly_lines_array->number_of_line; ++i){
-        p_line = &assembly_lines_array->lines[i];
+        p_line = assembly_lines_array->lines[i];
         printf("\n****Line number %d Address %d *****  \n\n", i, p_line->starting_address);
         allocate_binary_instruction(p_line, p_line->binary_line_count, BINARY_LINE_LENGTH);
         fill_instruction_line_binary(p_line);
