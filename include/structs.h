@@ -30,7 +30,7 @@ typedef struct {
  * Struct representing a symbol table.
  */
 typedef struct {
-    Symbol **symbols;                         /**< Pointer to an array of Symbol structs. */
+    Symbol **symbols;                         /**< Pointer to an array of pointers to Symbol structs. */
     size_t size;                             /**< The current number of symbols in the table. */
     size_t capacity;                         /**< The maximum capacity of the symbol table. */
 } SymbolTable;
@@ -76,7 +76,7 @@ typedef struct {
  * Struct representing an array of instruction lines.
  */
 typedef struct {
-    InstructionLine **lines;                  /**< Pointer to an array of InstructionLine structs. */
+    InstructionLine **lines;                  /**< Pointer to an array of pointers to InstructionLine structs. */
     unsigned int number_of_line;             /**< The number of lines currently stored in the array. */
     size_t capacity;                         /**< The maximum capacity of the lines array. */
     int ic;                                  /**< Instruction counter (IC), tracking the memory address for instructions. */

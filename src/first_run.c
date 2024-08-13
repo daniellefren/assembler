@@ -201,6 +201,8 @@ int read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, LinesArra
     InstructionLine *new_instruction_line;
     int success;
 
+    printf("linee %s\n", line);
+
     success = 1;
 
     line = skip_spaces(line);
@@ -208,7 +210,6 @@ int read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, LinesArra
     new_instruction_line = init_instruction_line(line);
 
     has_symbol = find_symbol(line, symbol_name);
-
 
     if (has_symbol) {
         if(!is_valid_symbol(symbol_name, macro_table, symbol_table)){
@@ -419,6 +420,7 @@ int is_valid_symbol(const char *symbol_name, MacroTable *macro_table, SymbolTabl
 
     //Check if the first character is a letter
     if (!isalpha((unsigned char)symbol_name[0])) {
+        printf("???? %s\n", symbol_name);
         print_internal_error(ERROR_CODE_6, symbol_name);
         return 0;
     }
