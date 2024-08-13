@@ -69,9 +69,9 @@ void run_assembler_on_file(LinesArray *assembly_lines_array, SymbolTable *symbol
     fclose(file);
 
     //call the second_run function with the LinesArray table
-//    start_second_run(assembly_lines_array, file_number);
+    start_second_run(assembly_lines_array, file_number);
 
-//    free_lines_array(assembly_lines_array);
-//    free_symbol_table(symbol_table);
+    free_lines_array(assembly_lines_array);
+    free_symbol_table(symbol_table);
 }
 
