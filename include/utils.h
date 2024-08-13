@@ -210,4 +210,6 @@ int compare_files(FILE *file1, FILE *file2);
 
 long get_file_size(FILE *file);
 
+void print_current_directory(); //TODO - erase
+
 #endif //ASSEMBLER_UTILS_H

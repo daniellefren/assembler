@@ -352,10 +352,11 @@ int ignore_line(char *line) {
 char* int_to_string(int number) {
     char *str = (char *)malloc(20 * sizeof(char)); // Allocate memory on the heap
     if (str == NULL) {
-//        perror("Unable to allocate memory");
+        perror("Unable to allocate memory");
         print_internal_error(ERROR_CODE_9, "");
         exit(EXIT_FAILURE);
     }
+    printf("???? %d", number);
     sprintf(str, "%d", number);
     return str;
 }
@@ -435,4 +436,29 @@ long get_file_size(FILE *file) {
         return -1;
     }
     return size;
+}
+
+void print_current_directory(){
+    char *cwd;
+    size_t size = 1024;  // Initial buffer size
+
+    // Allocate memory for the buffer
+    cwd = (char *)malloc(size * sizeof(char));
+    if (cwd == NULL) {
+        perror("Unable to allocate buffer");
+        return;
+    }
+
+    // Get the current working directory
+    if (getcwd(cwd, size) == NULL) {
+        perror("getcwd error");
+        free(cwd);
+        return;
+    }
+
+    // Print the current working directory
+    printf("Current working directory: %s\n", cwd);
+
+    // Free the allocated buffer
+    free(cwd);
 }

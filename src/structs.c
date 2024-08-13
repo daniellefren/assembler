@@ -128,7 +128,7 @@ void init_macro_table(MacroTable *table) {
     table->capacity = 10;
 }
 
-InstructionLine *init_instruction_line(char* line){
+InstructionLine *init_instruction_line(char* line, int file_number){
     // Allocate memory for instruction line
     InstructionLine *new_instruction_line = (InstructionLine *)malloc(sizeof(InstructionLine));
     if (new_instruction_line == NULL) {
@@ -146,6 +146,8 @@ InstructionLine *init_instruction_line(char* line){
 
     new_instruction_line->length = strlen(line);
     new_instruction_line->binary_line_count=0;
+    new_instruction_line->file_number = file_number;
+
 
     return new_instruction_line;
 }
@@ -249,4 +251,15 @@ int is_instruction_line_opcode(InstructionLine *instructionLine){
 int is_operand_classification_type_valid(enum operand_classification_type operandClassificationType){
     // Check if the operand classification type is within the valid range
     return (operandClassificationType >= IMMEDIATE) && (operandClassificationType <= DIRECT_REGISTER);
+}
+
+
+Symbol *find_symbol_by_name(SymbolTable* symbol_table, char* symbol_name){
+    int i;
+    for(i=0;i<symbol_table->size;i++){
+        if(strcmp(symbol_table->symbols[i]->name, symbol_name) == 0){
+            return symbol_table->symbols[i];
+        }
+    }
+    return NULL;
 }

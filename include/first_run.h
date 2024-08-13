@@ -240,14 +240,6 @@ void handle_string_directive(char *line, Directive *new_directive, InstructionLi
  */
 void handle_data_directive(char *line, Directive *new_directive, InstructionLine *instruction_line);
 
-//
-/**
- * Get symbol by given name
- * @param symbol_table A pointer to the SymbolTable structure that stores all symbols encountered in the source file.
- * @param symbol_name The name of the symbol to find
- * @return the symbol with the given name
- */
-Symbol *find_symbol_by_name(SymbolTable* symbol_table, char* symbol_name);
 
 /**
  * Add a new symbol to the SymbolTable.

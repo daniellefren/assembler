@@ -4,7 +4,7 @@
 
 
 int output_test();
-void print_current_directory();
 int count_strings(char *strings[]);
+int compare_output_files(int file_number, char* test_file_name, char* output_code_fname, char* input_code_fname, char* output_correct_fname, char* compared_file_name, char* correct_file_name_ending);
 
 #endif //ASSEMBLER_OUTPUT_TEST_H

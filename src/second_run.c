@@ -8,7 +8,7 @@
 #include "../include/errors.h"
 
 
-void start_second_run(LinesArray *assembly_lines_array, int file_number){
+void start_second_run(LinesArray *assembly_lines_array, int file_number, SymbolTable *symbol_table){
     int i;
     InstructionLine *p_line;
 
@@ -21,14 +21,14 @@ void start_second_run(LinesArray *assembly_lines_array, int file_number){
         p_line = assembly_lines_array->lines[i];
         printf("\n****Line number %d Address %d *****  \n\n", i, p_line->starting_address);
         allocate_binary_instruction(p_line, p_line->binary_line_count, BINARY_LINE_LENGTH);
-        fill_instruction_line_binary(p_line);
+        fill_instruction_line_binary(p_line, symbol_table);
         print_instruction_line(p_line);
     }
 
     create_ob_file(assembly_lines_array, file_number);
 }
 
-void fill_instruction_line_binary(InstructionLine *instruction_line){
+void fill_instruction_line_binary(InstructionLine *instruction_line, SymbolTable *symbol_table){
     // Pointer to the binary instruction array within the instruction line
     char *binary_instruction_p;
     int binary_line_count;
@@ -47,7 +47,7 @@ void fill_instruction_line_binary(InstructionLine *instruction_line){
         fill_first_part_binary_opcode(instruction_line, binary_instruction_p);
         printf("First part binary -                                      %s \n\n", binary_instruction_p);
         if (binary_line_count > 1){
-            fill_second_part_binary_opcode(instruction_line, binary_instruction_p);
+            fill_second_part_binary_opcode(instruction_line, binary_instruction_p, symbol_table);
             printf("Second part binary -                                     %s \n", binary_instruction_p);
         }
     }
@@ -171,7 +171,7 @@ void set_binary_string_opcode_representation(int opcode_number, char *binary_str
 }
 
 
-void fill_second_part_binary_opcode(InstructionLine *instruction_line, char *binary_string) {
+void fill_second_part_binary_opcode(InstructionLine *instruction_line, char *binary_string, SymbolTable *symbol_table) {
     int operand_number;
     Operand *src_operand;
     Operand *dst_operand;
@@ -184,13 +184,13 @@ void fill_second_part_binary_opcode(InstructionLine *instruction_line, char *bin
         case 2:
             // Process and append the binary representation for both source and destination operands
             fill_operand_binary(src_operand, dst_operand, binary_string,
-                                SRC_OPERAND_NUMBER);
+                                SRC_OPERAND_NUMBER, instruction_line->starting_address, instruction_line->file_number, symbol_table);
             fill_operand_binary(dst_operand, NULL, binary_string,
-                                DST_OPERAND_NUMBER);
+                                DST_OPERAND_NUMBER, instruction_line->starting_address, instruction_line->file_number, symbol_table);
             break;
         case 1:
             fill_operand_binary(src_operand, NULL, binary_string,
-                                SRC_OPERAND_NUMBER);
+                                SRC_OPERAND_NUMBER, instruction_line->starting_address, instruction_line->file_number, symbol_table);
             break;
         case 0:
             break;
@@ -200,9 +200,10 @@ void fill_second_part_binary_opcode(InstructionLine *instruction_line, char *bin
     }
 }
 
-void fill_operand_binary(Operand *operand, Operand *second_operand, char *binary_string, int operand_number) {
+void fill_operand_binary(Operand *operand, Operand *second_operand, char *binary_string, int operand_number, int ic, int file_number, SymbolTable *symbol_table) { //TODO - Danielle added ic
     int int_number_to_binary;
     char *register_value;
+    Symbol *symbol;
 
     // Handle the different operand classification types
     switch (operand->classification_type) {
@@ -214,17 +215,23 @@ void fill_operand_binary(Operand *operand, Operand *second_operand, char *binary
             set_binary_string_ARE_representation(binary_string, operand_number + 1, 'a');
             break;
         case DIRECT:
+            symbol = find_symbol_by_name(symbol_table, operand->value); //TODO - danielle been here //////
             // Convert symbol address to binary and update the binary string
             int_number_to_binary = operand->symbol->address;
             int_to_binary_string(int_number_to_binary, binary_string,
                                  operand_number * BINARY_LINE_LENGTH, 12);
-            if (operand->symbol->is_entry) { // internal
-                set_binary_string_ARE_representation(binary_string, operand_number + 1, 'r');
-            } else { // external
+
+            if (symbol->is_extern) { // external //TODO - danielle changed from here
+                if(operand_number == 2){
+                    ic+=1;
+                }
+                add_extern_to_externals_file(symbol->name, file_number, ic); // TODO - Add 0 in the beginning ov ic
                 set_binary_string_ARE_representation(binary_string, operand_number + 1, 'e');
+            } else { // internal
+                set_binary_string_ARE_representation(binary_string, operand_number + 1, 'r');
             }
-            break;
-        case INDIRECT_REGISTER:
+            break; // TODO - until here
+        case INDIRECT_REGISTER: //TODO - why empty?
         case DIRECT_REGISTER:
             // Handle register operand
             register_value = operand->value;

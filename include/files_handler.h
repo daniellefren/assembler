@@ -17,7 +17,7 @@ void add_output_directory(void);
  * @param file_number - The file number used to generate the externals file name.
  * @param ic - Pointer to the instruction counter (IC) which indicates the address of the symbol.
  */
-void add_extern_to_externals_file(Symbol *symbol, int file_number, int *ic);
+void add_extern_to_externals_file(char *symbol_name, int file_number, int ic);
 
 /**
  * Add an entry symbol to the entries file.
@@ -149,6 +149,24 @@ FILE* open_file(char *file_name, char *mode);
  * @return An integer representing the result of the comparison: 0 if the files are identical, non-zero if they are different.
  */
 int open_two_files_and_compare(char *file1_name, char *file2_name);
+
+/**
+ * @brief Searches for a specified string within a file and reports its presence.
+ *
+ * This function opens a file, reads its content line by line, and searches for the
+ * occurrence of a given string within each line. If the string is found, it prints
+ * the line number and the content of the line where the string occurs. If the string
+ * is not found in the file, it reports that as well.
+ *
+ * @param filename The name of the file to be searched. It should be a valid, readable file.
+ * @param search_str The string to search for within the file. It can be any valid C string.
+ *
+ * @return int
+ * - Returns 1 if the string is found in the file.
+ * - Returns 0 if the string is not found.
+ * - Returns -1 if the file could not be opened or another error occurred.
+ * */
+int search_in_file(char *filename, const char *search_str);
 
 #endif //ASSEMBLER_FILES_HANDLER_H
 
