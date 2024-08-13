@@ -383,24 +383,24 @@ int compare_files(FILE *file1, FILE *file2) {
     if (fgets(line1, sizeof(line1), file1) == NULL) {
         printf("Debug - File1 is empty or an error occurred.\n");
     } else {
-        printf("Debug - File1 Line %d: %s", line_number, line1);
+        printf("Debug - File1 Line %d: %s\n", line_number, line1);
     }
 
     if (fgets(line2, sizeof(line2), file2) == NULL) {
         printf("Debug - File2 is empty or an error occurred.\n");
     } else {
-        printf("Debug - File2 Line %d: %s", line_number, line2);
+        printf("Debug - File2 Line %d: %s\n", line_number, line2);
     }
     while (fgets(line1, sizeof(line1), file1) != NULL &&
            fgets(line2, sizeof(line2), file2) != NULL) {
         // Compare the lines from both files
-        printf("Debug - File1 Line %d: %s", line_number, line1);
-        printf("Debug - File2 Line %d: %s", line_number, line2);
+        printf("Debug - File1 Line %d: %s\n", line_number, line1);
+        printf("Debug - File2 Line %d: %s\n", line_number, line2);
         if (strcmp(line1, line2) != 0) {
             // If lines are different, print the line number and the differing lines
             printf("Difference found at line %d:\n", line_number);
-            printf("File1: %s", line1);
-            printf("File2: %s", line2);
+            printf("File1: %s\n", line1);
+            printf("File2: %s\n", line2);
             return 0; // Return 0 to indicate that the files are different
         }
         line_number++; // Increment the line number for the next comparison
