@@ -187,7 +187,7 @@ void remove_first_character(char *str);
  * @param buffer_size - The size of the buffer.
  * @param number - The number to add to the string.
  */
-void add_number_to_string(char *buffer, const char* source, size_t buffer_size, int number);
+void add_number_to_string(char *buffer, const char* source, int number);
 
 /**
  * Converts an integer to a string representation.

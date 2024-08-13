@@ -189,7 +189,8 @@ void remove_first_character(char *str) {
     }
 }
 
-void add_number_to_string(char *buffer, const char* source, size_t buffer_size, int number) {
+void add_number_to_string(char *buffer, const char* source, int number) {
+    size_t buffer_size = sizeof(buffer);
     snprintf(buffer, buffer_size, source, number);
 }
 
