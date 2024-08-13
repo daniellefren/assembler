@@ -189,9 +189,12 @@ void remove_first_character(char *str) {
     }
 }
 
-void add_number_to_string(char *buffer, const char* source, int number) {
-    size_t buffer_size = sizeof(buffer);
+void add_number_to_string(char *buffer, int buffer_size, const char* source, int number) {
+    printf("$$$$$ %d\n", buffer_size);
     snprintf(buffer, buffer_size, source, number);
+    printf("!!!! %s\n", buffer);
+    printf("!!!! %s\n", source);
+    printf("!!!! %d\n", number);
 }
 
 int is_directive_data(Directive *directive) {

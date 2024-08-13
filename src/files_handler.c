@@ -19,7 +19,7 @@ void create_ob_file(LinesArray *linesArray, int file_number){
     }
 
     // Generate the object file name with the file number appended
-    add_number_to_string(ob_file_name, OBJECTS_FILE_NAME, file_number);
+    add_number_to_string(ob_file_name, sizeof(ob_file_name), OBJECTS_FILE_NAME, file_number);
     object_file = open_ob_file(ob_file_name);
     number_of_command = linesArray->ic - STARTING_IC;
     number_of_directive = linesArray->dc;
@@ -156,7 +156,7 @@ void add_entry_to_entries_file(char *symbol_name, int file_number, int symbol_ad
     char entries_file_name[100];
     FILE *file;
 
-    add_number_to_string(entries_file_name, ENTRIES_FILE_NAME, file_number);
+    add_number_to_string(entries_file_name, sizeof(entries_file_name), ENTRIES_FILE_NAME, file_number);
     file = fopen(entries_file_name, "w");
     if (file == NULL) {
         perror("Unable to open entries file");
@@ -172,7 +172,7 @@ void add_entry_to_entries_file(char *symbol_name, int file_number, int symbol_ad
 
 void add_extern_to_externals_file(Symbol *symbol, int file_number, int *ic){
     char externals_file_name[100];
-    add_number_to_string(externals_file_name, EXTERNALS_FILE_NAME, file_number);
+    add_number_to_string(externals_file_name, sizeof(externals_file_name), EXTERNALS_FILE_NAME, file_number);
     FILE *file = fopen(externals_file_name, "w");
     if (file == NULL) {
         perror("Unable to open externals file");
@@ -247,6 +247,8 @@ FILE* open_file(char *file_name, char *mode) {
 }
 
 int open_two_files_and_compare(char *file1_name, char *file2_name) {
+    printf("file1_name %s\n", file1_name);
+    printf("file2_name %s\n", file2_name);
     int result;
     FILE *file1;
     FILE *file2;

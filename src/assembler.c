@@ -56,7 +56,7 @@ void run_assembler_on_file(LinesArray *assembly_lines_array, SymbolTable *symbol
     // Open the file in read mode
     file = fopen(filename, "r");
     if (file == NULL) {
-        print_internal_error(ERROR_CODE_4, filename);
+        print_internal_error(ERROR_CODE_48, filename);
         exit(EXIT_FAILURE);
     }
 
