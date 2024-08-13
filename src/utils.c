@@ -2,7 +2,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include "../include/utils.h"
 #include "../include/errors.h"
 
@@ -359,35 +361,78 @@ char* int_to_string(int number) {
 }
 
 
-int compare_files(FILE *file1, FILE *file2) {
-    char line1[1024], line2[1024];
-    int line_number = 1;
 
-    // Read lines from both files until one ends
+int compare_files(FILE *file1, FILE *file2) {
+    char line1[256]; // Buffer to store lines from file1
+    char line2[256]; // Buffer to store lines from file2
+    int line_number = 1; // Line counter to keep track of the line being compared
+
+    // Read lines from both files until end-of-file or error
+    // Check if files are opened successfully
+    if (file1 == NULL) {
+        printf("Error: Unable to open file1.\n");
+        return -1;
+    }
+    if (file2 == NULL) {
+        printf("Error: Unable to open file2.\n");
+        return -1;
+    }
+
+    // Read the first lines from both files
+    if (fgets(line1, sizeof(line1), file1) == NULL) {
+        printf("Debug - File1 is empty or an error occurred.\n");
+    } else {
+        printf("Debug - File1 Line %d: %s", line_number, line1);
+    }
+
+    if (fgets(line2, sizeof(line2), file2) == NULL) {
+        printf("Debug - File2 is empty or an error occurred.\n");
+    } else {
+        printf("Debug - File2 Line %d: %s", line_number, line2);
+    }
     while (fgets(line1, sizeof(line1), file1) != NULL &&
            fgets(line2, sizeof(line2), file2) != NULL) {
-        // Compare the lines
+        // Compare the lines from both files
+        printf("Debug - File1 Line %d: %s", line_number, line1);
+        printf("Debug - File2 Line %d: %s", line_number, line2);
         if (strcmp(line1, line2) != 0) {
+            // If lines are different, print the line number and the differing lines
             printf("Difference found at line %d:\n", line_number);
             printf("File1: %s", line1);
             printf("File2: %s", line2);
-            return 1; // Files are different
+            return 0; // Return 0 to indicate that the files are different
         }
-        line_number++;
+        line_number++; // Increment the line number for the next comparison
     }
 
-    // Check if one file has extra lines
-    if (fgets(line1, sizeof(line1), file1) != NULL) {
-        printf("File1 has extra lines starting at line %d:\n", line_number);
-        printf("File1: %s", line1);
-        return 1;
-    }
-    if (fgets(line2, sizeof(line2), file2) != NULL) {
-        printf("File2 has extra lines starting at line %d:\n", line_number);
-        printf("File2: %s", line2);
-        return 1;
+    // Check if one file ended before the other
+    if (fgets(line1, sizeof(line1), file1) != NULL || fgets(line2, sizeof(line2), file2) != NULL) {
+        printf("Files have different lengths.\n");
+        return 0; // Return 0 to indicate that the files are different
     }
 
-    return 0; // Files are identical
+    // If we reach this point, files are identical
+    return 1; // Return 1 to indicate that the files are identical
 }
 
+
+long get_file_size(FILE *file) {
+    long size;
+    // Move the file pointer to the end of the file
+    if (fseek(file, 0, SEEK_END) == -1){
+        printf("Error - fseek\n");
+        return -1;
+    }
+    // Get the current file pointer position, which is the size of the file
+    size = ftell(file);
+    if (size == -1){
+        printf("Error - ftell\n");
+        return -1;
+    }
+    // Move the file pointer back to the beginning of the file
+    if (fseek(file, 0, SEEK_SET) == -1){
+        printf("Error - fseek\n");
+        return -1;
+    }
+    return size;
+}

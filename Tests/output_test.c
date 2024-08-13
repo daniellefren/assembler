@@ -18,6 +18,7 @@
  */
 int output_test() {
     int i;
+    int number_of_tests;
     char input_code_fname[100];
     char output_code_fname[100];
     char output_correct_fname[100];
@@ -29,27 +30,30 @@ int output_test() {
 
 
     // Define the test cases
-    int number_of_tests = 2;
-    char *test[] = {"/Users/daniellefrenklakh/Desktop/University/C/assembler/Tests/Test_global"};
+
+    char *test[] = {"/Users/royidavid/Desktop/assembler/Tests/Test_global"}; //TODO - fix global directory
+    number_of_tests = count_strings(test);
     // Iterate over each test case
     for (i = 0; i < number_of_tests; ++i) {
         strcpy(input_code_fname, test[i]);
         strcat(input_code_fname, "/ps.as");
 
-        add_number_to_string(output_code_fname, sizeof(output_code_fname), OBJECTS_FILE_NAME, i+1);
+        add_number_to_string(output_code_fname, sizeof(output_code_fname), OBJECTS_FILE_NAME, i + 1);
 
-        printf("input is %s, output is %s\n",input_code_fname, output_code_fname);
+        printf("input is %s, output is %s\n", input_code_fname, output_code_fname);
         // Run the assembler on the test file
-        run_assembler_on_file(assembly_lines_array, symbol_table, input_code_fname, i);
+        run_assembler_on_file(assembly_lines_array, symbol_table, input_code_fname, i + 1);
 
         // Compare object files
         strcpy(output_correct_fname, test[i]);
         strcat(output_correct_fname, "/ps.ob");
-        if (!open_two_files_and_compare(output_correct_fname, output_code_fname)) {
+        if (open_two_files_and_compare(output_correct_fname, "/Users/royidavid/Desktop/assembler/output_files/ps1.ob")) {
             printf("The output test Failed! \nFor input file %s and output object file %s\n",
                    input_code_fname, output_code_fname);
             return 0;
         }
+
+
 
         // Compare extern files
 //        strcpy(output_correct_fname, test[i]);
@@ -71,7 +75,6 @@ int output_test() {
 //            return 0;
 //        }
     }
-
     return 1; // All tests passed
 }
 
@@ -99,4 +102,23 @@ void print_current_directory(){
 
     // Free the allocated buffer
     free(cwd);
+}
+
+/**
+ * @brief Counts the number of strings in a null-terminated array of strings.
+ *
+ * This function iterates through the array of strings until it encounters a NULL pointer,
+ * counting the number of valid strings in the array.
+ *
+ * @param strings The null-terminated array of strings.
+ * @return The number of strings in the array.
+ */
+int count_strings(char *strings[]) {
+    int count = 0;
+
+    while (strings[count] != NULL) {
+        count++;
+    }
+
+    return count;
 }
