@@ -60,7 +60,7 @@ Error errors[] = {
 
 
         // File related errors
-        {ERROR_CODE_48,  "Could not open file for writing"},
+        {ERROR_CODE_48,  "Could not open file"},
         {ERROR_CODE_49,  "Could not open file for writing macros"},
 
         //Additional errors

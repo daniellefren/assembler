@@ -213,10 +213,11 @@ int is_directive_string(Directive *directive) {
 void fill_octal_string_from_binary(const char *binary_string, int number_of_binary_bits, int offset, char *octal_string) {
     char octal_value[6] = {0};  // Buffer for octal value (assuming up to 4 octal digits)
     char extracted_binary[17] = {0};  // Buffer for extracted binary portion (up to 16 bits)
-
+    printf("Number of binary bits is %d, offset is %d, ocatal string is %s and binary string is %s\n",number_of_binary_bits,offset,octal_string,binary_string);
     // Check for invalid input
     if (number_of_binary_bits <= 0 || offset < 0 || offset + number_of_binary_bits > strlen(binary_string)) {
         print_internal_error(ERROR_CODE_42, "");
+        printf("\n\n\n\n");
         return;
     }
 
@@ -353,3 +354,37 @@ char* int_to_string(int number) {
     sprintf(str, "%d", number);
     return str;
 }
+
+
+int compare_files(FILE *file1, FILE *file2) {
+    char line1[1024], line2[1024];
+    int line_number = 1;
+
+    // Read lines from both files until one ends
+    while (fgets(line1, sizeof(line1), file1) != NULL &&
+           fgets(line2, sizeof(line2), file2) != NULL) {
+        // Compare the lines
+        if (strcmp(line1, line2) != 0) {
+            printf("Difference found at line %d:\n", line_number);
+            printf("File1: %s", line1);
+            printf("File2: %s", line2);
+            return 1; // Files are different
+        }
+        line_number++;
+    }
+
+    // Check if one file has extra lines
+    if (fgets(line1, sizeof(line1), file1) != NULL) {
+        printf("File1 has extra lines starting at line %d:\n", line_number);
+        printf("File1: %s", line1);
+        return 1;
+    }
+    if (fgets(line2, sizeof(line2), file2) != NULL) {
+        printf("File2 has extra lines starting at line %d:\n", line_number);
+        printf("File2: %s", line2);
+        return 1;
+    }
+
+    return 0; // Files are identical
+}
+

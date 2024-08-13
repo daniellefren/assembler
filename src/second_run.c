@@ -43,8 +43,7 @@ void fill_instruction_line_binary(InstructionLine *instruction_line){
     printf("The number of lines in the binary is: %d \n", binary_line_count);
     // Initialize the binary instruction array with zeros
     fill_the_binary_with_zero(binary_instruction_p, BINARY_LINE_LENGTH * binary_line_count);
-    if (is_instruction_line_opcode(*instruction_line)){
-
+    if (is_instruction_line_opcode(instruction_line)){
         fill_first_part_binary_opcode(instruction_line, binary_instruction_p);
         printf("First part binary -                                      %s \n\n", binary_instruction_p);
         if (binary_line_count > 1){
@@ -52,7 +51,7 @@ void fill_instruction_line_binary(InstructionLine *instruction_line){
             printf("Second part binary -                                     %s \n", binary_instruction_p);
         }
     }
-    else if (is_instruction_line_directive(*instruction_line)){
+    else if (is_instruction_line_directive(instruction_line)){
         fill_binary_directive(instruction_line, binary_instruction_p);
     }
     printf("***The binary representation of the line is %s \n", instruction_line->binary_instruction);
@@ -150,7 +149,7 @@ void fill_the_binary_with_zero(char *binary_string, size_t length) {
 
 void set_binary_string_opcode_representation(int opcode_number, char *binary_string) {
     int i;
-    printf("The opcode is %d \n", opcode_number);
+    printf("The opcode is %d and the binary string is %s\n", opcode_number, binary_string);
 
     if (binary_string == NULL) {
         print_internal_error(ERROR_CODE_38, "");
@@ -169,7 +168,6 @@ void set_binary_string_opcode_representation(int opcode_number, char *binary_str
             binary_string[i] = '0'; // Set '0' if the bit is not set
         }
     }
-    binary_string[OPCODE_SIZE] = '\0';
     printf("The opcode binary string after opcode representation is: %s \n", binary_string);
 }
 
