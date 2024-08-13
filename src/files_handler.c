@@ -264,5 +264,4 @@ int open_two_files_and_compare(char *file1_name, char *file2_name) {
     }
 
     return result;
-    }
 }
