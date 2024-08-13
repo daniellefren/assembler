@@ -128,6 +128,28 @@ void add_command_line_to_ob_file(InstructionLine *instructionLine, FILE *object_
  *                    line will be written.
  */
 void add_directive_line_to_ob_file(InstructionLine *instructionLine, FILE *object_file);
+
+/**
+ * Opens a file with the specified name and mode. If the file cannot be opened, this function
+ * prints an error message and exits the program.
+ *
+ * @param file_name A pointer to a string representing the name of the file to be opened.
+ * @param mode A pointer to a string representing the mode in which to open the file (e.g., "r" for reading, "w" for writing).
+ * @return A pointer to the `FILE` object if the file is successfully opened.
+ * @throws The function will exit the program if the file cannot be opened.
+ */
+FILE* open_file(char *file_name, char *mode);
+
+/**
+ * Opens two files with the specified names, compares their contents, and prints whether they
+ * are identical or different. The files are closed after comparison.
+ *
+ * @param file1_name A pointer to a string representing the name of the first file to be opened.
+ * @param file2_name A pointer to a string representing the name of the second file to be opened.
+ * @return An integer representing the result of the comparison: 0 if the files are identical, non-zero if they are different.
+ */
+int open_two_files_and_compare(char *file1_name, char *file2_name) {
+
 #endif //ASSEMBLER_FILES_HANDLER_H
 
 

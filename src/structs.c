@@ -31,7 +31,7 @@ SymbolTable *init_symbol_table(int initial_capacity) {
         print_internal_error(ERROR_CODE_27, "");
         exit(EXIT_FAILURE);
     }
-    symbol_table->symbols = (Symbol *)malloc(initial_capacity * sizeof(Symbol));
+    symbol_table->symbols = (Symbol **)malloc(initial_capacity * sizeof(Symbol));
     if (!symbol_table->symbols) {
         print_internal_error(ERROR_CODE_14, "");
         exit(EXIT_FAILURE);
@@ -230,17 +230,17 @@ char *get_instruction_line_binary(LinesArray *linesArray, int number_of_line) {
     return linesArray->lines[number_of_line]->binary_instruction;
 }
 
-int is_instruction_line_directive(InstructionLine instructionLine){
+int is_instruction_line_directive(InstructionLine *instructionLine){
     // Check if the `directive` field is not NULL
-    if (instructionLine.directive != NULL){
+    if (instructionLine->directive != NULL){
         return 1;
     }
     return 0;
 }
 
-int is_instruction_line_opcode(InstructionLine instructionLine){
+int is_instruction_line_opcode(InstructionLine *instructionLine){
     // Check if the `command` field is not NULL
-    if (instructionLine.command != NULL){
+    if (instructionLine->command != NULL){
         return 1;
     }
     return 0;

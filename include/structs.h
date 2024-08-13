@@ -231,7 +231,7 @@ char *get_instruction_line_binary(LinesArray *linesArray, int number_of_line);
  * @return `1 if the `directive` field is non-NULL, indicating the instruction is a directive,
  *         otherwise 0.
  */
-int is_instruction_line_directive(InstructionLine instructionLine);
+int is_instruction_line_directive(InstructionLine *instructionLine);
 
 /**
  * Checks if the given instruction line represents an opcode.
@@ -245,7 +245,7 @@ int is_instruction_line_directive(InstructionLine instructionLine);
  * @return 1 if the `command` field is non-NULL, indicating the instruction is an opcode,
  *         otherwise 0.
  */
-int is_instruction_line_opcode(InstructionLine instructionLine);
+int is_instruction_line_opcode(InstructionLine *instructionLine);
 
 /**
  * Checks if the given operand classification type is valid.

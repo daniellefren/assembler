@@ -50,7 +50,7 @@ void add_first_line_to_ob_file(int number_of_command, int number_of_directive, F
     }
 
     // Write the number of commands and directives to the first line of the file
-    fprintf(object_file, "%d %d\n", number_of_command, number_of_directive);
+    fprintf(object_file, "  %d %d\n", number_of_command, number_of_directive);
 }
 
 
@@ -231,5 +231,38 @@ void add_output_directory(){
         }
     } else {
         printf("Directory '%s' already exists.\n", dirName);
+    }
+}
+
+FILE* open_file(char *file_name, char *mode) {
+    FILE *file;
+
+    // Attempt to open the file
+    file = fopen(file_name, mode);
+    if (file == NULL) {
+        print_internal_error(ERROR_CODE_48, file_name);
+        exit(EXIT_FAILURE);
+    }
+    return file;
+}
+
+int open_two_files_and_compare(char *file1_name, char *file2_name) {
+    int result;
+    FILE *file1;
+    FILE *file2;
+
+    file1 = open_file(file1_name, "r");
+    file2 = open_file(file2_name, "r");
+    result = compare_files(file1, file2);
+    fclose(file1);
+    fclose(file2);
+
+    if (result == 0) {
+        printf("Files are identical.\n");
+    } else {
+        printf("Files are different.\n");
+    }
+
+    return result;
     }
 }

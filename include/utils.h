@@ -198,5 +198,14 @@ void add_number_to_string(char *buffer, const char* source, size_t buffer_size, 
  */
 char* int_to_string(int number);
 
+/**
+ * Compares two files line by line.
+ *
+ * @param file1 Pointer to the first file to compare.
+ * @param file2 Pointer to the second file to compare.
+ *
+ * @return 0 if the files are identical, 1 if they are different.
+ */
+int compare_files(FILE *file1, FILE *file2);
 
 #endif //ASSEMBLER_UTILS_H
