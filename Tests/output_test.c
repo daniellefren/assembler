@@ -31,7 +31,7 @@ int output_test() {
 
     // Define the test cases
 
-    char *test[] = {"/Users/royidavid/Desktop/assembler/Tests/Test_global"}; //TODO - fix global directory
+    char *test[] = {"Tests/Test_global"}; //TODO - fix global directory
     number_of_tests = count_strings(test);
     // Iterate over each test case
     for (i = 0; i < number_of_tests; ++i) {
@@ -47,7 +47,7 @@ int output_test() {
         // Compare object files
         strcpy(output_correct_fname, test[i]);
         strcat(output_correct_fname, "/ps.ob");
-        if (open_two_files_and_compare(output_correct_fname, "/Users/royidavid/Desktop/assembler/output_files/ps1.ob")) {
+        if (open_two_files_and_compare(output_correct_fname, output_code_fname)) {
             printf("The output test Failed! \nFor input file %s and output object file %s\n",
                    input_code_fname, output_code_fname);
             return 0;
@@ -76,32 +76,6 @@ int output_test() {
 //        }
     }
     return 1; // All tests passed
-}
-
-
-void print_current_directory(){
-    char *cwd;
-    size_t size = 1024;  // Initial buffer size
-
-    // Allocate memory for the buffer
-    cwd = (char *)malloc(size * sizeof(char));
-    if (cwd == NULL) {
-        perror("Unable to allocate buffer");
-        return;
-    }
-
-    // Get the current working directory
-    if (getcwd(cwd, size) == NULL) {
-        perror("getcwd error");
-        free(cwd);
-        return;
-    }
-
-    // Print the current working directory
-    printf("Current working directory: %s\n", cwd);
-
-    // Free the allocated buffer
-    free(cwd);
 }
 
 /**
