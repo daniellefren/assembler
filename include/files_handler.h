@@ -148,7 +148,7 @@ FILE* open_file(char *file_name, char *mode);
  * @param file2_name A pointer to a string representing the name of the second file to be opened.
  * @return An integer representing the result of the comparison: 0 if the files are identical, non-zero if they are different.
  */
-int open_two_files_and_compare(char *file1_name, char *file2_name) {
+int open_two_files_and_compare(char *file1_name, char *file2_name);
 
 #endif //ASSEMBLER_FILES_HANDLER_H
 
