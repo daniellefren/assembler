@@ -19,6 +19,7 @@
  */
 
 int main(int argc, char *argv[]) {
+    //TODO - delete all output files from the previouse run
     LinesArray *assembly_lines_array = NULL;
     SymbolTable *symbol_table = NULL;
     int file_number;
@@ -57,6 +58,7 @@ void run_assembler_on_file(LinesArray *assembly_lines_array, SymbolTable *symbol
     // Open the file in read mode
     file = fopen(filename, "r");
     if (file == NULL) {
+        printf("error in run_assembler_on_file");
         print_internal_error(ERROR_CODE_48, filename);
         exit(EXIT_FAILURE);
     }
@@ -70,7 +72,7 @@ void run_assembler_on_file(LinesArray *assembly_lines_array, SymbolTable *symbol
     fclose(file);
 
     //call the second_run function with the LinesArray table
-    start_second_run(assembly_lines_array, file_number);
+    start_second_run(assembly_lines_array, file_number, symbol_table);
 
     free_lines_array(assembly_lines_array);
     free_symbol_table(symbol_table);

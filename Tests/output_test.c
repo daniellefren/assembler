@@ -31,34 +31,26 @@ int output_test() {
 
     // Define the test cases
 
-    char *test[] = {"Tests/Test_global"}; //TODO - fix global directory
+    char *test[] = {"./Tests/Test_global"}; //TODO - fix global directory
+
     number_of_tests = count_strings(test);
+
     // Iterate over each test case
-    for (i = 0; i < number_of_tests; ++i) {
+    for (i = 0; i < number_of_tests; i++) {
+        //Get input file name
         strcpy(input_code_fname, test[i]);
         strcat(input_code_fname, "/ps.as");
 
-        add_number_to_string(output_code_fname, sizeof(output_code_fname), OBJECTS_FILE_NAME, i + 1);
-
-        printf("input is %s, output is %s\n", input_code_fname, output_code_fname);
         // Run the assembler on the test file
         run_assembler_on_file(assembly_lines_array, symbol_table, input_code_fname, i + 1);
-
-        // Compare object files
-        strcpy(output_correct_fname, test[i]);
-        strcat(output_correct_fname, "/ps.ob");
-        if (open_two_files_and_compare(output_correct_fname, output_code_fname)) {
-            printf("The output test Failed! \nFor input file %s and output object file %s\n",
-                   input_code_fname, output_code_fname);
-            return 0;
-        }
-
+        compare_output_files(i+1, test[i], output_code_fname, input_code_fname, output_correct_fname, OBJECTS_FILE_NAME, "/ps.ob");
+        strcpy(input_code_fname, test[i]);
+        strcat(input_code_fname, "/ps.ext");
+        compare_output_files(i+1, test[i], output_code_fname, input_code_fname, output_correct_fname, EXTERNALS_FILE_NAME, "/ps.ext");
 
 
         // Compare extern files
-//        strcpy(output_correct_fname, test[i]);
-//        strcat(output_correct_fname, "/ps.ext");
-//        add_number_to_string(output_code_fname, EXTERNALS_FILE_NAME, i+1);
+//
 //        if (!open_two_files_and_compare(output_correct_fname, output_code_fname)) {
 //            printf("The output test Failed! \nFor input file %s and output extern file %s\n",
 //                   input_code_fname, output_code_fname);
@@ -78,6 +70,23 @@ int output_test() {
     return 1; // All tests passed
 }
 
+int compare_output_files(int file_number, char* test_file_name, char* output_code_fname, char* input_code_fname, char* output_correct_fname, char* compared_file_name, char* correct_file_name_ending){
+    //get output filename
+    add_number_to_string(output_code_fname, 100, compared_file_name, file_number);
+    printf("input is %s, output is %s\n", input_code_fname, output_code_fname);
+
+    // Compare object files
+    strcpy(output_correct_fname, test_file_name);
+    strcat(output_correct_fname, correct_file_name_ending);
+    if (open_two_files_and_compare(output_correct_fname, output_code_fname)) {
+        printf("The output test Failed! \nFor input file %s and output object file %s\n",
+               input_code_fname, output_code_fname);
+        return 0;
+    }
+
+}
+
+
 /**
  * @brief Counts the number of strings in a null-terminated array of strings.
  *
@@ -94,5 +103,5 @@ int count_strings(char *strings[]) {
         count++;
     }
 
-    return count;
+    return count - 1;
 }

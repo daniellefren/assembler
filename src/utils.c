@@ -352,10 +352,11 @@ int ignore_line(char *line) {
 char* int_to_string(int number) {
     char *str = (char *)malloc(20 * sizeof(char)); // Allocate memory on the heap
     if (str == NULL) {
-//        perror("Unable to allocate memory");
+        perror("Unable to allocate memory");
         print_internal_error(ERROR_CODE_9, "");
         exit(EXIT_FAILURE);
     }
+    printf("???? %d", number);
     sprintf(str, "%d", number);
     return str;
 }

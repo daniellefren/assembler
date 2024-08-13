@@ -14,7 +14,7 @@
  *                             starting addresses and binary content.
  * @param file_number An integer representing the file number to be appended.
  */
-void start_second_run(LinesArray *assembly_lines_array, int file_number);
+void start_second_run(LinesArray *assembly_lines_array, int file_number, SymbolTable *symbol_table);
 
 /**
  * Fills the binary representation for an instruction line. Depending on whether the instruction
@@ -25,7 +25,7 @@ void start_second_run(LinesArray *assembly_lines_array, int file_number);
  * @param instruction_line A pointer to the `InstructionLine` structure that contains the
  *                         instruction line to be converted into its binary form.
  */
-void fill_instruction_line_binary(InstructionLine *instruction_line);
+void fill_instruction_line_binary(InstructionLine *instruction_line, SymbolTable *symbol_table);
 
 /**
  * Sets the binary string representation of the given opcode number.
@@ -65,7 +65,7 @@ void fill_first_part_binary_opcode(InstructionLine *instruction_line, char* bina
  * @param binary_string A pointer to a character array where the binary representation will be appended.
  *                      This array should be large enough to hold the additional binary data.
  */
-void fill_second_part_binary_opcode(InstructionLine *instruction_line, char* binary_string);
+void fill_second_part_binary_opcode(InstructionLine *instruction_line, char* binary_string, SymbolTable *symbol_table);
 
 /**
  * Fills a binary string with '0' characters and null-terminates it.
@@ -105,7 +105,7 @@ void set_binary_string_operand_representation(int first_operand_classification_t
  * @param binary_string The string where the binary representation will be stored.
  * @param operand_number Indicates whether the operand is the source (1) or destination (2) operand.
  */
-void fill_operand_binary(Operand *operand, Operand *second_operand, char *binary_string, int operand_number);
+void fill_operand_binary(Operand *operand, Operand *second_operand, char *binary_string, int operand_number, int ic, int file_number, SymbolTable *symbol_table);
 
 /**
  * Sets the ARE (Absolute/Relative/External) representation bit in a binary string.

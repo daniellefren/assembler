@@ -182,16 +182,36 @@ void add_entry_to_entries_file(char *symbol_name, int file_number, int symbol_ad
 
 
 
-void add_extern_to_externals_file(Symbol *symbol, int file_number, int *ic){
+void add_extern_to_externals_file(char *symbol_name, int file_number, int ic){
     char externals_file_name[100];
+    char *new_ic = malloc(sizeof(char) *5);
     add_number_to_string(externals_file_name, sizeof(externals_file_name), EXTERNALS_FILE_NAME, file_number);
-    FILE *file = fopen(externals_file_name, "w");
+
+    if ((ic < 1000) && (ic > 99)){
+        new_ic[0] = '0';
+//        add_number_to_string(new_ic, 10, "0", ic);
+        strcpy(new_ic+1, int_to_string(ic));
+        printf("new icccc %s", new_ic);
+//        strcat(new_ic, int_to_string(ic));
+    }
+    else{
+        strcpy(new_ic, int_to_string(ic));
+    }
+
+    if(search_in_file(externals_file_name, new_ic)){
+        return;
+    }
+
+    FILE *file = fopen(externals_file_name, "a");
     if (file == NULL) {
         perror("Unable to open externals file");
         exit(EXIT_FAILURE);
     }
-
-    fprintf(file, "%s %d\n", symbol->name, *ic);
+    printf("ic?? %d\n", ic);
+    printf("externals_file_name %s\n", externals_file_name);
+    fprintf(file, "%s %s\n", symbol_name, new_ic);
+    fflush(file); // Flush the buffer
+    printf("added to externals file! %s %s", symbol_name, new_ic);
 
     fclose(file);
 }
@@ -199,6 +219,8 @@ void add_extern_to_externals_file(Symbol *symbol, int file_number, int *ic){
 int write_line_to_file(char *line, char* new_file_name) {
     FILE *outputFile = fopen(new_file_name, "a"); // Open in append mode
     if (!outputFile) {
+        printf("error in write_line_to_file");
+
         print_internal_error(ERROR_CODE_48, new_file_name);
         exit(EXIT_FAILURE);
     }
@@ -252,6 +274,7 @@ FILE* open_file(char *file_name, char *mode) {
     // Attempt to open the file
     file = fopen(file_name, mode);
     if (file == NULL) {
+        printf("error in open_file");
         print_internal_error(ERROR_CODE_48, file_name);
         exit(EXIT_FAILURE);
     }
@@ -279,4 +302,35 @@ int open_two_files_and_compare(char *file1_name, char *file2_name) {
     }
 
     return result;
+}
+
+
+int search_in_file(char *filename, const char *search_str) {
+    printf("search_in_file %s\n", search_str);
+    FILE *file = fopen(filename, "r");
+    if (file == NULL) {
+        return 0; // Means the file does not exist, and therefore the string does not exist in the file
+    }
+
+    char line[256];  // Buffer to store each line from the file
+    int line_number = 0;
+    int found = 0;
+
+    while (fgets(line, sizeof(line), file)) {
+        line_number++;
+        if (strstr(line, search_str) != NULL) {
+            printf("Found '%s' in line %d: %s", search_str, line_number, line);
+            found = 1;
+            // Uncomment the next line if you want to stop after finding the first occurrence
+            // break;
+        }
+    }
+
+    fclose(file);
+
+    if (!found) {
+        printf("'%s' not found in the file.\n", search_str);
+    }
+
+    return found;
 }

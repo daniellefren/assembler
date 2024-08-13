@@ -207,7 +207,7 @@ int read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, LinesArra
 
     line = skip_spaces(line);
 
-    new_instruction_line = init_instruction_line(line);
+    new_instruction_line = init_instruction_line(line, file_number);
 
     has_symbol = find_symbol(line, symbol_name);
 
@@ -605,6 +605,11 @@ int handle_directives(char *line, int *dc, SymbolTable *symbol_table, int* ic, i
     } else if (strcmp(directive_type, ".extern") == 0){
         new_instruction_line->instruction_type = EXTERN_DIRECTIVE;
         success &= handle_extern_directive(line, new_directive, symbol_table, file_number, ic);
+        printf("name of the symbol %s \n", new_directive->symbol);
+
+        Symbol *symbol = find_symbol_by_name(symbol_table, new_directive->symbol);
+        printf("is extern?? %s\n", symbol->name);
+        printf("is extern?? %d\n", symbol->is_extern);
 
 
     } else if (strcmp(directive_type, ".entry") == 0) {
@@ -641,22 +646,24 @@ int handle_entry_directive(Directive *new_directive, int file_number, SymbolTabl
 }
 
 int handle_extern_directive(char *line, Directive *new_directive, SymbolTable *symbol_table, int file_number, int *ic) {
+    printf("handle_extern_directive %s\n", line);
     Symbol *symbol;
     char *ptr = line;
     char symbol_name[SYMBOL_NAME_LEN];
     new_directive->type = EXTERN;
 
     extract_word_after_keyword(ptr, symbol_name, ".extern");
+    strcpy(new_directive->symbol, symbol_name);
     symbol = add_new_symbol(symbol_table, symbol_name);
     if (!symbol) {
         return 0;
     }
-
+    Symbol *sss = find_symbol_by_name(symbol_table, symbol_name);
 
     symbol->address = 0; // external address, will be filled by linker
     symbol->type = EXTERN_DIRECTIVE;
     symbol->is_extern = 1;
-    add_extern_to_externals_file(symbol, file_number, ic);
+//    add_extern_to_externals_file(symbol, file_number, ic);
 
     return 1;
 }
@@ -752,17 +759,6 @@ void handle_data_directive(char *line, Directive *new_directive, InstructionLine
     new_directive->data_values_count = values_count;
 
     instruction_line->binary_line_count = values_count;
-}
-
-
-Symbol *find_symbol_by_name(SymbolTable* symbol_table, char* symbol_name){
-    int i;
-    for(i=0;i<symbol_table->size;i++){
-        if(strcmp(symbol_table->symbols[i]->name, symbol_name) == 0){
-            return symbol_table->symbols[i];
-        }
-    }
-    return NULL;
 }
 
 Symbol *add_new_symbol(SymbolTable *symbol_table, char* symbol_name) {

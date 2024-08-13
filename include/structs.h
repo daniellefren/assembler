@@ -67,6 +67,7 @@ typedef struct {
     Command *command;                        /**< Pointer to the Command struct associated with the line, if applicable. */
     Directive *directive;                    /**< Pointer to the Directive struct associated with the line, if applicable. */
     Symbol *symbol;                          /**< Pointer to the Symbol struct associated with the line, if applicable. */
+    int file_number;                          /**< The file number of the src assembly file. */
     int starting_address;                    /**< The starting address of the instruction in memory. */
     int binary_line_count;                   /**< The number of binary lines generated for the instruction. */
     char *binary_instruction;                /**< Pointer to the binary representation of the instruction. */
@@ -165,7 +166,7 @@ void init_macro_table(MacroTable *table);
  * @param line - The line of text to initialize the InstructionLine with.
  * @return A pointer to the initialized InstructionLine structure.
  */
-InstructionLine *init_instruction_line(char* line);
+InstructionLine *init_instruction_line(char* line, int file_number);
 
 /**
  * Initialize a Command structure.
@@ -259,4 +260,14 @@ int is_instruction_line_opcode(InstructionLine *instructionLine);
  * @return `1` (true) if the `operandClassificationType` is within the valid range, otherwise `0` (false).
  */
 int is_operand_classification_type_valid(enum operand_classification_type operandClassificationType);
+
+/**
+ * Get symbol by given name
+ * @param symbol_table A pointer to the SymbolTable structure that stores all symbols encountered in the source file.
+ * @param symbol_name The name of the symbol to find
+ * @return the symbol with the given name
+ */
+Symbol *find_symbol_by_name(SymbolTable* symbol_table, char* symbol_name);
+
+
 #endif
