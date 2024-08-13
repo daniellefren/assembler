@@ -112,9 +112,9 @@ void add_command_line_to_ob_file(InstructionLine *instructionLine, FILE *object_
         perror("Error: this instruction line is not a command");
         exit(EXIT_FAILURE);
     }
-
     // Loop through each binary line in the instruction
     for (i = 0; i < instructionLine->binary_line_count; ++i) {
+
         // Convert the binary instruction to an octal string
         fill_octal_string_from_binary(instructionLine->binary_instruction, BINARY_WORD_LENGTH, i * BINARY_WORD_LENGTH, octal_number);
         printf("The address is %d and the octal number is %s\n", instruction_address, octal_number);
