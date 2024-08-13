@@ -142,8 +142,7 @@ void fill_the_binary_with_zero(char *binary_string, size_t length) {
     for (i = 0; i < length; i++) {
         binary_string[i] = '0';
     }
-
-    binary_string[length] = '\0';
+    binary_string[i] = '\0';
     printf("The binary string (filled with zero) is: %s \n", binary_string);
 }
 
