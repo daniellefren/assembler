@@ -33,7 +33,6 @@ Command commands_struct[] = {
 
 
 void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTable *symbol_table, int file_number) {
-    printf("first_run\n");
     int success;
     char line[MAX_LINE_LENGTH];
     char *macro_names[MAX_MACRO_NAMES];  // Array to store pointers to macro names
@@ -68,13 +67,13 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
 
     fclose(file);
     for(i = 0;i<lines_array->number_of_line;i++){
-        InstructionLine *instruction_line = &lines_array->lines[i];
+        InstructionLine *instruction_line = lines_array->lines[i];
         if(instruction_line->instruction_type == DATA_DIRECTIVE){
             instruction_line->starting_address += *ic;
         }
     }
 
-    // Free allocated memory for macro names
+//     Free allocated memory for macro names
     for (i = 0; i < MAX_MACRO_NAMES; ++i) {
         free(macro_names[i]);
     }
@@ -196,7 +195,6 @@ void expand_macro(const Macro *macro, FILE *outputFile) {
 }
 
 int read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, LinesArray *lines_array, MacroTable *macro_table, int file_number) {
-    printf("read_line\n");
     char symbol_name[MAX_SYMBOL_LENGTH] = "";
     int has_symbol;
     Symbol *new_symbol;
@@ -221,11 +219,14 @@ int read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, LinesArra
         while (*line && isspace((unsigned char)*line)) {
             line++;
         }
-        new_symbol = handle_symbol(new_instruction_line, symbol_name);
+        new_symbol = handle_symbol(new_instruction_line, symbol_name, symbol_table);
+        if(!new_symbol){
+            return 0;
+        }
     }
 
-    if (is_directive(line)) { // If .data or .String
-        handle_directives(line, dc, symbol_table, ic, file_number, new_instruction_line);
+    if (is_directive(line)) {
+        success &= handle_directives(line, dc, symbol_table, ic, file_number, new_instruction_line);
 
         if(has_symbol){
             new_symbol->type = DATA_DIRECTIVE;
@@ -246,28 +247,26 @@ int read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, LinesArra
     }
     if(has_symbol){
         new_instruction_line->symbol = new_symbol;
-        add_new_symbol(symbol_table, new_symbol);
     }
 
-    if(new_instruction_line->instruction_type==DATA_DIRECTIVE){
-        if(new_instruction_line->directive->type == EXTERN || new_instruction_line->directive->type == ENTRY){
-            return success;
-        }
+    if(new_instruction_line->instruction_type==EXTERN_DIRECTIVE || new_instruction_line->instruction_type==ENTRY_DIRECTIVE){
+        return success;
     }
+
     addInstructionLine(lines_array, new_instruction_line);
 
     return success;
 }
 
-Symbol* handle_symbol(InstructionLine *new_instruction_line, char* symbol_name){
+Symbol* handle_symbol(InstructionLine *new_instruction_line, char* symbol_name, SymbolTable *symbol_table){
     Symbol *new_symbol;
-    new_symbol = (Symbol *)malloc(10 * sizeof(Symbol));
-    if (new_symbol == NULL) {
-        print_internal_error(ERROR_CODE_11, "");
-        exit(EXIT_FAILURE);
+    new_symbol = find_symbol_by_name(symbol_table, symbol_name);
+    if(!new_symbol){
+        new_symbol = add_new_symbol(symbol_table, symbol_name);
+        if(!new_symbol){
+            return NULL;
+        }
     }
-
-    strcpy(new_symbol->name, symbol_name);
 
     new_instruction_line->is_symbol=1;
     new_instruction_line->symbol = new_symbol;
@@ -432,10 +431,6 @@ int is_valid_symbol(const char *symbol_name, MacroTable *macro_table, SymbolTabl
         }
     }
 
-    if(symbol_exists(symbol_table, symbol_name)){
-        print_internal_error(ERROR_CODE_50, symbol_name);
-    }
-
     return 1; // Valid symbol
 }
 
@@ -559,15 +554,6 @@ int is_command(char *line) {
     return 0;
 }
 
-int symbol_exists(SymbolTable *symbol_table, char *symbol_name) {
-    int i;
-    for (i = 0; i < symbol_table->size; ++i) {
-        if (strcmp(symbol_table->symbols[i].name, symbol_name) == 0) {
-            return 1;
-        }
-    }
-    return 0;
-}
 
 int is_directive(char *line) {
     int i;
@@ -592,7 +578,8 @@ int is_directive(char *line) {
 }
 
 
-void handle_directives(char *line, int *dc, SymbolTable *symbol_table, int* ic, int file_number, InstructionLine *new_instruction_line) {
+int handle_directives(char *line, int *dc, SymbolTable *symbol_table, int* ic, int file_number, InstructionLine *new_instruction_line) {
+    int success = 1;
     char directive_type[MAX_LINE_LENGTH];
     Directive *new_directive;
     new_directive = init_directive();
@@ -614,12 +601,13 @@ void handle_directives(char *line, int *dc, SymbolTable *symbol_table, int* ic, 
         handle_string_directive(line, new_directive, new_instruction_line);
 
     } else if (strcmp(directive_type, ".extern") == 0){
-        handle_extern_directive(line, new_directive, symbol_table, file_number, ic);
+        new_instruction_line->instruction_type = EXTERN_DIRECTIVE;
+        success &= handle_extern_directive(line, new_directive, symbol_table, file_number, ic);
 
 
     } else if (strcmp(directive_type, ".entry") == 0) {
-        handle_entry_directive(new_directive, file_number, symbol_table, line);
-
+        new_instruction_line->instruction_type = ENTRY_DIRECTIVE;
+        success &= handle_entry_directive(new_directive, file_number, symbol_table, line);
     } else {
         new_directive->type = NOT_DIRECTIVE;
         print_internal_error(ERROR_CODE_47, directive_type);
@@ -628,37 +616,47 @@ void handle_directives(char *line, int *dc, SymbolTable *symbol_table, int* ic, 
 
     (*dc) += new_instruction_line->binary_line_count;
     new_instruction_line->directive = new_directive;
+    return success;
 }
 
-void handle_entry_directive(Directive *new_directive, int file_number, SymbolTable *symbol_table, char* line){
+int handle_entry_directive(Directive *new_directive, int file_number, SymbolTable *symbol_table, char* line){
     char *ptr = line;
     Symbol* symbol;
     new_directive->type = ENTRY;
     extract_word_after_keyword(ptr, new_directive->symbol, ".entry");
     symbol = find_symbol_by_name(symbol_table, new_directive->symbol);
+    if(!symbol){
+        symbol = add_new_symbol(symbol_table, new_directive->symbol);
+        if(!symbol){
+            return 0;
+        }
+        symbol->address = 0;
+    }
     symbol->is_entry=1;
-
     add_entry_to_entries_file(new_directive->symbol, file_number, symbol->address);
+
+    return 1;
 }
 
-void handle_extern_directive(char *line, Directive *new_directive, SymbolTable *symbol_table, int file_number, int *ic){
-    Symbol* symbol;
+int handle_extern_directive(char *line, Directive *new_directive, SymbolTable *symbol_table, int file_number, int *ic) {
+    Symbol *symbol;
     char *ptr = line;
+    char symbol_name[SYMBOL_NAME_LEN];
     new_directive->type = EXTERN;
 
-    symbol = (Symbol *)malloc(10 * sizeof(Symbol));
-    if (symbol == NULL) {
-        print_internal_error(ERROR_CODE_12, "");
-        exit(EXIT_FAILURE);
+    extract_word_after_keyword(ptr, symbol_name, ".extern");
+    symbol = add_new_symbol(symbol_table, symbol_name);
+    if (!symbol) {
+        return 0;
     }
-    extract_word_after_keyword(ptr, symbol->name, ".extern");
-    strcpy(new_directive->symbol, symbol->name);
+
 
     symbol->address = 0; // external address, will be filled by linker
     symbol->type = EXTERN_DIRECTIVE;
-    symbol->is_extern=1;
-    add_new_symbol(symbol_table, symbol);
+    symbol->is_extern = 1;
     add_extern_to_externals_file(symbol, file_number, ic);
+
+    return 1;
 }
 
 
@@ -758,10 +756,43 @@ void handle_data_directive(char *line, Directive *new_directive, InstructionLine
 Symbol *find_symbol_by_name(SymbolTable* symbol_table, char* symbol_name){
     int i;
     for(i=0;i<symbol_table->size;i++){
-        if(strcmp(symbol_table->symbols[i].name, symbol_name)){
-            return &symbol_table->symbols[i];
+        if(strcmp(symbol_table->symbols[i]->name, symbol_name) == 0){
+            return symbol_table->symbols[i];
         }
     }
-    print_internal_error(ERROR_CODE_39, symbol_name);
-    exit(EXIT_FAILURE);
+    return NULL;
+}
+
+Symbol *add_new_symbol(SymbolTable *symbol_table, char* symbol_name) {
+    Symbol *new_symbol;
+
+    if(find_symbol_by_name(symbol_table, symbol_name)){
+        print_internal_error(ERROR_CODE_50, symbol_name);
+        return NULL;
+    }
+
+    new_symbol = (Symbol *)malloc(sizeof(Symbol));
+    if (new_symbol == NULL) {
+        print_internal_error(ERROR_CODE_11, "");
+        exit(EXIT_FAILURE);
+    }
+    strcpy(new_symbol->name, symbol_name);
+//     Check if the array needs to be resized
+    if (symbol_table->size >= symbol_table->capacity) {
+//         Double the capacity or set an initial capacity if it's zero
+        size_t new_capacity = (symbol_table->capacity == 0) ? 10 : symbol_table->capacity * 2;
+        Symbol **new_symbols = realloc(symbol_table->symbols, new_capacity * sizeof(Symbol *));
+        if (!new_symbols) {
+            print_internal_error(ERROR_CODE_15, "");
+            exit(EXIT_FAILURE);
+        }
+
+        symbol_table->symbols = new_symbols;
+        symbol_table->capacity = new_capacity;
+    }
+
+    // Add the new instruction line to the array
+    symbol_table->symbols[symbol_table->size] = new_symbol;
+    symbol_table->size++;
+    return new_symbol;
 }

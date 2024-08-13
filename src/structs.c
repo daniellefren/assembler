@@ -14,7 +14,7 @@ LinesArray *init_lines_array(int initial_capacity) {
         print_internal_error(ERROR_CODE_46, "");
         exit(EXIT_FAILURE);
     }
-    lines_array->lines = (InstructionLine *)malloc(initial_capacity * sizeof(InstructionLine));
+    lines_array->lines = (InstructionLine **)malloc(initial_capacity * sizeof(InstructionLine *));
     if (!lines_array->lines) {
         print_internal_error(ERROR_CODE_15, "");
         exit(EXIT_FAILURE);
@@ -45,7 +45,7 @@ SymbolTable *init_symbol_table(int initial_capacity) {
 void free_lines_array(LinesArray *lines_array) {
     if (lines_array->lines) {
         for (unsigned int i = 0; i < lines_array->number_of_line; i++) {
-            free_instruction_line(&lines_array->lines[i]);
+            free_instruction_line(lines_array->lines[i]);
         }
         free(lines_array->lines);
     }
@@ -104,7 +104,7 @@ void addInstructionLine(LinesArray *lines_array, InstructionLine *instruction_li
     if (lines_array->number_of_line >= lines_array->capacity) {
         // Double the capacity or set an initial capacity if it's zero
         size_t new_capacity = (lines_array->capacity == 0) ? 10 : lines_array->capacity * 2;
-        InstructionLine *new_lines = realloc(lines_array->lines, new_capacity * sizeof(InstructionLine));
+        InstructionLine **new_lines = realloc(lines_array->lines, new_capacity * sizeof(InstructionLine *));
         if (!new_lines) {
             print_internal_error(ERROR_CODE_15, "");
             exit(EXIT_FAILURE);
@@ -112,30 +112,10 @@ void addInstructionLine(LinesArray *lines_array, InstructionLine *instruction_li
         lines_array->lines = new_lines;
         lines_array->capacity = new_capacity;
     }
-
-    // Add the new instruction line to the array
-    lines_array->lines[lines_array->number_of_line] = *instruction_line;
+//
+//    // Add the new instruction line to the array
+    lines_array->lines[lines_array->number_of_line] = instruction_line;
     lines_array->number_of_line++;
-}
-
-void add_new_symbol(SymbolTable *symbol_table, Symbol *symbol) {
-    // Check if the array needs to be resized
-    if (symbol_table->size >= symbol_table->capacity) {
-        // Double the capacity or set an initial capacity if it's zero
-        size_t new_capacity = (symbol_table->capacity == 0) ? 10 : symbol_table->capacity * 2;
-        Symbol *new_symbols = realloc(symbol_table->symbols, new_capacity * sizeof(Symbol));
-        if (!new_symbols) {
-            print_internal_error(ERROR_CODE_15, "");
-            exit(EXIT_FAILURE);
-        }
-
-        symbol_table->symbols = new_symbols;
-        symbol_table->capacity = new_capacity;
-    }
-
-    // Add the new instruction line to the array
-    symbol_table->symbols[symbol_table->size] = *symbol;
-    symbol_table->size++;
 }
 
 void init_macro_table(MacroTable *table) {
@@ -247,7 +227,7 @@ void allocate_binary_instruction(InstructionLine *p_line, size_t binary_line_cou
 
 
 char *get_instruction_line_binary(LinesArray *linesArray, int number_of_line) {
-    return linesArray->lines[number_of_line].binary_instruction;
+    return linesArray->lines[number_of_line]->binary_instruction;
 }
 
 int is_instruction_line_directive(InstructionLine instructionLine){

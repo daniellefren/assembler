@@ -13,16 +13,16 @@ void test_all_run(LinesArray* assembly_lines_array){
 
     for(int i=0;i<assembly_lines_array->number_of_line;i++){
         printf("%d line number\n", i);
-        InstructionLine line = assembly_lines_array->lines[i];
-        printf("line %s\n", line.line_content);
+        InstructionLine *line = assembly_lines_array->lines[i];
+        printf("line %s\n", line->line_content);
 
-        if(line.is_symbol){
-            Symbol *symbol = line.symbol;
+        if(line->is_symbol){
+            Symbol *symbol = line->symbol;
             printf("symbol name %s\n", symbol->name);
             size_t length = strlen(symbol->name);
         }
-        if(line.instruction_type == COMMAND){
-            Command *command = line.command;
+        if(line->instruction_type == COMMAND){
+            Command *command = line->command;
             printf("command %s\n", command->command_name);
             switch (command->operand_number) {
                 case 0: {
@@ -46,8 +46,8 @@ void test_all_run(LinesArray* assembly_lines_array){
                 }
             }
         }
-        if(line.instruction_type == DATA_DIRECTIVE){
-            Directive *directive = line.directive;
+        if(line->instruction_type == DATA_DIRECTIVE){
+            Directive *directive = line->directive;
             printf("directive value: %d\n", directive->type);
             for(int j=0;j<directive->data_values_count;j++){
                 printf("%s,", directive->value[j]);
