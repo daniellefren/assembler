@@ -28,6 +28,7 @@ void create_ob_file(LinesArray *linesArray, int file_number){
     add_all_command_lines_to_ob_file(linesArray, object_file);
     add_all_directive_lines_to_ob_file(linesArray, object_file);
     printf("Finished creating object file\n");
+    fclose(object_file);
 }
 
 FILE* open_ob_file(char *ob_file_name) {
@@ -118,7 +119,13 @@ void add_command_line_to_ob_file(InstructionLine *instructionLine, FILE *object_
         // Convert the binary instruction to an octal string
         fill_octal_string_from_binary(instructionLine->binary_instruction, BINARY_WORD_LENGTH, i * BINARY_WORD_LENGTH, octal_number);
         printf("The address is %d and the octal number is %s\n", instruction_address, octal_number);
-        fprintf(object_file, "%d %s\n", instruction_address, octal_number);
+        if ((instruction_address < 1000) && (instruction_address > 99)){ //IC start from 100 so no need to add more then one 0 at the starts
+            fprintf(object_file, "0%d %s\n", instruction_address, octal_number);
+        }
+        else {
+            fprintf(object_file, "%d %s\n", instruction_address, octal_number);
+        }
+
         instruction_address += 1;
     }
     free(octal_number);
@@ -147,7 +154,12 @@ void add_directive_line_to_ob_file(InstructionLine *instructionLine, FILE *objec
         // Convert the binary instruction to an octal string
         fill_octal_string_from_binary(instructionLine->binary_instruction, BINARY_WORD_LENGTH, i * BINARY_WORD_LENGTH, octal_number);
         printf("The address is %d and the octal number is %s\n", instruction_address, octal_number);
-        fprintf(object_file, "%d %s\n", instruction_address, octal_number);
+        if ((instruction_address < 1000) && (instruction_address > 99)){ //IC start from 100 so no need to add more then one 0 at the starts
+            fprintf(object_file, "0%d %s\n", instruction_address, octal_number);
+        }
+        else {
+            fprintf(object_file, "%d %s\n", instruction_address, octal_number);
+        }
         instruction_address += 1;
     }
 }
@@ -255,11 +267,12 @@ int open_two_files_and_compare(char *file1_name, char *file2_name) {
 
     file1 = open_file(file1_name, "r");
     file2 = open_file(file2_name, "r");
-    result = compare_files(file1, file2);
+    printf("The size of file 1 is %lu and the size of file 2 is %lu\n", get_file_size(file1), get_file_size(file2));
+    result = compare_files(file1, file2); //return 0 for different
     fclose(file1);
     fclose(file2);
 
-    if (result == 0) {
+    if (result == 1) {
         printf("Files are identical.\n");
     } else {
         printf("Files are different.\n");

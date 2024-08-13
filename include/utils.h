@@ -208,4 +208,6 @@ char* int_to_string(int number);
  */
 int compare_files(FILE *file1, FILE *file2);
 
+long get_file_size(FILE *file);
+
 #endif //ASSEMBLER_UTILS_H

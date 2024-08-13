@@ -32,7 +32,6 @@ int main(int argc, char *argv[]) {
     }
 
     add_output_directory();
-
     output_test("","");
     /*
     //Run assembler on all files
@@ -40,7 +39,9 @@ int main(int argc, char *argv[]) {
         run_assembler_on_file(assembly_lines_array, symbol_table, argv[file_number], file_number);
     }
     */
+
     return EXIT_SUCCESS;
+
 }
 
 void run_assembler_on_file(LinesArray *assembly_lines_array, SymbolTable *symbol_table, char* filename, int file_number){
