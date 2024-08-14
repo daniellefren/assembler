@@ -66,6 +66,11 @@ Error errors[] = {
         //Additional errors
         {ERROR_CODE_50, "Symbol is not valid -- Already exists"},
         {ERROR_CODE_51, "Symbol is NUll"},
+        {ERROR_CODE_52, "Unable to open directory"},
+        {ERROR_CODE_53, "Failed to delete file"},
+        {ERROR_CODE_54, "got a null file pointer"},
+        {ERROR_CODE_55, "Unable to allocate memory for octal_number"},
+        {ERROR_CODE_56, "Unable to create directory"},
 
 
 };

@@ -81,6 +81,7 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
     }
 }
 
+
 void final_actions(LinesArray *lines_array, int *ic, int *dc, int file_number){
     int i;
     for(i = 0;i<lines_array->number_of_line;i++){
@@ -703,14 +704,14 @@ void handle_string_directive(char *line, Directive *new_directive, InstructionLi
             // Allocate memory for the values array
             new_directive->value = (char **)malloc(sizeof(char *) * 2); // One for the string and one for NULL terminator
             if (new_directive->value == NULL) {
-                perror("Unable to allocate memory for values");
+                print_internal_error(ERROR_CODE_9, "new_directive->value - data");
                 exit(EXIT_FAILURE);
             }
 
             // Allocate memory for the string and copy it
             new_directive->value[0] = (char *)malloc(length + 1);
             if (new_directive->value[0] == NULL) {
-                perror("Unable to allocate memory for string");
+                print_internal_error(ERROR_CODE_9, "new_directive->value - string");
                 exit(EXIT_FAILURE);
             }
             strncpy(new_directive->value[0], start + 1, length);

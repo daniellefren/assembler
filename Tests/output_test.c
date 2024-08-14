@@ -17,6 +17,7 @@
  * @return 1 if all tests pass, 0 if any test fails.
  */
 int output_test() {
+
     int i;
     int number_of_tests;
     char input_code_fname[100];
@@ -35,7 +36,7 @@ int output_test() {
 
     number_of_tests = count_strings(test);
 
-
+    printf("number_of_tests %d", number_of_tests);
     // Iterate over each test case
     for (i = 0; i < number_of_tests; i++) {
         //Get input file name
@@ -96,5 +97,5 @@ int count_strings(char *strings[]) {
     while (strings[count] != NULL) {
         count++;
     }
-    return count - 1; //TODO - why -1
+    return count;
 }
