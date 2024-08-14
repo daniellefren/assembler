@@ -206,9 +206,9 @@ char* int_to_string(int number);
  *
  * @return 0 if the files are identical, 1 if they are different.
  */
-int compare_files(FILE *file1, FILE *file2);
 
-long get_file_size(FILE *file);
+
+void strip_newline(char *line); //TODO - add doco
 
 void print_current_directory(); //TODO - erase
 

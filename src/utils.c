@@ -109,14 +109,13 @@ void print_instruction_line(InstructionLine *instructionLine) {
 void erase_file_data(const char *filename) {
     FILE *file = fopen(filename, "w"); // Open the file in write mode
     if (file == NULL) {
-        perror("Error opening file");
-        return;
+        print_internal_error(ERROR_CODE_48, filename);
+        exit(EXIT_FAILURE);
     }
     fclose(file); // Closing the file truncates it to zero length
 }
 
 void extract_numbers(char *input, int length) {
-    printf("lengthhhh %d\n", length);
     char *q;
     const char *p = input;
     char *numbers;
@@ -124,7 +123,7 @@ void extract_numbers(char *input, int length) {
     // Allocate memory for the new string
     numbers = (char *)malloc((length + 1) * sizeof(char));
     if (numbers == NULL) {
-        perror("Unable to allocate memory");
+        print_internal_error(ERROR_CODE_9, "extract_numbers");
         exit(EXIT_FAILURE);
     }
     q = numbers;
@@ -347,84 +346,13 @@ int ignore_line(char *line) {
 char* int_to_string(int number) {
     char *str = (char *)malloc(20 * sizeof(char)); // Allocate memory on the heap
     if (str == NULL) {
-        perror("Unable to allocate memory");
-        print_internal_error(ERROR_CODE_9, "");
+        print_internal_error(ERROR_CODE_9, "int_to_string");
         exit(EXIT_FAILURE);
     }
     sprintf(str, "%d", number);
     return str;
 }
 
-
-
-int compare_files(FILE *file1, FILE *file2) {
-    char line1[256]; // Buffer to store lines from file1
-    char line2[256]; // Buffer to store lines from file2
-    int line_number = 1; // Line counter to keep track of the line being compared
-
-    // Read lines from both files until end-of-file or error
-    // Check if files are opened successfully
-    if (file1 == NULL) {
-        printf("Error: Unable to open file1.\n");
-        return -1;
-    }
-    if (file2 == NULL) {
-        printf("Error: Unable to open file2.\n");
-        return -1;
-    }
-
-    // Read the first lines from both files
-    if (fgets(line1, sizeof(line1), file1) == NULL) {
-        printf("Debug - File1 is empty or an error occurred.\n");
-    }
-
-    if (fgets(line2, sizeof(line2), file2) == NULL) {
-        printf("Debug - File2 is empty or an error occurred.\n");
-    }
-    while (fgets(line1, sizeof(line1), file1) != NULL &&
-           fgets(line2, sizeof(line2), file2) != NULL) {
-        // Compare the lines from both files
-        if (strcmp(line1, line2) != 0) {
-            // If lines are different, print the line number and the differing lines
-            printf("Difference found at line %d:\n", line_number);
-            printf("File1: %s\n", line1);
-            printf("File2: %s\n", line2);
-            return 0; // Return 0 to indicate that the files are different
-        }
-        line_number++; // Increment the line number for the next comparison
-    }
-
-    // Check if one file ended before the other
-    if (fgets(line1, sizeof(line1), file1) != NULL || fgets(line2, sizeof(line2), file2) != NULL) {
-        printf("Files have different lengths.\n");
-        return 0; // Return 0 to indicate that the files are different
-    }
-
-    // If we reach this point, files are identical
-    return 1; // Return 1 to indicate that the files are identical
-}
-
-
-long get_file_size(FILE *file) {
-    long size;
-    // Move the file pointer to the end of the file
-    if (fseek(file, 0, SEEK_END) == -1){
-        printf("Error - fseek\n");
-        return -1;
-    }
-    // Get the current file pointer position, which is the size of the file
-    size = ftell(file);
-    if (size == -1){
-        printf("Error - ftell\n");
-        return -1;
-    }
-    // Move the file pointer back to the beginning of the file
-    if (fseek(file, 0, SEEK_SET) == -1){
-        printf("Error - fseek\n");
-        return -1;
-    }
-    return size;
-}
 
 void print_current_directory(){
     char *cwd;
@@ -433,8 +361,8 @@ void print_current_directory(){
     // Allocate memory for the buffer
     cwd = (char *)malloc(size * sizeof(char));
     if (cwd == NULL) {
-        perror("Unable to allocate buffer");
-        return;
+        print_internal_error(ERROR_CODE_9, "");
+        exit(EXIT_FAILURE);
     }
 
     // Get the current working directory
@@ -449,4 +377,11 @@ void print_current_directory(){
 
     // Free the allocated buffer
     free(cwd);
+}
+
+void strip_newline(char *line) {
+    size_t len = strlen(line);
+    if (len > 0 && line[len - 1] == '\n') {
+        line[len - 1] = '\0';
+    }
 }

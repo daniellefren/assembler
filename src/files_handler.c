@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <dirent.h>
+#include <unistd.h>
 
 #include "../include/files_handler.h"
 #include "../include/errors.h"
@@ -37,7 +39,7 @@ FILE* open_ob_file(char *ob_file_name) {
     // Attempt to open the file in write mode ("w" will create a new file or overwrite an existing file)
     file = fopen(ob_file_name, "w");
     if (file == NULL) {
-        perror("Unable to open entries file");
+        print_internal_error(ERROR_CODE_48, ob_file_name);
         exit(EXIT_FAILURE);
     }
     return file;
@@ -46,7 +48,7 @@ FILE* open_ob_file(char *ob_file_name) {
 
 void add_first_line_to_ob_file(int number_of_command, int number_of_directive, FILE *object_file) {
     if (object_file == NULL) {
-        perror("Error: got a null file pointer");
+        print_internal_error(ERROR_CODE_54, "");
         exit(EXIT_FAILURE);
     }
 
@@ -104,13 +106,13 @@ void add_command_line_to_ob_file(InstructionLine *instructionLine, FILE *object_
     // Allocate memory for the octal number string (5 digits + null terminator)
     octal_number = (char *)malloc((OCTAL_LENGTH + 1) * sizeof(char));
     if (octal_number == NULL) {
-        perror("Error: Unable to allocate memory for octal_number");
+        print_internal_error(ERROR_CODE_55, "");
         exit(EXIT_FAILURE);
     }
 
     instruction_address = instructionLine->starting_address;
     if (instructionLine->instruction_type != COMMAND){
-        perror("Error: this instruction line is not a command");
+        perror("Error: this instruction line is not a command"); // TODO - all perrors must be in the errors format!
         exit(EXIT_FAILURE);
     }
     // Loop through each binary line in the instruction
@@ -143,7 +145,7 @@ void add_directive_line_to_ob_file(InstructionLine *instructionLine, FILE *objec
     // Allocate memory for the octal number string (5 digits + null terminator)
     octal_number = (char *)malloc((OCTAL_LENGTH + 1) * sizeof(char));
     if (octal_number == NULL) {
-        perror("Error: Unable to allocate memory for octal_number");
+        print_internal_error(ERROR_CODE_55, "");
         exit(EXIT_FAILURE);
     }
 
@@ -179,7 +181,7 @@ void add_entry_to_entries_file(char *symbol_name, int file_number, int symbol_ad
     add_number_to_string(entries_file_name, sizeof(entries_file_name), ENTRIES_FILE_NAME, file_number);
     file = fopen(entries_file_name, "a");
     if (file == NULL) {
-        perror("Unable to open entries file");
+        print_internal_error(ERROR_CODE_48, entries_file_name);
         exit(EXIT_FAILURE);
     }
     if(search_in_file(entries_file_name, symbol_name)){
@@ -208,7 +210,7 @@ void add_extern_to_externals_file(char *symbol_name, int file_number, int ic){
 
     FILE *file = fopen(externals_file_name, "a");
     if (file == NULL) {
-        perror("Unable to open externals file");
+        print_internal_error(ERROR_CODE_48, externals_file_name);
         exit(EXIT_FAILURE);
     }
     fprintf(file, "%s %s\n", symbol_name, new_ic);
@@ -216,19 +218,16 @@ void add_extern_to_externals_file(char *symbol_name, int file_number, int ic){
     fclose(file);
 }
 
-char *pad_address(int ic){
-    char *new_ic = malloc(sizeof(char) *5);
-    if ((ic < 1000) && (ic > 99)){
-        new_ic[0] = '0';
-//        add_number_to_string(new_ic, 10, "0", ic);
-        strcpy(new_ic+1, int_to_string(ic));
-        printf("new icccc %s", new_ic);
-//        strcat(new_ic, int_to_string(ic));
+char *pad_address(int address){ //TODO - david should add to his code
+    char *new_address = malloc(sizeof(char) *5);
+    if ((address < 1000) && (address >= 99)){
+        new_address[0] = '0';
+        strcpy(new_address+1, int_to_string(address));
     }
     else{
-        strcpy(new_ic, int_to_string(ic));
+        strcpy(new_address, int_to_string(address));
     }
-    return new_ic;
+    return new_address;
 }
 
 int write_line_to_file(char *line, char* new_file_name) {
@@ -265,21 +264,17 @@ void write_expanded_macros_to_file(MacroTable *macro_table, char* new_file_name)
     fclose(outputFile);
 }
 
-void add_output_directory(){
+void add_output_directory() {
     const char *dirName = OUTPUT_DIRECTORY_NAME;
     struct stat st = {0};
 
     // Check if the directory exists
     if (stat(dirName, &st) == -1) {
         // Directory does not exist, create it
-        if (mkdir(dirName, 0755) == 0) {
-            printf("Directory '%s' created successfully.\n", dirName);
-        } else {
-            perror("Error creating directory");
+        if (mkdir(dirName, 0755) == 1) {
+            print_internal_error(ERROR_CODE_56, dirName);
             exit(EXIT_FAILURE);
         }
-    } else {
-        printf("Directory '%s' already exists.\n", dirName);
     }
 }
 
@@ -289,7 +284,6 @@ FILE* open_file(char *file_name, char *mode) {
     // Attempt to open the file
     file = fopen(file_name, mode);
     if (file == NULL) {
-        printf("error in open_file");
         print_internal_error(ERROR_CODE_48, file_name);
         exit(EXIT_FAILURE);
     }
@@ -297,15 +291,21 @@ FILE* open_file(char *file_name, char *mode) {
 }
 
 int open_two_files_and_compare(char *file1_name, char *file2_name) {
-    printf("file1_name %s\n", file1_name);
-    printf("file2_name %s\n", file2_name);
     int result;
     FILE *file1;
     FILE *file2;
 
+    if(file_exists(file1_name) == 0 || file_exists(file1_name) == 0){
+        return 1;
+    }
+
+//    remove_trailing_newline_from_file(file1_name);
+//    remove_trailing_newline_from_file(file2_name);
+
     file1 = open_file(file1_name, "r");
     file2 = open_file(file2_name, "r");
-    printf("The size of file 1 is %lu and the size of file 2 is %lu\n", get_file_size(file1), get_file_size(file2));
+
+//    printf("The size of file 1 is %lu and the size of file 2 is %lu\n", get_file_size(file1), get_file_size(file2)); //TODO - not interesting, erase
     result = compare_files(file1, file2); //return 0 for different
     fclose(file1);
     fclose(file2);
@@ -342,4 +342,155 @@ int search_in_file(char *filename, const char *search_str) {
     fclose(file);
 
     return found;
+}
+
+void delete_files_in_directory(char *dir_path) {
+    DIR *dir;
+    dir = opendir(dir_path);
+    struct dirent *entry;
+    char file_path[1024];
+
+    // Check if directory is successfully opened
+    if (dir == NULL) {
+        print_internal_error(ERROR_CODE_52, dir_path);
+        exit(EXIT_FAILURE);
+    }
+
+    // Iterate over all files in the directory
+    while ((entry = readdir(dir)) != NULL) {
+        // Skip "." and ".."
+        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
+            continue;
+        }
+
+        // Construct the full path to the file
+        snprintf(file_path, sizeof(file_path), "%s/%s", dir_path, entry->d_name);
+
+        // Remove the file
+        if (remove(file_path) == 1) {
+            print_internal_error(ERROR_CODE_53, file_path);
+        }
+
+    }
+
+    // Close the directory
+    closedir(dir);
+}
+
+
+int file_exists(const char *filename) {
+    return access(filename, F_OK) == 0;
+}
+
+
+int compare_files(FILE *file1, FILE *file2) {
+    char line1[256]; // Buffer to store lines from file1
+    char line2[256]; // Buffer to store lines from file2
+    int line_number = 1; // Line counter to keep track of the line being compared
+
+    // Read lines from both files until end-of-file or error
+    // Check if files are opened successfully
+    if (file1 == NULL) {
+        print_internal_error(ERROR_CODE_48, "file 1");
+        exit(EXIT_FAILURE);
+    }
+    if (file2 == NULL) {
+        print_internal_error(ERROR_CODE_48, "file 2");
+        exit(EXIT_FAILURE);
+    }
+
+    // Read the first lines from both files
+    if (fgets(line1, sizeof(line1), file1) == NULL) {
+        printf("Debug - File1 is empty or an error occurred.\n");
+    }
+
+    if (fgets(line2, sizeof(line2), file2) == NULL) {
+        printf("Debug - File2 is empty or an error occurred.\n");
+    }
+
+    while (fgets(line1, sizeof(line1), file1) != NULL &&
+           fgets(line2, sizeof(line2), file2) != NULL) {
+        strip_newline(line1);
+        strip_newline(line2);
+        // Compare the lines from both files
+        if (strcmp(line1, line2) != 0) {
+            // If lines are different, print the line number and the differing lines
+            printf("Difference found at line %d:\n", line_number);
+            printf("File1: %s\n", line1);
+            printf("File2: %s\n", line2);
+            return 0; // Return 0 to indicate that the files are different
+        }
+        line_number++; // Increment the line number for the next comparison
+    }
+
+    // Check if one file ended before the other
+    if (fgets(line1, sizeof(line1), file1) != NULL || fgets(line2, sizeof(line2), file2) != NULL) {
+        printf("Files have different lengths.\n");
+        return 0; // Return 0 to indicate that the files are different
+    }
+
+    // If we reach this point, files are identical
+    return 1; // Return 1 to indicate that the files are identical
+}
+
+long get_file_size(FILE *file) {
+    long size;
+    // Move the file pointer to the end of the file
+    if (fseek(file, 0, SEEK_END) == -1){
+        printf("Error - fseek\n");
+        return -1;
+    }
+    // Get the current file pointer position, which is the size of the file
+    size = ftell(file);
+    if (size == -1){
+        printf("Error - ftell\n");
+        return -1;
+    }
+    // Move the file pointer back to the beginning of the file
+    if (fseek(file, 0, SEEK_SET) == -1){
+        printf("Error - fseek\n");
+        return -1;
+    }
+    return size;
+}
+
+void remove_trailing_newline_from_file(char *filename) {
+    FILE *file = fopen(filename, "r+");  // Open file for reading and writing
+    if (file == NULL) {
+        perror("Unable to open file");
+        return;
+    }
+
+    // Seek to the end of the file to find its size
+    if (fseek(file, 0, SEEK_END) != 0) {
+        perror("fseek error");
+        fclose(file);
+        return;
+    }
+
+    long file_size = ftell(file);  // Get current file position which is file size
+    if (file_size == -1) {
+        perror("ftell error");
+        fclose(file);
+        return;
+    }
+
+    // Read the file backwards to find the first non-newline character
+    while (file_size > 0) {
+        file_size--;
+        fseek(file, file_size, SEEK_SET);
+        char ch = fgetc(file);
+
+        if (ch != '\n' && ch != '\r') {
+            // Found a non-newline character
+            break;
+        }
+    }
+
+    // Truncate the file to remove the trailing newlines
+    if (ftruncate(fileno(file), file_size + 1) != 0) {
+        perror("ftruncate error");
+    }
+
+    fclose(file);
 }

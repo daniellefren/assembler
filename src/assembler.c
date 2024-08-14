@@ -34,6 +34,11 @@ int main(int argc, char *argv[]) {
 
     add_output_directory();
 
+//    char *output_directory_name;
+//    strcpy(output_directory_name, OUTPUT_DIRECTORY_NAME);
+//    strcat(output_directory_name, '/')
+    delete_files_in_directory(OUTPUT_DIRECTORY_NAME);
+
     if(strcmp(argv[1], "test") == 0){
         output_test();
     }
@@ -51,7 +56,6 @@ int main(int argc, char *argv[]) {
 void run_assembler_on_file(LinesArray *assembly_lines_array, SymbolTable *symbol_table, char* filename, int file_number){
     FILE *file;
     int ic, dc;
-
 
     ic = 0;
     dc = 0;

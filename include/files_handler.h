@@ -168,7 +168,32 @@ int open_two_files_and_compare(char *file1_name, char *file2_name);
  * */
 int search_in_file(char *filename, const char *search_str);
 
+/**
+ * Add 0 in the beginning of a given address if necessary
+ * @param address - The address to pad the 0 to
+ * @return The padded address
+ */
 char *pad_address(int ic);
+
+/**
+ * Delete all files from a given directory
+ * @param dir_path The path of the dir to delete files from
+ */
+void delete_files_in_directory(char *dir_path);
+
+/**
+ * Check if file exists
+ * @param filename The filename to check
+ * @return 1 if yes, else 0
+ */
+int file_exists(const char *filename);
+
+int compare_files(FILE *file1, FILE *file2);
+
+long get_file_size(FILE *file);
+
+void remove_trailing_newline_from_file(char *filename);
+
 
 #endif //ASSEMBLER_FILES_HANDLER_H
 
