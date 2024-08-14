@@ -62,7 +62,7 @@ char* extract_numbers(const char *input, int length);
 
 /**
  * Convert a string to an integer.
- * @param str - The string to convert.
+ * @param input - The string to convert.
  * @return The integer value of the string.
  */
 int char_to_int(char *c);
