@@ -175,6 +175,7 @@ void add_directive_line_to_ob_file(InstructionLine *instructionLine, FILE *objec
 }
 
 void add_entry_to_entries_file(char *symbol_name, int file_number, int symbol_address){
+    printf("??????");
     char entries_file_name[100];
     FILE *file;
 
