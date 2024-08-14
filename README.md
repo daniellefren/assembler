@@ -59,7 +59,7 @@ cd assembler
 ```
 3. Run Makefile to compile the program:
 ```sh
-`make`
+make
 ```
 ### Usage
 In order to run the compiled program you should run the following command `./assembler file_name_1 ... file_name_n`
@@ -73,7 +73,10 @@ For each file from the input files, will be created (for the i file):
 ### Testing
 Several input assembly files are provided, with different command and directives in order to present the assembler work properly.
 
-
+In order to run all Tests, you should run the program the following way - 
+```sh
+./assembler test
+```
 
 # Royi David and Danielle Frenklakh ©
 

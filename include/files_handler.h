@@ -168,6 +168,8 @@ int open_two_files_and_compare(char *file1_name, char *file2_name);
  * */
 int search_in_file(char *filename, const char *search_str);
 
+char *pad_address(int ic);
+
 #endif //ASSEMBLER_FILES_HANDLER_H
 
 

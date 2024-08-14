@@ -11,7 +11,7 @@
 #include "../include/errors.h"
 
 
-Command commands_struct[] = {
+Command COMMANDS_STRUCT[] = {
         {"mov", MOV, 2},
         {"cmp", CMP, 2},
         {"add", ADD, 2},
@@ -42,7 +42,6 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
     int line_num;
     int i;
 
-    success = 1;
     *ic = STARTING_IC; // Starting point of assembler
 
     init_macro_table(&macro_table);
@@ -66,28 +65,38 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
     }
 
     fclose(file);
-    for(i = 0;i<lines_array->number_of_line;i++){
-        InstructionLine *instruction_line = lines_array->lines[i];
-        if(instruction_line->instruction_type == DATA_DIRECTIVE){
-            instruction_line->starting_address += *ic;
-        }
-    }
+
+    final_actions(lines_array, ic, dc, file_number);
 
 //     Free allocated memory for macro names
     for (i = 0; i < MAX_MACRO_NAMES; ++i) {
         free(macro_names[i]);
     }
+    free_macro_table(&macro_table);
 
-    //Declare final ic and dc in lines array
-    lines_array->ic = *ic;
-    lines_array->dc = *dc;
 
     if(!success){
         print_internal_error(ERROR_CODE_8, "");
         exit(EXIT_FAILURE);
     }
+}
 
-    free_macro_table(&macro_table);
+void final_actions(LinesArray *lines_array, int *ic, int *dc, int file_number){
+    int i;
+    for(i = 0;i<lines_array->number_of_line;i++){
+        InstructionLine *instruction_line = lines_array->lines[i];
+        if(instruction_line->instruction_type == DATA_DIRECTIVE){
+            instruction_line->starting_address += *ic;
+        }
+        if(instruction_line->is_symbol){
+            if(instruction_line->symbol->is_entry){
+                add_entry_to_entries_file(instruction_line->symbol->name, file_number, instruction_line->starting_address);
+            }
+        }
+    }
+    //Declare final ic and dc in lines array
+    lines_array->ic = *ic; //TODO - do i need it? if not, delete from doco
+    lines_array->dc = *dc;
 }
 
 int pre_run(MacroTable *macro_table, char **macro_names, FILE *file, char* new_file_name) {
@@ -220,7 +229,7 @@ int read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, LinesArra
         while (*line && isspace((unsigned char)*line)) {
             line++;
         }
-        new_symbol = handle_symbol(new_instruction_line, symbol_name, symbol_table);
+        new_symbol = handle_symbol(new_instruction_line, symbol_name, symbol_table, file_number);
         if(!new_symbol){
             return 0;
         }
@@ -233,13 +242,14 @@ int read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, LinesArra
             new_symbol->type = DATA_DIRECTIVE;
             new_symbol->address = *dc;
         }
+
     }
     else if (is_command(line)) {
         new_instruction_line->starting_address=*ic;
 
         success &= handle_command(line, symbol_table, macro_table, new_instruction_line);
 
-        (*ic)+= new_instruction_line->binary_line_count;
+        (*ic)+= (new_instruction_line->binary_line_count);
 
         if(has_symbol){
             new_symbol->type = COMMAND;
@@ -259,7 +269,7 @@ int read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, LinesArra
     return success;
 }
 
-Symbol* handle_symbol(InstructionLine *new_instruction_line, char* symbol_name, SymbolTable *symbol_table){
+Symbol* handle_symbol(InstructionLine *new_instruction_line, char* symbol_name, SymbolTable *symbol_table, int file_number){
     Symbol *new_symbol;
     new_symbol = find_symbol_by_name(symbol_table, symbol_name);
     if(!new_symbol){
@@ -267,13 +277,13 @@ Symbol* handle_symbol(InstructionLine *new_instruction_line, char* symbol_name, 
         if(!new_symbol){
             return NULL;
         }
+        new_symbol->is_extern=0;
+        new_symbol->is_entry=0;
     }
 
     new_instruction_line->is_symbol=1;
     new_instruction_line->symbol = new_symbol;
 
-    new_symbol->is_extern=0;
-    new_symbol->is_entry=0;
 
     return new_symbol;
 }
@@ -294,14 +304,18 @@ int handle_command(char *line, SymbolTable *symbol_table, MacroTable *macro_tabl
     if(new_command->operand_number >= 1){
         success = define_operand_types(new_command->dst_operand, macro_table, symbol_table);
         success &= classify_operand(new_command->dst_operand);
+
         if(new_command->operand_number == 2){
             success &= define_operand_types(new_command->src_operand, macro_table, symbol_table);
             success &= classify_operand(new_command->src_operand);
+
         }
     }
 
     new_instruction_line->binary_line_count = find_number_of_lines_in_binary(new_command);
     new_instruction_line->command = new_command;
+
+
 
     return success;
 }
@@ -367,10 +381,8 @@ int define_operand_types(Operand *operand, MacroTable *macro_table, SymbolTable 
     if (operand->value[0] == '#') {
         // Check if the rest is a valid integer
         length = check_if_valid_integer(operand->value + 1); //The first is # so send the rest
-
         if(length){
             operand->type = INTEGER;
-            extract_numbers(operand->value, length);
         }
     }
     else if (operand->value[0] == '*') {
@@ -380,7 +392,6 @@ int define_operand_types(Operand *operand, MacroTable *macro_table, SymbolTable 
     }
     else if (operand->value[0] == 'r' && operand->value[1] >= '0' && operand->value[1] <= '7'){
         operand->type = REGISTER;
-        extract_numbers(operand->value, length);
     }
     else if(is_valid_symbol(operand->value, macro_table, symbol_table)){
         operand->type = SYMBOL;
@@ -441,8 +452,11 @@ int find_number_of_lines_in_binary(Command *new_command){
 
     //If both operands are indirective or directive register classification, then they share the same data word
     if(new_command->operand_number == 2){
-        if((new_command->src_operand->classification_type==INDIRECT_REGISTER && new_command->dst_operand->classification_type==INDIRECT_REGISTER) ||
-                (new_command->src_operand->classification_type==DIRECT_REGISTER && new_command->dst_operand->classification_type==DIRECT_REGISTER)){
+        if ((new_command->src_operand->classification_type == INDIRECT_REGISTER ||
+             new_command->src_operand->classification_type == DIRECT_REGISTER) &&
+            (new_command->dst_operand->classification_type == INDIRECT_REGISTER ||
+             new_command->dst_operand->classification_type == DIRECT_REGISTER)) {
+
             number_of_binary_lines -= 1;
         }
     }
@@ -451,11 +465,14 @@ int find_number_of_lines_in_binary(Command *new_command){
 }
 
 int classify_operand(Operand *new_operand) {
+    int length;
     new_operand->classification_type = METHOD_UNKNOWN; // set default
 
     // Immediate addressing - starts with #
     if (new_operand->type == INTEGER) {
         new_operand->classification_type = IMMEDIATE; // Immediate addressing
+        length = check_if_valid_integer(new_operand->value + 1); //The first is # so send the rest
+        extract_numbers(new_operand->value, length);
     }
     else if(new_operand->type == SYMBOL){
         new_operand->classification_type = DIRECT; // Direct addressing
@@ -464,7 +481,6 @@ int classify_operand(Operand *new_operand) {
     // Register indirect addressing - starts with *
     else if (new_operand->value[0] == '*' && new_operand->type == REGISTER) {
         new_operand->classification_type = INDIRECT_REGISTER; // Indirect Register addressing
-        remove_first_character(new_operand->value);
         extract_numbers(new_operand->value, sizeof(new_operand->value));
 
     }
@@ -472,6 +488,7 @@ int classify_operand(Operand *new_operand) {
     // Register addressing - starts with r followed by a digit
     else if (new_operand->type == REGISTER) {
         new_operand->classification_type = DIRECT_REGISTER; // Direct Register addressing
+        extract_numbers(new_operand->value, length);
     }
     else{
         print_internal_error(ERROR_CODE_25, "");
@@ -483,11 +500,10 @@ int classify_operand(Operand *new_operand) {
 
 void get_operands_data_for_command(char* command_name, Command *new_command){
     int i;
-    int command_opcode;
     for (i = 0; i < COMMANDS_COUNT; i++) {
-        if (strcmp(commands_struct[i].command_name, command_name) == 0) {
-            new_command->opcode_command_type = commands_struct[i].opcode_command_type;
-            new_command->operand_number=commands_struct[i].operand_number;
+        if (strcmp(COMMANDS_STRUCT[i].command_name, command_name) == 0) {
+            new_command->opcode_command_type = COMMANDS_STRUCT[i].opcode_command_type;
+            new_command->operand_number=COMMANDS_STRUCT[i].operand_number;
             return;
         }
     }
@@ -627,6 +643,7 @@ int handle_directives(char *line, int *dc, SymbolTable *symbol_table, int* ic, i
 }
 
 int handle_entry_directive(Directive *new_directive, int file_number, SymbolTable *symbol_table, char* line){
+    printf("handle_entry_directive %s\n", line);
     char *ptr = line;
     Symbol* symbol;
     new_directive->type = ENTRY;
@@ -640,7 +657,6 @@ int handle_entry_directive(Directive *new_directive, int file_number, SymbolTabl
         symbol->address = 0;
     }
     symbol->is_entry=1;
-    add_entry_to_entries_file(new_directive->symbol, file_number, symbol->address);
 
     return 1;
 }
