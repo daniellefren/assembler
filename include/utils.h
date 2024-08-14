@@ -121,7 +121,7 @@ void binary_to_octal(const char *binary_string, char *octal_string);
  *
  * Converts the given integer `num` into a binary string with a specified number of bits.
  * The binary representation is stored in `binary_string` starting at the specified `offset`.
- * The string includes a sign bit (0 for positive, 1 for negative).
+ * Negative numbers converted using the two's complement method
  *
  * @param num The integer value to convert.
  * @param binary_string The buffer to store the resulting binary string.

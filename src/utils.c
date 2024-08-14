@@ -301,12 +301,9 @@ int check_if_valid_integer(char *str) {
 void int_to_binary_string(int num, char *binary_string, int offset, int num_bits) {
     int i;
 
-    // Handle negative numbers
+    // Handle negative numbers using two's complement
     if (num < 0) {
-        binary_string[offset] = '1';  // Sign bit for negative numbers
-        num = -num;
-    } else {
-        binary_string[offset] = '0';  // Sign bit for non-negative numbers
+        num = (1 << num_bits) + num;  // Convert negative num to its two's complement
     }
 
     // Convert to binary representation

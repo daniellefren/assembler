@@ -16,8 +16,8 @@
 #define SRC_OPERAND_NUMBER 1
 #define DST_OPERAND_NUMBER 2
 #define ARE_STARTING_OFFSET 11
-#define SRC_REGISTER_OFFSET 5
-#define DST_REGISTER_OFFSET 8
+#define SRC_REGISTER_OFFSET 6
+#define DST_REGISTER_OFFSET 9
 #define BINARY_INSTRUCTION_MAX_LENGTH 46
 #define BINARY_LINE_LENGTH 15
 #define SYMBOL_NAME_LEN 15
@@ -54,7 +54,7 @@ enum operand_classification_type {IMMEDIATE = 0, DIRECT = 1, INDIRECT_REGISTER =
 /* Directives types */
 enum directives {DATA, STRING, STRUCT, ENTRY, EXTERN, NOT_DIRECTIVE};
 /* Enum of commands ordered by their opcode */
-enum opcode_command {MOV, CMP, ADD, SUB, NOT, CLR, LEA, INC, DEC, JMP, BNE, RED, PRN, JSR, RTS, STOP, NOT_OPCODE};
+enum opcode_command {MOV, CMP, ADD, SUB, LEA, CLR, NOT, INC, DEC, JMP, BNE, RED, PRN, JSR, RTS, STOP, NOT_OPCODE};
 
 enum instruction_types {
     COMMAND = 1,

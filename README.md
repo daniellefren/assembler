@@ -30,20 +30,20 @@ The assembler works in three main stages:
 3. Second Pass
 
 ### Pre-Assembler
-The pre-assembler, scans through the assembly source file and looks for macro definitions. When encountered a macro, it stores the macro's name and body in macroTable.
-When the macro is invoked later in the source code, the function expands the macro by replacing the invocation with its body, in a new output file.
-In the end of the pre-processing, we have a new file (each assembly input file, has its own expanded macros file) with the expanded macros.
-
+The pre-assembler scans through the assembly source file and looks for macro definitions. When it encounters a macro, it stores the macro's name and body in `macroTable`. When the macro is invoked later in the source code, the function expands the macro by replacing the invocation with its body in a new output file. At the end of the pre-processing, each assembly input file has its own expanded macros file.
 
 ### First Pass
-The first pass of the assembler, scans through the expanded macros file that the pre-assembler has created.
-Through the scan' it identifies symbols (Symbols) and assigns them numerical values representing their corresponding memory addresses, and stores into a lableTable.
-In addition, it created an InstructionLine for each line from the assembly code.
-Each instruction line is stored in the linesArray, and consists with tha data of the current command/direct of the assembly line, and a number that represents the number of binary lines for the current assembly line.
-Furthermore, two files - `ps.end` and `ps.ext` are made in this pass, contains all the entries and externals in file.
-
+The first pass of the assembler scans through the expanded macros file that the pre-assembler has created. During the scan, it identifies symbols and assigns them numerical values representing their corresponding memory addresses, storing them in `labelTable`. Additionally, it creates an `InstructionLine` for each line from the assembly code. Each instruction line is stored in the `linesArray` and contains data related to the current command/directive of the assembly line, as well as a number representing the number of binary lines for the current assembly line. Furthermore, two files—`ps.end` and `ps.ext`—are generated in this pass, containing all the entries and externals in the file.
 
 ### Second Pass
+In the second pass, the assembler processes each line of the assembly code to generate its binary representation. The main steps include:
+
+- **Processing Each Line**: The function `start_second_run` iterates over each line in the assembly code, converting it into binary format and handling any associated symbols or directives.
+- **Binary Conversion**: Functions such as `fill_instruction_line_binary`, `fill_first_part_binary_opcode`, and `fill_second_part_binary_opcode` manage the conversion of opcodes, operands (immediate values, direct addresses, registers), and directives into binary strings.
+- **Binary String Formatting**: The code ensures that binary strings are formatted correctly by setting specific bits for opcodes, operand classifications, and the ARE (Absolute, Relocatable, External) values using functions like `set_binary_string_opcode_representation` and `set_binary_string_ARE_representation`.
+- **Final Output**: After processing all lines, the assembler generates the final binary output and writes it to an object file.
+
+This pass is crucial for creating the final machine code that can be executed by the target system.
 
 
 ## Getting started

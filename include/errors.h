@@ -61,7 +61,8 @@ typedef enum ERROR_CODES {
     ERROR_CODE_47,
     ERROR_CODE_48,
     ERROR_CODE_49,
-    ERROR_CODE_50
+    ERROR_CODE_50,
+    ERROR_CODE_51
 } ERROR_CODES;
 
 void print_internal_error(int error_code, char* data);

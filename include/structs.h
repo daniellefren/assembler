@@ -1,6 +1,7 @@
 #ifndef ASSEMBLER_STRUCTS_H
 #define ASSEMBLER_STRUCTS_H
 #include "constants.h"
+#include <stdbool.h>
 
 #define INITIAL_IC 100
 #define MAX_MACRO_LENGTH 100
@@ -269,5 +270,16 @@ int is_operand_classification_type_valid(enum operand_classification_type operan
  */
 Symbol *find_symbol_by_name(SymbolTable* symbol_table, char* symbol_name);
 
-
+/**
+ * @brief Checks if the given operand classification type corresponds to a register.
+ *
+ * This function determines whether the provided operand classification type
+ * is either an indirect register or a direct register. If the classification type
+ * matches either of these, the function returns true; otherwise, it returns false.
+ *
+ * @param classification_type The operand classification type to be checked.
+ * @return true if the classification type is INDIRECT_REGISTER or DIRECT_REGISTER;
+ *         otherwise, false.
+ */
+bool is_classification_type_register(enum operand_classification_type classification_type);
 #endif
