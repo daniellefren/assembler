@@ -370,7 +370,7 @@ int define_operand_types(Operand *operand, MacroTable *macro_table, SymbolTable 
 
         if(length){
             operand->type = INTEGER;
-            strcpy(operand->value, extract_numbers(operand->value, length));
+            extract_numbers(operand->value, length);
         }
     }
     else if (operand->value[0] == '*') {
@@ -380,7 +380,7 @@ int define_operand_types(Operand *operand, MacroTable *macro_table, SymbolTable 
     }
     else if (operand->value[0] == 'r' && operand->value[1] >= '0' && operand->value[1] <= '7'){
         operand->type = REGISTER;
-        strcpy(operand->value, extract_numbers(operand->value, length));
+        extract_numbers(operand->value, length);
     }
     else if(is_valid_symbol(operand->value, macro_table, symbol_table)){
         operand->type = SYMBOL;
@@ -465,7 +465,7 @@ int classify_operand(Operand *new_operand) {
     else if (new_operand->value[0] == '*' && new_operand->type == REGISTER) {
         new_operand->classification_type = INDIRECT_REGISTER; // Indirect Register addressing
         remove_first_character(new_operand->value);
-        strcpy(new_operand->value, extract_numbers(new_operand->value, sizeof(new_operand->value)));
+        extract_numbers(new_operand->value, sizeof(new_operand->value));
 
     }
 

@@ -58,7 +58,7 @@ void erase_file_data(const char *filename);
  * @param length - The length of the input string.
  * @return A pointer to the string containing extracted numbers.
  */
-char* extract_numbers(const char *input, int length);
+void extract_numbers(char *input, int length);
 
 /**
  * Convert a string to an integer.
