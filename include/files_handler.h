@@ -188,11 +188,25 @@ void delete_files_in_directory(char *dir_path);
  */
 int file_exists(const char *filename);
 
+/**
+ * Compare between two given files
+ * @param file1 A pointer to the first file to compare
+ * @param file2 A pointer to the second file to compare
+ * @return 1 if equal, else 0
+ */
 int compare_files(FILE *file1, FILE *file2);
 
+/**
+ * Return the given file size
+ * @param file File to find and return its size
+ * @return file size
+ */
 long get_file_size(FILE *file);
 
-void remove_trailing_newline_from_file(char *filename);
+/**
+ *
+ * @param filename
+ */
 
 
 #endif //ASSEMBLER_FILES_HANDLER_H
