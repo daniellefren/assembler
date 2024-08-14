@@ -94,9 +94,10 @@ int read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, LinesArra
  * @param new_instruction_line A pointer to the `InstructionLine` structure that the symbol will be associated with.
  * @param symbol_name The name of the symbol to be assigned to the new `symbol` structure.
  * @param symbol_table A pointer to the SymbolTable structure that stores all symbols encountered in the source file.
+ * @param file_number An integer representing the number of the current file being processed, used for generating unique output file names.
  * @return A pointer to the newly created `symbol` structure.
  */
-Symbol* handle_symbol(InstructionLine *instruction_line, char *symbol_name, SymbolTable *symbol_table);
+Symbol* handle_symbol(InstructionLine *instruction_line, char *symbol_name, SymbolTable *symbol_table, int file_number);
 
 /**
  * Processes a command line from the assembly source, extracting and classifying its operands.
@@ -149,7 +150,7 @@ int is_valid_symbol(const char *symbol, MacroTable *macro_table, SymbolTable *sy
 int find_number_of_lines_in_binary(Command *new_command);
 
 /**
- * Define the operand classification mode
+ * Define the operand classification mode, and remove un needed characters ('*' and 'r' from resisters and # from integers)
  * @param new_operand New given operand
  * @return 1 if there were no errors, else 0
  */
@@ -249,4 +250,15 @@ void handle_data_directive(char *line, Directive *new_directive, InstructionLine
  */
 Symbol *add_new_symbol(SymbolTable *symbol_table, char* symbol_name);
 
+/**
+ * Make final actions in run:
+ * 1. add to ic to all directory addresses because directories should be after command
+ * 2. Define final ic and dc in lines array
+ * 3. add entries to entries file
+ * @param lines_array
+ * @param ic
+ * @param dc
+ * @param file_number
+ */
+void final_actions(LinesArray *lines_array, int *ic, int *dc, int file_number);
 #endif //ASSEMBLER_FIRST_RUN_H

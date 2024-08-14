@@ -289,8 +289,10 @@ void fill_direct_binary(Operand *operand, char *binary_string, int binary_word_n
     int_to_binary_string(int_number_to_binary, binary_string, binary_word_number * BINARY_LINE_LENGTH, 12);
 
     if (symbol->is_extern) { // External symbol
-        if (binary_word_number == 2) {
+        if (binary_word_number == 1) {
             ic += 1;
+        } else if(binary_word_number == 2){
+            ic += 2;
         }
         add_extern_to_externals_file(symbol->name, file_number, ic);
         set_binary_string_ARE_representation(binary_string, binary_word_number + 1, 'e');

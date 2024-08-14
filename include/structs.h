@@ -103,6 +103,8 @@ typedef struct {
     int capacity;                            /**< The maximum capacity of the macro table. */
 } MacroTable;
 
+
+
 /**
  * Free the memory allocated for a LinesArray structure.
  * @param lines_array_pointer - Pointer to the LinesArray structure to be freed.

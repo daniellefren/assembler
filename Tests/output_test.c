@@ -46,35 +46,20 @@ int output_test() {
         // Run the assembler on the test file
         run_assembler_on_file(assembly_lines_array, symbol_table, input_code_fname, i + 1);
         printf("\nStarting comparing \n\n");
+
         printf("Compare object file\n");
         compare_output_files(i+1, test[i], output_code_fname, input_code_fname, output_correct_fname, OBJECTS_FILE_NAME, "/ps.ob");
+
         printf("\nCompare extern file\n");
         strcpy(input_code_fname, test[i]);
         strcat(input_code_fname, "/ps.ext");
         compare_output_files(i+1, test[i], output_code_fname, input_code_fname, output_correct_fname, EXTERNALS_FILE_NAME, "/ps.ext");
+
         printf("\nCompare entry file\n");
         strcpy(input_code_fname, test[i]);
         strcat(input_code_fname, "/ps.ent");
         compare_output_files(i+1, test[i], output_code_fname, input_code_fname, output_correct_fname, ENTRIES_FILE_NAME, "/ps.ent");
 
-
-        // Compare extern files
-//
-//        if (!open_two_files_and_compare(output_correct_fname, output_code_fname)) {
-//            printf("The output test Failed! \nFor input file %s and output extern file %s\n",
-//                   input_code_fname, output_code_fname);
-//            return 0;
-//        }
-//
-//        // Compare entry files
-//        strcpy(output_correct_fname, test[i]);
-//        strcat(output_correct_fname, "/ps.ent");
-//        add_number_to_string(output_code_fname, ENTRIES_FILE_NAME, i+1);
-//        if (!open_two_files_and_compare(output_correct_fname, output_code_fname)) {
-//            printf("The output test Failed! \nFor input file %s and output entry file %s\n",
-//                   input_code_fname, output_code_fname);
-//            return 0;
-//        }
     }
     return 1; // All tests passed
 }
@@ -111,5 +96,5 @@ int count_strings(char *strings[]) {
     while (strings[count] != NULL) {
         count++;
     }
-    return count; //TODO - why -1
+    return count - 1; //TODO - why -1
 }
