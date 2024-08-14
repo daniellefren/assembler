@@ -68,7 +68,7 @@ void fill_first_part_binary_opcode(InstructionLine *instruction_line, char *bina
     // Set the ARE (Addressing, Register, or External) representation in the binary string
     set_binary_string_ARE_representation(binary_string, binary_string_number, 'a');
     printf("The binary string with ARE is:                           %s \n", binary_string);
-    /* TODO wait for dani to swap src and dst operand when only 1 operand
+
     if (instruction_line->command->operand_number <= 0) {
         return; // No operands present, exit function
 
@@ -77,15 +77,6 @@ void fill_first_part_binary_opcode(InstructionLine *instruction_line, char *bina
 
     }
     second_operand_classification = instruction_line->command->dst_operand->classification_type; //1 operand can be just dst
-    */
-    if (instruction_line->command->operand_number > 0) {
-        first_operand_classification = instruction_line->command->src_operand->classification_type;
-    } else {
-        return; // No operands present, exit function
-    }
-    if (instruction_line->command->operand_number > 1) {
-        second_operand_classification = instruction_line->command->dst_operand->classification_type;
-    }
 
     // Convert operand classifications to their binary representation and update the binary string
     set_binary_string_operand_representation(first_operand_classification,
@@ -182,31 +173,75 @@ void set_binary_string_opcode_representation(int opcode_number, char *binary_str
 
 
 void fill_second_part_binary_opcode(InstructionLine *instruction_line, char *binary_string, SymbolTable *symbol_table) {
-    int operand_number;
-    Operand *src_operand;
-    Operand *dst_operand;
+    int operand_number;          // Number of operands in the instruction
+    Operand *src_operand;        // Pointer to the source operand
+    Operand *dst_operand;        // Pointer to the destination operand
+    int file_number;             // File number for tracking external symbols
+    int ic;                      // Instruction counter (starting address of the instruction)
 
+    // Initialize local variables from the instruction line
     operand_number = instruction_line->command->operand_number;
     src_operand = instruction_line->command->src_operand;
     dst_operand = instruction_line->command->dst_operand;
+    file_number = instruction_line->file_number;
+    ic = instruction_line->starting_address;
+
     // Process the binary representation based on the number of operands
     switch (operand_number) {
-        case 2:
-            // Process and append the binary representation for both source and destination operands
-            fill_operand_binary(src_operand, dst_operand, binary_string,
-                                SRC_OPERAND_NUMBER, instruction_line->starting_address, instruction_line->file_number, symbol_table);
-            fill_operand_binary(dst_operand, NULL, binary_string,
-                                DST_OPERAND_NUMBER, instruction_line->starting_address, instruction_line->file_number, symbol_table);
+        case 2: // Instruction has both source and destination operands
+            // Handle the source operand
+            switch (src_operand->classification_type) {
+                case IMMEDIATE:
+                    fill_immediate_binary(src_operand, binary_string, SRC_OPERAND_NUMBER);
+                    break;
+                case DIRECT:
+                    fill_direct_binary(src_operand, binary_string, SRC_OPERAND_NUMBER, ic, file_number, symbol_table);
+                    break;
+                case DIRECT_REGISTER:
+                case INDIRECT_REGISTER:
+                    fill_register_binary(src_operand, NULL, binary_string, SRC_OPERAND_NUMBER);
+                    break;
+                case METHOD_UNKNOWN:
+                    break;
+            }
+            // Handle the destination operand
+            switch (dst_operand->classification_type) {
+                case IMMEDIATE:
+                    fill_immediate_binary(dst_operand, binary_string, DST_OPERAND_NUMBER);
+                    break;
+                case DIRECT:
+                    fill_direct_binary(dst_operand, binary_string, DST_OPERAND_NUMBER, ic, file_number, symbol_table);
+                    break;
+                case DIRECT_REGISTER:
+                case INDIRECT_REGISTER:
+                    if (is_classification_type_register(src_operand->classification_type)) {
+                        // If both source and destination operands are registers, combine them in the same binary word
+                        fill_register_binary(NULL, dst_operand, binary_string, 1);
+                    } else {
+                        fill_register_binary(NULL, dst_operand, binary_string, DST_OPERAND_NUMBER);
+                    }
+                    break;
+                case METHOD_UNKNOWN:
+                    break;
+            }
             break;
-        case 1:
-            fill_operand_binary(src_operand, NULL, binary_string,
-                                SRC_OPERAND_NUMBER, instruction_line->starting_address, instruction_line->file_number, symbol_table);
-            /* TODO - use after dani swap src and dst
-            fill_operand_binary(dst_operand, NULL, binary_string,
-                                SRC_OPERAND_NUMBER, instruction_line->starting_address, instruction_line->file_number, symbol_table);
-            */
+        case 1: // Instruction has only a destination operand
+            switch (dst_operand->classification_type) {
+                case IMMEDIATE:
+                    fill_immediate_binary(dst_operand, binary_string, 1);
+                    break;
+                case DIRECT:
+                    fill_direct_binary(dst_operand, binary_string, 1, ic , file_number, symbol_table);
+                    break;
+                case DIRECT_REGISTER:
+                case INDIRECT_REGISTER:
+                    fill_register_binary(NULL, dst_operand, binary_string, 1);
+                    break;
+                case METHOD_UNKNOWN:
+                    break;
+            }
             break;
-        case 0:
+        case 0: // Instruction has no operands
             break;
         default:
             print_internal_error(ERROR_CODE_23, int_to_string(operand_number));
@@ -214,70 +249,75 @@ void fill_second_part_binary_opcode(InstructionLine *instruction_line, char *bin
     }
 }
 
-void fill_operand_binary(Operand *operand, Operand *second_operand, char *binary_string, int operand_number, int ic, int file_number, SymbolTable *symbol_table) { //TODO - Danielle added ic
-    int int_number_to_binary;
-    char *register_value;
-    Symbol *symbol;
+void fill_immediate_binary(Operand *operand, char *binary_string, int binary_word_number) {
+    int int_number_to_binary;  // Integer value to be converted to binary
 
-    // Handle the different operand classification types
-    switch (operand->classification_type) {
-        case IMMEDIATE:
-            // Convert immediate value to binary and update the binary string
-            int_number_to_binary = char_to_int(operand->value);
-            int_to_binary_string(int_number_to_binary, binary_string,
-                                 operand_number * BINARY_LINE_LENGTH, 12);
-            set_binary_string_ARE_representation(binary_string, operand_number + 1, 'a');
-            break;
-        case DIRECT:
-            symbol = find_symbol_by_name(symbol_table, operand->value);
-            // Convert symbol address to binary and update the binary string
-            int_number_to_binary = operand->symbol->address;
-            int_to_binary_string(int_number_to_binary, binary_string,
-                                 operand_number * BINARY_LINE_LENGTH, 12);
-            if (symbol->is_extern) { // external
-                if(operand_number == 2){
-                    ic+=1;
-                }
-                add_extern_to_externals_file(symbol->name, file_number, ic); // TODO - Add 0 in the beginning ov ic
-                set_binary_string_ARE_representation(binary_string, operand_number + 1, 'e');
-            } else { // internal
-                set_binary_string_ARE_representation(binary_string, operand_number + 1, 'r');
-            }
-            break;
-        case INDIRECT_REGISTER:
-        case DIRECT_REGISTER:
-            // Handle register operand TODO - need to swap here afte dani swap src and dst
-            register_value = operand->value;
-            if (operand_number == 1) { // Source operand
-                if (second_operand != NULL) {
-                    if ((second_operand->classification_type == INDIRECT_REGISTER) ||
-                        (second_operand->classification_type == DIRECT_REGISTER)) { // Both operands are registers
-                        register_to_binary_string(register_value, operand_number, binary_string,
-                                                  BINARY_LINE_LENGTH);
-                        register_value = second_operand->value;
-                        register_to_binary_string(register_value, operand_number + 1, binary_string,
-                                                  BINARY_LINE_LENGTH);
-                        set_binary_string_ARE_representation(binary_string,
-                                                             operand_number + 1,'a');
-                    } else { // Source operand with destination as direct or immediate
-                        register_to_binary_string(register_value, operand_number, binary_string,
-                                                  BINARY_LINE_LENGTH);
-                        set_binary_string_ARE_representation(binary_string,
-                                                             operand_number + 1,'a');
-                    }
-                }
-            } else { // Destination operand
-                int a_offset = (BINARY_LINE_LENGTH * operand_number) + 12;
-                if (binary_string[a_offset] == '0') { // The source operand wasn't a register
-                    register_to_binary_string(register_value, operand_number, binary_string, BINARY_LINE_LENGTH);
-                    set_binary_string_ARE_representation(binary_string, operand_number + 1, 'a');
-                }
-            }
-            break;
-        case METHOD_UNKNOWN:
-            // No action for unknown method
-            break;
+    if (operand == NULL) {
+        print_internal_error(ERROR_CODE_24, " Operand is empty");
+        return;
     }
+
+    // Convert the operand's immediate value from string to integer
+    int_number_to_binary = char_to_int(operand->value);
+
+    // Convert the integer to binary and store it in the binary string
+    int_to_binary_string(int_number_to_binary, binary_string, binary_word_number * BINARY_LINE_LENGTH, 12);
+
+    // Set the ARE (Absolute, Relocatable, External) bit for the binary word
+    set_binary_string_ARE_representation(binary_string, binary_word_number + 1, 'a');
+}
+
+
+void fill_direct_binary(Operand *operand, char *binary_string, int binary_word_number, int ic, int file_number, SymbolTable *symbol_table) {
+    Symbol *symbol;                // Pointer to the symbol associated with the operand
+    int int_number_to_binary;       // Integer value representing the symbol's address
+
+    if (operand == NULL) {
+        print_internal_error(ERROR_CODE_24, " Operand is empty");
+        return;
+    }
+    if (operand->symbol == NULL) {
+        print_internal_error(ERROR_CODE_51, " Symbol is empty");
+        return;
+    }
+
+    // Find the symbol by name in the symbol table
+    symbol = find_symbol_by_name(symbol_table, operand->value);
+
+    // Convert symbol address to binary and update the binary string
+    int_number_to_binary = operand->symbol->address;
+    int_to_binary_string(int_number_to_binary, binary_string, binary_word_number * BINARY_LINE_LENGTH, 12);
+
+    if (symbol->is_extern) { // External symbol
+        if (binary_word_number == 2) {
+            ic += 1;
+        }
+        add_extern_to_externals_file(symbol->name, file_number, ic);
+        set_binary_string_ARE_representation(binary_string, binary_word_number + 1, 'e');
+    } else { // Internal symbol
+        set_binary_string_ARE_representation(binary_string,
+                                             binary_word_number + 1, 'r');
+    }
+}
+
+void fill_register_binary(Operand *src_operand, Operand *dst_operand, char *binary_string, int binary_word_number) {
+    char *src_register_value;  // Value of the source register
+    char *dst_register_value;  // Value of the destination register
+
+    if (src_operand != NULL) {
+        src_register_value = src_operand->value;
+        register_to_binary_string(src_register_value, SRC_OPERAND_NUMBER, binary_string,
+                                  BINARY_LINE_LENGTH * binary_word_number);
+    }
+
+    if (dst_operand != NULL) {
+        dst_register_value = dst_operand->value;
+        register_to_binary_string(dst_register_value, DST_OPERAND_NUMBER, binary_string,
+                                  BINARY_LINE_LENGTH * binary_word_number);
+    }
+
+    // Set the ARE (Absolute, Relocatable, External) bit for the binary word
+    set_binary_string_ARE_representation(binary_string, binary_word_number + 1, 'a');
 }
 
 void register_to_binary_string(char *register_value, int operand_number, char *binary_string, int offset) {

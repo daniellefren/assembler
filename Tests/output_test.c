@@ -52,6 +52,10 @@ int output_test() {
         strcpy(input_code_fname, test[i]);
         strcat(input_code_fname, "/ps.ext");
         compare_output_files(i+1, test[i], output_code_fname, input_code_fname, output_correct_fname, EXTERNALS_FILE_NAME, "/ps.ext");
+        printf("\nCompare entry file\n");
+        strcpy(input_code_fname, test[i]);
+        strcat(input_code_fname, "/ps.ent");
+        compare_output_files(i+1, test[i], output_code_fname, input_code_fname, output_correct_fname, ENTRIES_FILE_NAME, "/ps.ent");
 
 
         // Compare extern files
@@ -107,5 +111,5 @@ int count_strings(char *strings[]) {
     while (strings[count] != NULL) {
         count++;
     }
-    return count - 1; //TODO - why -1
+    return count; //TODO - why -1
 }

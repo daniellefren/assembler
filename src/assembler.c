@@ -66,7 +66,6 @@ void run_assembler_on_file(LinesArray *assembly_lines_array, SymbolTable *symbol
     // Call the first_run function with the file pointer
     first_run(file, &ic, &dc, assembly_lines_array, symbol_table, file_number);
 
-//    test_all_run(assembly_lines_array); //TODO - delete
 
     // Close the file
     fclose(file);

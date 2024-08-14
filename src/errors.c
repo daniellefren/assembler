@@ -65,6 +65,7 @@ Error errors[] = {
 
         //Additional errors
         {ERROR_CODE_50, "Symbol is not valid -- Already exists"},
+        {ERROR_CODE_51, "Symbol is NUll"},
 
 
 };

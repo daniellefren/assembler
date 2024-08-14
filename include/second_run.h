@@ -54,18 +54,6 @@ void set_binary_string_opcode_representation(int opcode, char* binary_string);
  */
 void fill_first_part_binary_opcode(InstructionLine *instruction_line, char* binary_string);
 
-/**
- * Fills the second part of the binary representation for an opcode instruction line.
- * This function processes and adds the binary representation of operands to the `binary_string`
- * based on the number of operands present in the instruction. The length of the binary part depends on
- * the number of operands: 15 bits or 30 bits in total.
- *
- * @param instruction_line A pointer to the `InstructionLine` structure that contains the command details.
- *                         This includes information about the source and destination operands.
- * @param binary_string A pointer to a character array where the binary representation will be appended.
- *                      This array should be large enough to hold the additional binary data.
- */
-void fill_second_part_binary_opcode(InstructionLine *instruction_line, char* binary_string, SymbolTable *symbol_table);
 
 /**
  * Fills a binary string with '0' characters and null-terminates it.
@@ -150,4 +138,56 @@ void fill_binary_directive(InstructionLine *instruction_line, char *binary_strin
  *
  */
 void register_to_binary_string(char *register_value, int operand_number, char *binary_string, int offset);
+
+/**
+ * @brief Fills the binary opcode for the second part of an instruction.
+ *
+ * This function processes the operands in the `instruction_line` and fills the `binary_string`
+ * with the appropriate binary representation based on the operand types (immediate, direct, register, etc.).
+ *
+ * @param instruction_line Pointer to the instruction line containing operands and command details.
+ * @param binary_string Pointer to the string where the binary opcode will be stored.
+ * @param symbol_table Pointer to the symbol table for resolving direct operand addresses.
+ */
+void fill_second_part_binary_opcode(InstructionLine *instruction_line, char* binary_string, SymbolTable *symbol_table);
+
+/**
+ * @brief Fills the binary string with the immediate value from the operand.
+ *
+ * This function converts the immediate value of the operand to a binary string representation
+ * and stores it in the appropriate location within `binary_string`.
+ *
+ * @param operand Pointer to the operand containing the immediate value.
+ * @param binary_string Pointer to the string where the binary representation will be stored.
+ * @param binary_word_number The position in the binary string where the binary word should be stored.
+ */
+void fill_immediate_binary(Operand *operand, char *binary_string, int binary_word_number);
+
+/**
+ * @brief Fills the binary string with the address of a direct operand.
+ *
+ * This function retrieves the address of a symbol from the symbol table and converts it to binary.
+ * The binary representation is then stored in the appropriate location within `binary_string`.
+ *
+ * @param operand Pointer to the operand containing the symbol.
+ * @param binary_string Pointer to the string where the binary representation will be stored.
+ * @param binary_word_number The position in the binary string where the binary word should be stored.
+ * @param ic The instruction counter (starting address of the instruction).
+ * @param file_number The current file number, used for tracking external symbols.
+ * @param symbol_table Pointer to the symbol table for resolving symbols.
+ */
+void fill_direct_binary(Operand *operand, char *binary_string, int binary_word_number, int ic, int file_number, SymbolTable *symbol_table);
+
+/**
+ * @brief Fills the binary string with the register values of the source and/or destination operands.
+ *
+ * This function converts the register values of the source and destination operands to binary
+ * and stores them in the appropriate locations within `binary_string`.
+ *
+ * @param src_operand Pointer to the source operand (can be NULL if not applicable).
+ * @param dst_operand Pointer to the destination operand (can be NULL if not applicable).
+ * @param binary_string Pointer to the string where the binary representation will be stored.
+ * @param binary_word_number The position in the binary string where the binary word should be stored.
+ */
+void fill_register_binary(Operand *src_operand, Operand *dst_operand, char *binary_string, int binary_word_number);
 #endif //ASSEMBLER_SECOND_RUN_H
