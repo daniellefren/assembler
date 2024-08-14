@@ -38,12 +38,16 @@ int output_test() {
     // Iterate over each test case
     for (i = 0; i < number_of_tests; i++) {
         //Get input file name
+
         strcpy(input_code_fname, test[i]);
         strcat(input_code_fname, "/ps.as");
 
         // Run the assembler on the test file
         run_assembler_on_file(assembly_lines_array, symbol_table, input_code_fname, i + 1);
+        printf("\nStarting comparing \n\n");
+        printf("Compare object file\n");
         compare_output_files(i+1, test[i], output_code_fname, input_code_fname, output_correct_fname, OBJECTS_FILE_NAME, "/ps.ob");
+        printf("\nCompare extern file\n");
         strcpy(input_code_fname, test[i]);
         strcat(input_code_fname, "/ps.ext");
         compare_output_files(i+1, test[i], output_code_fname, input_code_fname, output_correct_fname, EXTERNALS_FILE_NAME, "/ps.ext");
@@ -97,11 +101,10 @@ int compare_output_files(int file_number, char* test_file_name, char* output_cod
  * @return The number of strings in the array.
  */
 int count_strings(char *strings[]) {
-    int count = 0;
-
+    int count;
+    count = 0;
     while (strings[count] != NULL) {
         count++;
     }
-
-    return count - 1;
+    return count; //TODO - why -1
 }
