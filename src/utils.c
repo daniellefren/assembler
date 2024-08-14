@@ -115,7 +115,8 @@ void erase_file_data(const char *filename) {
     fclose(file); // Closing the file truncates it to zero length
 }
 
-char* extract_numbers(const char *input, int length) {
+void extract_numbers(char *input, int length) {
+    printf("lengthhhh %d\n", length);
     char *q;
     const char *p = input;
     char *numbers;
@@ -143,8 +144,9 @@ char* extract_numbers(const char *input, int length) {
     }
 
     *q = '\0'; // Null-terminate the new string
+    strcpy(input, numbers);
 
-    return numbers;
+    free(numbers);
 }
 
 
