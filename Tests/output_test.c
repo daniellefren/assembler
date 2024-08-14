@@ -32,7 +32,7 @@ int output_test() {
 
     // Define the test cases
 
-    char *test[] = {"./Tests/Test_global"};
+    char *test[] = {"./Tests/Test_global", "./Tests/Test_entries", "./Tests/Test_externals"};
 
     number_of_tests = count_strings(test);
 
@@ -51,6 +51,8 @@ int output_test() {
         printf("Compare object file\n");
         compare_output_files(i+1, test[i], output_code_fname, input_code_fname, output_correct_fname, OBJECTS_FILE_NAME, "/ps.ob");
 
+
+        // TODO - compare only if exists
         printf("\nCompare extern file\n");
         strcpy(input_code_fname, test[i]);
         strcat(input_code_fname, "/ps.ext");
