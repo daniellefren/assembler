@@ -121,7 +121,7 @@ char* extract_numbers(const char *input, int length) {
     char *numbers;
 
     // Allocate memory for the new string
-    numbers = (char *)malloc(length + 1);
+    numbers = (char *)malloc((length + 1) * sizeof(char));
     if (numbers == NULL) {
         perror("Unable to allocate memory");
         exit(EXIT_FAILURE);
@@ -352,7 +352,6 @@ char* int_to_string(int number) {
         print_internal_error(ERROR_CODE_9, "");
         exit(EXIT_FAILURE);
     }
-    printf("???? %d", number);
     sprintf(str, "%d", number);
     return str;
 }

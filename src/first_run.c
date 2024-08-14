@@ -290,12 +290,13 @@ int handle_command(char *line, SymbolTable *symbol_table, MacroTable *macro_tabl
     get_operands_data_for_command(new_command->command_name, new_command);
 
     define_operands_from_line(new_command, line);
+
     if(new_command->operand_number >= 1){
-        success = define_operand_types(new_command->src_operand, macro_table, symbol_table);
-        success &= classify_operand(new_command->src_operand);
+        success = define_operand_types(new_command->dst_operand, macro_table, symbol_table);
+        success &= classify_operand(new_command->dst_operand);
         if(new_command->operand_number == 2){
-            success &= define_operand_types(new_command->dst_operand, macro_table, symbol_table);
-            success &= classify_operand(new_command->dst_operand);
+            success &= define_operand_types(new_command->src_operand, macro_table, symbol_table);
+            success &= classify_operand(new_command->src_operand);
         }
     }
 
@@ -326,7 +327,7 @@ void define_operands_from_line(Command *new_command, char* line){
             return;
         case 1:
             // Extract the first operand
-            sscanf(line, "%s", new_command->src_operand->value);
+            sscanf(line, "%s", new_command->dst_operand->value);
             return;
 
         case 2:
@@ -365,7 +366,7 @@ int define_operand_types(Operand *operand, MacroTable *macro_table, SymbolTable 
     operand->type = INVALID;
     if (operand->value[0] == '#') {
         // Check if the rest is a valid integer
-        length = check_if_valid_integer(operand->value + 1);
+        length = check_if_valid_integer(operand->value + 1); //The first is # so send the rest
 
         if(length){
             operand->type = INTEGER;
@@ -373,12 +374,11 @@ int define_operand_types(Operand *operand, MacroTable *macro_table, SymbolTable 
         }
     }
     else if (operand->value[0] == '*') {
-        if (operand->value[1] == 'r' && operand->value[2] >= '1' && operand->value[2] <= '7'){
+        if (operand->value[1] == 'r' && operand->value[2] >= '0' && operand->value[2] <= '7'){ //TODO - make const
             operand->type = REGISTER;
-            strcpy(operand->value, extract_numbers(operand->value, length));
         }
     }
-    else if (operand->value[0] == 'r' && operand->value[1] >= '1' && operand->value[1] <= '7'){
+    else if (operand->value[0] == 'r' && operand->value[1] >= '0' && operand->value[1] <= '7'){
         operand->type = REGISTER;
         strcpy(operand->value, extract_numbers(operand->value, length));
     }
@@ -464,8 +464,8 @@ int classify_operand(Operand *new_operand) {
     // Register indirect addressing - starts with *
     else if (new_operand->value[0] == '*' && new_operand->type == REGISTER) {
         new_operand->classification_type = INDIRECT_REGISTER; // Indirect Register addressing
-
         remove_first_character(new_operand->value);
+        strcpy(new_operand->value, extract_numbers(new_operand->value, sizeof(new_operand->value)));
 
     }
 

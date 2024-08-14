@@ -107,5 +107,5 @@ int count_strings(char *strings[]) {
     while (strings[count] != NULL) {
         count++;
     }
-    return count; //TODO - why -1
+    return count - 1; //TODO - why -1
 }
