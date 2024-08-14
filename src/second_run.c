@@ -59,8 +59,8 @@ void fill_instruction_line_binary(InstructionLine *instruction_line, SymbolTable
 
 void fill_first_part_binary_opcode(InstructionLine *instruction_line, char *binary_string) {
     int binary_string_number = 1; //first part binary
-    int first_operand_classification;
-    int second_operand_classification = -1; // Set to -1 to indicate no second operand if only one operand is present
+    int first_operand_classification = -1; // Set to -1 to indicate no second operand if only one operand is present
+    int second_operand_classification = -1;
 
     // Convert the opcode value to its binary representation and store it in binary_string
     set_binary_string_opcode_representation(instruction_line->command->opcode_command_type, binary_string);
@@ -68,7 +68,16 @@ void fill_first_part_binary_opcode(InstructionLine *instruction_line, char *bina
     // Set the ARE (Addressing, Register, or External) representation in the binary string
     set_binary_string_ARE_representation(binary_string, binary_string_number, 'a');
     printf("The binary string with ARE is:                           %s \n", binary_string);
+    /* TODO wait for dani to swap src and dst operand when only 1 operand
+    if (instruction_line->command->operand_number <= 0) {
+        return; // No operands present, exit function
 
+    } else if (instruction_line->command->operand_number > 1){ //2 operand mean src and dst
+        first_operand_classification = instruction_line->command->src_operand->classification_type;
+
+    }
+    second_operand_classification = instruction_line->command->dst_operand->classification_type; //1 operand can be just dst
+    */
     if (instruction_line->command->operand_number > 0) {
         first_operand_classification = instruction_line->command->src_operand->classification_type;
     } else {
@@ -77,6 +86,7 @@ void fill_first_part_binary_opcode(InstructionLine *instruction_line, char *bina
     if (instruction_line->command->operand_number > 1) {
         second_operand_classification = instruction_line->command->dst_operand->classification_type;
     }
+
     // Convert operand classifications to their binary representation and update the binary string
     set_binary_string_operand_representation(first_operand_classification,
                                              second_operand_classification, binary_string);
@@ -191,6 +201,10 @@ void fill_second_part_binary_opcode(InstructionLine *instruction_line, char *bin
         case 1:
             fill_operand_binary(src_operand, NULL, binary_string,
                                 SRC_OPERAND_NUMBER, instruction_line->starting_address, instruction_line->file_number, symbol_table);
+            /* TODO - use after dani swap src and dst
+            fill_operand_binary(dst_operand, NULL, binary_string,
+                                SRC_OPERAND_NUMBER, instruction_line->starting_address, instruction_line->file_number, symbol_table);
+            */
             break;
         case 0:
             break;
@@ -215,13 +229,12 @@ void fill_operand_binary(Operand *operand, Operand *second_operand, char *binary
             set_binary_string_ARE_representation(binary_string, operand_number + 1, 'a');
             break;
         case DIRECT:
-            symbol = find_symbol_by_name(symbol_table, operand->value); //TODO - danielle been here //////
+            symbol = find_symbol_by_name(symbol_table, operand->value);
             // Convert symbol address to binary and update the binary string
             int_number_to_binary = operand->symbol->address;
             int_to_binary_string(int_number_to_binary, binary_string,
                                  operand_number * BINARY_LINE_LENGTH, 12);
-
-            if (symbol->is_extern) { // external //TODO - danielle changed from here
+            if (symbol->is_extern) { // external
                 if(operand_number == 2){
                     ic+=1;
                 }
@@ -230,10 +243,10 @@ void fill_operand_binary(Operand *operand, Operand *second_operand, char *binary
             } else { // internal
                 set_binary_string_ARE_representation(binary_string, operand_number + 1, 'r');
             }
-            break; // TODO - until here
-        case INDIRECT_REGISTER: //TODO - why empty?
+            break;
+        case INDIRECT_REGISTER:
         case DIRECT_REGISTER:
-            // Handle register operand
+            // Handle register operand TODO - need to swap here afte dani swap src and dst
             register_value = operand->value;
             if (operand_number == 1) { // Source operand
                 if (second_operand != NULL) {
