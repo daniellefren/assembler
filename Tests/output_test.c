@@ -31,9 +31,10 @@ int output_test() {
 
     // Define the test cases
 
-    char *test[] = {"./Tests/Test_global"}; //TODO - fix global directory
+    char *test[] = {"./Tests/Test_global"};
 
     number_of_tests = count_strings(test);
+
 
     // Iterate over each test case
     for (i = 0; i < number_of_tests; i++) {
