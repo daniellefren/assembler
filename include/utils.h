@@ -207,7 +207,9 @@ char* int_to_string(int number);
  * @return 0 if the files are identical, 1 if they are different.
  */
 
-
+/**
+ * Removes trailing newline and carriage return characters from a string.
+ */
 void strip_newline(char *line); //TODO - add doco
 
 void print_current_directory(); //TODO - erase

@@ -299,8 +299,6 @@ int open_two_files_and_compare(char *file1_name, char *file2_name) {
         return 1;
     }
 
-//    remove_trailing_newline_from_file(file1_name);
-//    remove_trailing_newline_from_file(file2_name);
 
     file1 = open_file(file1_name, "r");
     file2 = open_file(file2_name, "r");
@@ -452,45 +450,4 @@ long get_file_size(FILE *file) {
         return -1;
     }
     return size;
-}
-
-void remove_trailing_newline_from_file(char *filename) {
-    FILE *file = fopen(filename, "r+");  // Open file for reading and writing
-    if (file == NULL) {
-        perror("Unable to open file");
-        return;
-    }
-
-    // Seek to the end of the file to find its size
-    if (fseek(file, 0, SEEK_END) != 0) {
-        perror("fseek error");
-        fclose(file);
-        return;
-    }
-
-    long file_size = ftell(file);  // Get current file position which is file size
-    if (file_size == -1) {
-        perror("ftell error");
-        fclose(file);
-        return;
-    }
-
-    // Read the file backwards to find the first non-newline character
-    while (file_size > 0) {
-        file_size--;
-        fseek(file, file_size, SEEK_SET);
-        char ch = fgetc(file);
-
-        if (ch != '\n' && ch != '\r') {
-            // Found a non-newline character
-            break;
-        }
-    }
-
-    // Truncate the file to remove the trailing newlines
-    if (ftruncate(fileno(file), file_size + 1) != 0) {
-        perror("ftruncate error");
-    }
-
-    fclose(file);
 }

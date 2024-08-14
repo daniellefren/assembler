@@ -73,7 +73,7 @@ int compare_output_files(int file_number, char* test_file_name, char* output_cod
     // Compare object files
     strcpy(output_correct_fname, test_file_name);
     strcat(output_correct_fname, correct_file_name_ending);
-    if (open_two_files_and_compare(output_correct_fname, output_code_fname)) {
+    if (open_two_files_and_compare(output_correct_fname, output_code_fname) == 0) {
         printf("The output test Failed! \nFor input file %s and output object file %s\n",
                input_code_fname, output_code_fname);
         return 0;
