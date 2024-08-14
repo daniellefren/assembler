@@ -120,7 +120,11 @@ void add_command_line_to_ob_file(InstructionLine *instructionLine, FILE *object_
         fill_octal_string_from_binary(instructionLine->binary_instruction, BINARY_WORD_LENGTH, i * BINARY_WORD_LENGTH, octal_number);
         printf("The address is %d and the octal number is %s\n", instruction_address, octal_number);
         if ((instruction_address < 1000) && (instruction_address > 99)){ //IC start from 100 so no need to add more then one 0 at the starts
-            fprintf(object_file, "0%d %s\n", instruction_address, octal_number);
+            fprintf(object_file, "0%d %s content - %s and binary -", instruction_address, octal_number, instructionLine->line_content);
+            for (int j = 0; j < 15; ++j) {
+                fprintf(object_file,"%c", instructionLine->binary_instruction[(i * BINARY_WORD_LENGTH) + j]);
+            }
+            fprintf(object_file, "\n");
         }
         else {
             fprintf(object_file, "%d %s\n", instruction_address, octal_number);
@@ -155,7 +159,11 @@ void add_directive_line_to_ob_file(InstructionLine *instructionLine, FILE *objec
         fill_octal_string_from_binary(instructionLine->binary_instruction, BINARY_WORD_LENGTH, i * BINARY_WORD_LENGTH, octal_number);
         printf("The address is %d and the octal number is %s\n", instruction_address, octal_number);
         if ((instruction_address < 1000) && (instruction_address > 99)){ //IC start from 100 so no need to add more then one 0 at the starts
-            fprintf(object_file, "0%d %s\n", instruction_address, octal_number);
+            fprintf(object_file, "0%d %s content - %s and binary - ", instruction_address, octal_number, instructionLine->line_content);
+            for (int j = 0; j < 15; ++j) {
+                fprintf(object_file,"%c", instructionLine->binary_instruction[(i * BINARY_WORD_LENGTH) + j]);
+            }
+            fprintf(object_file, "\n");
         }
         else {
             fprintf(object_file, "%d %s\n", instruction_address, octal_number);

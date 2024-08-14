@@ -16,15 +16,15 @@
 #define SRC_OPERAND_NUMBER 1
 #define DST_OPERAND_NUMBER 2
 #define ARE_STARTING_OFFSET 11
-#define SRC_REGISTER_OFFSET 6
-#define DST_REGISTER_OFFSET 9
+#define SRC_REGISTER_OFFSET 5
+#define DST_REGISTER_OFFSET 8
 #define BINARY_INSTRUCTION_MAX_LENGTH 46
 #define BINARY_LINE_LENGTH 15
 #define SYMBOL_NAME_LEN 15
 //#define EXTERNALS_FILE_NAME "output_files/externals.txt";
 
 static const char *COMMANDS[] = {
-        "mov", "cmp", "add", "sub", "not", "clr", "lea", "inc", "dec", "jmp", "bne",
+        "mov", "cmp", "add", "sub", "lea", "clr", "not", "inc", "dec", "jmp", "bne",
         "red", "prn", "jsr", "rts", "stop"
 };
 
