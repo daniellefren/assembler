@@ -27,18 +27,16 @@ int output_test() {
     SymbolTable *symbol_table;
 
     printf("Starting output tests\n");
-    print_current_directory();
-
 
     // Define the test cases
 
-    char *test[] = {"./Tests/Test_global", "./Tests/Test_entries", "./Tests/Test_externals"};
+    char *test[] = {"./Tests/Test_global", "./Tests/Test_entries", "./Tests/Test_externals", NULL};
 
     number_of_tests = count_strings(test);
-
     printf("number_of_tests %d", number_of_tests);
     // Iterate over each test case
     for (i = 0; i < number_of_tests; i++) {
+
         //Get input file name
 
         strcpy(input_code_fname, test[i]);
@@ -46,7 +44,7 @@ int output_test() {
 
         // Run the assembler on the test file
         run_assembler_on_file(assembly_lines_array, symbol_table, input_code_fname, i + 1);
-        printf("\nStarting comparing \n\n");
+        printf("\nStarting comparing test number %d\n\n", i);
 
         printf("Compare object file\n");
         compare_output_files(i+1, test[i], output_code_fname, input_code_fname, output_correct_fname, OBJECTS_FILE_NAME, "/ps.ob");
@@ -80,9 +78,8 @@ int compare_output_files(int file_number, char* test_file_name, char* output_cod
                input_code_fname, output_code_fname);
         return 0;
     }
-
+    return 1;
 }
-
 
 /**
  * @brief Counts the number of strings in a null-terminated array of strings.

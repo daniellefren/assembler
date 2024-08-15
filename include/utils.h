@@ -210,8 +210,6 @@ char* int_to_string(int number);
 /**
  * Removes trailing newline and carriage return characters from a string.
  */
-void strip_newline(char *line); //TODO - add doco
-
-void print_current_directory(); //TODO - erase
+void strip_newline(char *line);
 
 #endif //ASSEMBLER_UTILS_H

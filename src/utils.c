@@ -353,32 +353,6 @@ char* int_to_string(int number) {
     return str;
 }
 
-
-void print_current_directory(){
-    char *cwd;
-    size_t size = 1024;  // Initial buffer size
-
-    // Allocate memory for the buffer
-    cwd = (char *)malloc(size * sizeof(char));
-    if (cwd == NULL) {
-        print_internal_error(ERROR_CODE_9, "");
-        exit(EXIT_FAILURE);
-    }
-
-    // Get the current working directory
-    if (getcwd(cwd, size) == NULL) {
-        perror("getcwd error");
-        free(cwd);
-        return;
-    }
-
-    // Print the current working directory
-    printf("Current working directory: %s\n", cwd);
-
-    // Free the allocated buffer
-    free(cwd);
-}
-
 void strip_newline(char *line) {
     size_t len = strlen(line);
     if (len > 0 && line[len - 1] == '\n') {
