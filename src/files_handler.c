@@ -112,7 +112,7 @@ void add_command_line_to_ob_file(InstructionLine *instructionLine, FILE *object_
 
     instruction_address = instructionLine->starting_address;
     if (instructionLine->instruction_type != COMMAND){
-        perror("Error: this instruction line is not a command"); // TODO - all perrors must be in the errors format!
+        print_internal_error(ERROR_CODE_57, "");
         exit(EXIT_FAILURE);
     }
     // Loop through each binary line in the instruction
@@ -141,6 +141,7 @@ void add_directive_line_to_ob_file(InstructionLine *instructionLine, FILE *objec
     int i;
     char *octal_number;            // Pointer to hold the octal string representation of the binary instruction
     int instruction_address;       // Variable to store the starting address of the instruction
+    char *padded_instruction_address = malloc(sizeof(char) *5);
 
     // Allocate memory for the octal number string (5 digits + null terminator)
     octal_number = (char *)malloc((OCTAL_LENGTH + 1) * sizeof(char));
@@ -151,7 +152,7 @@ void add_directive_line_to_ob_file(InstructionLine *instructionLine, FILE *objec
 
     instruction_address = instructionLine->starting_address;
     if (instructionLine->instruction_type != DATA_DIRECTIVE){
-        perror("Error: this instruction line is not a data directive");
+        print_internal_error(ERROR_CODE_57, "");
         exit(EXIT_FAILURE);
     }
 
@@ -159,17 +160,14 @@ void add_directive_line_to_ob_file(InstructionLine *instructionLine, FILE *objec
     for (i = 0; i < instructionLine->binary_line_count; ++i) {
         // Convert the binary instruction to an octal string
         fill_octal_string_from_binary(instructionLine->binary_instruction, BINARY_WORD_LENGTH, i * BINARY_WORD_LENGTH, octal_number);
-        printf("The address is %d and the octal number is %s\n", instruction_address, octal_number);
-        if ((instruction_address < 1000) && (instruction_address > 99)){ //IC start from 100 so no need to add more then one 0 at the starts
-            fprintf(object_file, "0%d %s content - %s and binary - ", instruction_address, octal_number, instructionLine->line_content);
-            for (int j = 0; j < 15; ++j) {
-                fprintf(object_file,"%c", instructionLine->binary_instruction[(i * BINARY_WORD_LENGTH) + j]);
-            }
-            fprintf(object_file, "\n");
+        strcpy(padded_instruction_address, pad_address(instruction_address));
+        printf("The address is %s and the octal number is %s\n", padded_instruction_address, octal_number);
+
+        fprintf(object_file, "%s %s content - %s and binary - ", padded_instruction_address, octal_number, instructionLine->line_content);
+        for (int j = 0; j < 15; ++j) {
+            fprintf(object_file,"%c", instructionLine->binary_instruction[(i * BINARY_WORD_LENGTH) + j]);
         }
-        else {
-            fprintf(object_file, "%d %s\n", instruction_address, octal_number);
-        }
+        fprintf(object_file, "\n");
         instruction_address += 1;
     }
 }
@@ -191,7 +189,7 @@ void add_entry_to_entries_file(char *symbol_name, int file_number, int symbol_ad
     strcpy(new_ic, pad_address(symbol_address));
 
     fprintf(file, "%s %s\n", symbol_name, new_ic);
-
+    free(new_ic);
     fclose(file);
 }
 
@@ -201,7 +199,6 @@ void add_extern_to_externals_file(char *symbol_name, int file_number, int ic){
     char externals_file_name[100];
     char *new_ic = malloc(sizeof(char) *5);
     add_number_to_string(externals_file_name, sizeof(externals_file_name), EXTERNALS_FILE_NAME, file_number);
-
     strcpy(new_ic, pad_address(ic));
 
     if(search_in_file(externals_file_name, new_ic)){
@@ -214,11 +211,11 @@ void add_extern_to_externals_file(char *symbol_name, int file_number, int ic){
         exit(EXIT_FAILURE);
     }
     fprintf(file, "%s %s\n", symbol_name, new_ic);
-
+    free(new_ic);
     fclose(file);
 }
 
-char *pad_address(int address){ //TODO - david should add to his code
+char *pad_address(int address){
     char *new_address = malloc(sizeof(char) *5);
     if ((address < 1000) && (address >= 99)){
         new_address[0] = '0';
@@ -303,7 +300,6 @@ int open_two_files_and_compare(char *file1_name, char *file2_name) {
     file1 = open_file(file1_name, "r");
     file2 = open_file(file2_name, "r");
 
-//    printf("The size of file 1 is %lu and the size of file 2 is %lu\n", get_file_size(file1), get_file_size(file2)); //TODO - not interesting, erase
     result = compare_files(file1, file2); //return 0 for different
     fclose(file1);
     fclose(file2);

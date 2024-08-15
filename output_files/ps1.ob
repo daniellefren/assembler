@@ -1,85 +1,78 @@
-  33 9
+  25 14
 0100 12024 content - MAIN: add r3, LIST
  and binary -001010000010100
 0101 00304 content - MAIN: add r3, LIST
  and binary -000000011000100
 0102 00002 content - MAIN: add r3, LIST
  and binary -000000000000010
-0103 64024 content - jsr fn1
- and binary -110100000010100
-0104 00001 content - jsr fn1
- and binary -000000000000001
-0105 60014 content - LOOP: prn #48
+0103 60014 content - LOOP: prn #48
  and binary -110000000001100
-0106 00604 content - LOOP: prn #48
+0104 00604 content - LOOP: prn #48
  and binary -000000110000100
-0107 20504 content - lea STR, r6
+0105 20504 content - lea STR, r6
  and binary -010000101000100
-0108 00002 content - lea STR, r6
+0106 00002 content - lea STR, r6
  and binary -000000000000010
-0109 00064 content - lea STR, r6
+0107 00064 content - lea STR, r6
  and binary -000000000110100
-0110 34104 content - inc r6
+0108 34104 content - inc r6
  and binary -011100001000100
-0111 00064 content - inc r6
+0109 00064 content - inc r6
  and binary -000000000110100
-0112 01024 content - mov *r6, L3
+0110 01024 content - mov *r6,K
  and binary -000001000010100
-0113 00604 content - mov *r6, L3
+0111 00604 content - mov *r6,K
  and binary -000000110000100
-0114 00001 content - mov *r6, L3
- and binary -000000000000001
-0115 16104 content - sub r1, r4
+0112 00002 content - mov *r6,K
+ and binary -000000000000010
+0113 16104 content - sub r1, r4
  and binary -001110001000100
-0116 00144 content - sub r1, r4
+0114 00144 content - sub r1, r4
  and binary -000000001100100
-0117 06014 content - cmp r3, #-6
+0115 06014 content - cmp r3, #-6
  and binary -000110000001100
-0118 00304 content - cmp r3, #-6
+0116 00304 content - cmp r3, #-6
  and binary -000000011000100
-0119 77724 content - cmp r3, #-6
+0117 77724 content - cmp r3, #-6
  and binary -111111111010100
-0120 50024 content - bne END
+0118 50024 content - bne end
  and binary -101000000010100
-0121 00002 content - bne END
- and binary -000000000000010
-0122 12044 content - add r7, *r6
- and binary -001010000100100
-0123 00764 content - add r7, *r6
- and binary -000000111110100
-0124 00000 content - add r7, *r6
+0119 00000 content - bne end
  and binary -000000000000000
-0125 24024 content - clr K
- and binary -010100000010100
-0126 00002 content - clr K
+0120 40024 content - dec K
+ and binary -100000000010100
+0121 00002 content - dec K
  and binary -000000000000010
-0127 14424 content - sub L3, L3
- and binary -001100100010100
-0128 00001 content - sub L3, L3
- and binary -000000000000001
-0129 00001 content - sub L3, L3
- and binary -000000000000001
-0130 44024 content - jmp LOOP
+0122 44024 content - jmp LOOP
  and binary -100100000010100
-0131 00002 content - jmp LOOP
+0123 00002 content - jmp LOOP
  and binary -000000000000010
-0132 74004 content - END: stop
+0124 74004 content - END: stop
  and binary -111100000000100
-0133 00141 content - STR: .string "abcd"
+0125 00141 content - STR1: .string "abcd"
  and binary - 000000001100001
-0134 00142 content - STR: .string "abcd"
+0126 00142 content - STR1: .string "abcd"
  and binary - 000000001100010
-0135 00143 content - STR: .string "abcd"
+0127 00143 content - STR1: .string "abcd"
  and binary - 000000001100011
-0136 00144 content - STR: .string "abcd"
+0128 00144 content - STR1: .string "abcd"
  and binary - 000000001100100
-0137 00000 content - STR: .string "abcd"
+0129 00000 content - STR1: .string "abcd"
  and binary - 000000000000000
-0138 00006 content - LIST: .data 6, -9
+0130 00141 content - STR: .string "abcd"
+ and binary - 000000001100001
+0131 00142 content - STR: .string "abcd"
+ and binary - 000000001100010
+0132 00143 content - STR: .string "abcd"
+ and binary - 000000001100011
+0133 00144 content - STR: .string "abcd"
+ and binary - 000000001100100
+0134 00000 content - STR: .string "abcd"
+ and binary - 000000000000000
+0135 00006 content - LIST: .data 6, -9
  and binary - 000000000000110
-0139 77767 content - LIST: .data 6, -9
+0136 77767 content - LIST: .data 6, -9
  and binary - 111111111110111
-0140 77634 content - .data -100
+0137 77634 content - .data -100
  and binary - 111111110011100
-0141 00037 content - K: .data 31
- and binary - 000000000011111
+0138 00037 content - K:  .data 31 and binary - 000000000011111

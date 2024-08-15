@@ -24,7 +24,6 @@ void start_second_run(LinesArray *assembly_lines_array, int file_number, SymbolT
         fill_instruction_line_binary(p_line, symbol_table);
         print_instruction_line(p_line);
     }
-
     create_ob_file(assembly_lines_array, file_number);
 }
 
@@ -283,7 +282,10 @@ void fill_direct_binary(Operand *operand, char *binary_string, int binary_word_n
 
     // Find the symbol by name in the symbol table
     symbol = find_symbol_by_name(symbol_table, operand->value);
-
+    if (symbol == NULL){
+        print_internal_error(ERROR_CODE_51, " Symbol is empty");
+        return;
+    }
     // Convert symbol address to binary and update the binary string
     int_number_to_binary = operand->symbol->address;
     int_to_binary_string(int_number_to_binary, binary_string, binary_word_number * BINARY_LINE_LENGTH, 12);

@@ -19,7 +19,6 @@
  */
 
 int main(int argc, char *argv[]) {
-    //TODO - delete all output files from the previouse run
     LinesArray *assembly_lines_array = NULL;
     SymbolTable *symbol_table = NULL;
     int file_number;
@@ -33,10 +32,6 @@ int main(int argc, char *argv[]) {
     }
 
     add_output_directory();
-
-//    char *output_directory_name;
-//    strcpy(output_directory_name, OUTPUT_DIRECTORY_NAME);
-//    strcat(output_directory_name, '/')
     delete_files_in_directory(OUTPUT_DIRECTORY_NAME);
 
     if(strcmp(argv[1], "test") == 0){

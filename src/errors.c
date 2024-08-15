@@ -71,6 +71,8 @@ Error errors[] = {
         {ERROR_CODE_54, "got a null file pointer"},
         {ERROR_CODE_55, "Unable to allocate memory for octal_number"},
         {ERROR_CODE_56, "Unable to create directory"},
+        {ERROR_CODE_57, "this instruction line is not a command"},
+        {ERROR_CODE_58, "this instruction line is not a data directive"}
 
 
 };
