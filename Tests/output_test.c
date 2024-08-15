@@ -1,9 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
-#include <limits.h>
-#include <stdio.h>
-#include <unistd.h>  // for getcwd
+
 
 #include "output_test.h"
 #include "../include/assembler.h"

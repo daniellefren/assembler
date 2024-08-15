@@ -51,7 +51,7 @@ This pass is crucial for creating the final machine code that can be executed by
 ### Installation
 1. Clone the Labratory-C-Final-Project repository:
 ```sh
-git clone https://github.com/daniellefren/assembler.git
+git clone git@github.com:daniellefren/assembler.git
 ```
 2. Change to the project directory:
 ```sh
@@ -62,13 +62,23 @@ cd assembler
 make
 ```
 ### Usage
-In order to run the compiled program you should run the following command `./assembler file_name_1 ... file_name_n`
-This will create all the output files in the `output_files\` directory.
-For each file from the input files, will be created (for the i file):
-1. `expanded_macros{i}.am` (The src file after the pre-assembler)
-2. `ps{i}.ent` (All the entries)
-3. `ps{i}.ext` (All the externals)
-4. `ps{i}.ob` (Final binary file)
+In order to run the compiled program you need to follow this steps
+1. put your .as files in the input directory:
+```sh
+cd input_files
+touch <your_file_name>.as
+cd ..
+```
+2. Then run the following command - This will create all the output files in the `output_files\` directory.
+```sh
+./assembler file_name_1 ... file_name_n
+```
+
+For each file from the input files, will be created:
+1. `<your_file_name>.am` (The src file after the pre-assembler)
+2. `<your_file_name>.ent` (All the entries)
+3. `<your_file_name>.ext` (All the externals)
+4. `<your_file_name>.ob` (Final object file)
 
 ### Testing
 Several input assembly files are provided, with different command and directives in order to present the assembler work properly.
@@ -77,6 +87,7 @@ In order to run all Tests, you should run the program the following way -
 ```sh
 ./assembler test
 ```
+if you get the messege `All Tests Passed!!!` well, you can guess what that means
 
 # Royi David and Danielle Frenklakh ©
 

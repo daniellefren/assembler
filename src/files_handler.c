@@ -15,14 +15,13 @@ void create_ob_file(LinesArray *linesArray, char* file_name){
     int number_of_command;
     int number_of_directive;
     FILE *object_file;
+    printf("\nStarting to create object file\n");
 
     if (linesArray == NULL){
         print_internal_error(ERROR_CODE_28, "");
         exit(EXIT_FAILURE);
     }
 
-    // Generate the object file name with the file number appended
-//    add_number_to_string(ob_file_name, sizeof(ob_file_name), OBJECTS_FILE_NAME, file_number);
     get_output_filename(ob_file_name, ob_file_name_with_directive, OBJECT_FILE_EXTENSION, file_name);
 
     object_file = open_ob_file(ob_file_name_with_directive);
@@ -32,7 +31,7 @@ void create_ob_file(LinesArray *linesArray, char* file_name){
     add_first_line_to_ob_file(number_of_command, number_of_directive, object_file);
     add_all_command_lines_to_ob_file(linesArray, object_file);
     add_all_directive_lines_to_ob_file(linesArray, object_file);
-    printf("Finished creating object file\n");
+    printf("Finished creating object file!\n");
     fclose(object_file);
 }
 
@@ -72,8 +71,6 @@ void add_all_command_lines_to_ob_file(LinesArray *lines_array, FILE *object_file
         }
 
         if (p_line->instruction_type == COMMAND) {
-            printf("Starting to insert command to object file address=%d, binary=%d, content=%s\n",
-                   p_line->starting_address, p_line->binary_line_count, p_line->line_content);
             add_command_line_to_ob_file(p_line, object_file);
         }
     }
@@ -92,8 +89,6 @@ void add_all_directive_lines_to_ob_file(LinesArray *lines_array, FILE *object_fi
         }
 
         if (lines_array->lines[i]->instruction_type == DATA_DIRECTIVE) {
-           printf("Starting to insert directive to object file address=%d, binary=%d, content=%s\n",
-                   p_line->starting_address, p_line->binary_line_count, p_line->line_content);
            add_directive_line_to_ob_file(p_line, object_file);
         }
     }
@@ -123,13 +118,8 @@ void add_command_line_to_ob_file(InstructionLine *instructionLine, FILE *object_
 
         // Convert the binary instruction to an octal string
         fill_octal_string_from_binary(instructionLine->binary_instruction, BINARY_WORD_LENGTH, i * BINARY_WORD_LENGTH, octal_number);
-        printf("The address is %d and the octal number is %s\n", instruction_address, octal_number);
         if ((instruction_address < 1000) && (instruction_address > 99)){ //IC start from 100 so no need to add more then one 0 at the starts
-            fprintf(object_file, "0%d %s content - %s and binary -", instruction_address, octal_number, instructionLine->line_content);
-            for (int j = 0; j < 15; ++j) {
-                fprintf(object_file,"%c", instructionLine->binary_instruction[(i * BINARY_WORD_LENGTH) + j]);
-            }
-            fprintf(object_file, "\n");
+            fprintf(object_file, "0%d %s\n", instruction_address, octal_number);
         }
         else {
             fprintf(object_file, "%d %s\n", instruction_address, octal_number);
@@ -164,13 +154,8 @@ void add_directive_line_to_ob_file(InstructionLine *instructionLine, FILE *objec
         // Convert the binary instruction to an octal string
         fill_octal_string_from_binary(instructionLine->binary_instruction, BINARY_WORD_LENGTH, i * BINARY_WORD_LENGTH, octal_number);
         strcpy(padded_instruction_address, pad_address(instruction_address));
-        printf("The address is %s and the octal number is %s\n", padded_instruction_address, octal_number);
 
-        fprintf(object_file, "%s %s content - %s and binary - ", padded_instruction_address, octal_number, instructionLine->line_content);
-        for (int j = 0; j < 15; ++j) {
-            fprintf(object_file,"%c", instructionLine->binary_instruction[(i * BINARY_WORD_LENGTH) + j]);
-        }
-        fprintf(object_file, "\n");
+        fprintf(object_file, "%s %s\n", padded_instruction_address, octal_number);
         instruction_address += 1;
     }
 }
@@ -322,10 +307,11 @@ int open_two_files_and_compare(char *file1_name, char *file2_name) {
     int result;
     FILE *file1;
     FILE *file2;
-
-    if(file_exists(file1_name) == 0 || file_exists(file1_name) == 0){
+    printf("***PROBLEM HERE!!!\n");
+    if(file_exists(file1_name) == 0 || file_exists(file1_name) == 0){ //TODO Fix the problem with names of the files
         return 1;
     }
+    printf("***PROBLEM HERE!!!\n");
 
 
     file1 = open_file(file1_name, "r");
