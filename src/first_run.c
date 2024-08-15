@@ -32,11 +32,13 @@ Command COMMANDS_STRUCT[] = {
 };
 
 
-void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTable *symbol_table, int file_number) {
+void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTable *symbol_table, int file_number, char* file_name) {
     int success;
     char line[MAX_LINE_LENGTH];
     char *macro_names[MAX_MACRO_NAMES];  // Array to store pointers to macro names
-    char expended_macro_file_name[100];
+    char expended_macro_file_name[MAX_FILE_NAME_LEN];
+    char expended_macro_file_name_with_directive[MAX_FILE_NAME_LEN];
+    char src_file_name[MAX_FILE_NAME_LEN];
     MacroTable macro_table;
     FILE *expanded_macros_file;
     int line_num;
@@ -49,24 +51,26 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
 
     rewind(file); // Reset file pointer to the beginning before calling pre_run
 
+    strcpy(src_file_name, get_filename(file_name));
+
     //add file num to expended_macro_file_name to make new file for the assembly input file
-    add_number_to_string(expended_macro_file_name, sizeof(expended_macro_file_name), EXPANDED_MACRO_FILE_NAME, file_number);
+    get_output_filename(expended_macro_file_name, expended_macro_file_name_with_directive, EXPENDED_MACROS_EXTENSION, src_file_name);
 
     //Pre run in order to expand macros from asse,bly input file
-    success = pre_run(&macro_table, macro_names, file, expended_macro_file_name); // Keeps track of the number of encountered macros
+    success = pre_run(&macro_table, macro_names, file, expended_macro_file_name_with_directive); // Keeps track of the number of encountered macros
 
-    expanded_macros_file = fopen(expended_macro_file_name, "r");
+    expanded_macros_file = fopen(expended_macro_file_name_with_directive, "r");
     line_num = 0;
     while (fgets(line, MAX_LINE_LENGTH, expanded_macros_file) != NULL) {
         if (!ignore_line(line)) {
-            success &= read_line(line, symbol_table, ic, dc, lines_array, &macro_table, file_number);
+            success &= read_line(line, symbol_table, ic, dc, lines_array, &macro_table, file_number, src_file_name);
         }
         line_num++;
     }
 
     fclose(file);
 
-    final_actions(lines_array, ic, dc, file_number);
+    final_actions(lines_array, ic, dc);
 
 
     //Declare final ic and dc in lines array
@@ -88,7 +92,7 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
 }
 
 
-void final_actions(LinesArray *lines_array, int *ic, int *dc, int file_number){
+void final_actions(LinesArray *lines_array, int *ic, int *dc){
     int i;
     for(i = 0;i<lines_array->number_of_line;i++){
         InstructionLine *instruction_line = lines_array->lines[i];
@@ -100,7 +104,7 @@ void final_actions(LinesArray *lines_array, int *ic, int *dc, int file_number){
         }
         if(instruction_line->is_symbol){
             if(instruction_line->symbol->is_entry){
-                add_entry_to_entries_file(instruction_line->symbol->name, file_number, instruction_line->starting_address);
+                add_entry_to_entries_file(instruction_line->symbol->name, instruction_line->file_name, instruction_line->starting_address);
             }
         }
     }
@@ -213,7 +217,8 @@ void expand_macro(const Macro *macro, FILE *outputFile) {
     }
 }
 
-int read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, LinesArray *lines_array, MacroTable *macro_table, int file_number) {
+int read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, LinesArray *lines_array, MacroTable *macro_table, int file_number, char *file_name) {
+    printf("filenameee %s\n", file_name);
     char symbol_name[MAX_SYMBOL_LENGTH] = "";
     int has_symbol;
     Symbol *new_symbol;
@@ -226,7 +231,7 @@ int read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, LinesArra
 
     line = skip_spaces(line);
 
-    new_instruction_line = init_instruction_line(line, file_number);
+    new_instruction_line = init_instruction_line(line, file_number, file_name);
 
     has_symbol = find_symbol(line, symbol_name);
 
@@ -320,12 +325,25 @@ int handle_command(char *line, SymbolTable *symbol_table, MacroTable *macro_tabl
         }
     }
 
+    is_valid_command_line(new_command);
+
     new_instruction_line->binary_line_count = find_number_of_lines_in_binary(new_command);
     new_instruction_line->command = new_command;
 
 
 
     return success;
+}
+
+int is_valid_command_line(Command *new_command){
+    switch (new_command->opcode_command_type) {
+        case MOV:
+        {
+
+            break;
+        }
+
+    }
 }
 
 void define_operands_from_line(Command *new_command, char* line){

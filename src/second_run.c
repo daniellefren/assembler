@@ -8,7 +8,7 @@
 #include "../include/errors.h"
 
 
-void start_second_run(LinesArray *assembly_lines_array, int file_number, SymbolTable *symbol_table){
+void start_second_run(LinesArray *assembly_lines_array, int file_number, SymbolTable *symbol_table, char* file_name){
     int i;
     InstructionLine *p_line;
 
@@ -24,7 +24,7 @@ void start_second_run(LinesArray *assembly_lines_array, int file_number, SymbolT
         fill_instruction_line_binary(p_line, symbol_table);
         print_instruction_line(p_line);
     }
-    create_ob_file(assembly_lines_array, file_number);
+    create_ob_file(assembly_lines_array, get_filename(file_name));
 }
 
 void fill_instruction_line_binary(InstructionLine *instruction_line, SymbolTable *symbol_table){
@@ -177,12 +177,14 @@ void fill_second_part_binary_opcode(InstructionLine *instruction_line, char *bin
     Operand *dst_operand;        // Pointer to the destination operand
     int file_number;             // File number for tracking external symbols
     int ic;                      // Instruction counter (starting address of the instruction)
+    char file_name[100];
 
     // Initialize local variables from the instruction line
     operand_number = instruction_line->command->operand_number;
     src_operand = instruction_line->command->src_operand;
     dst_operand = instruction_line->command->dst_operand;
     file_number = instruction_line->file_number;
+    strcpy(file_name, instruction_line->file_name);
     ic = instruction_line->starting_address;
 
     // Process the binary representation based on the number of operands
@@ -194,7 +196,7 @@ void fill_second_part_binary_opcode(InstructionLine *instruction_line, char *bin
                     fill_immediate_binary(src_operand, binary_string, SRC_OPERAND_NUMBER);
                     break;
                 case DIRECT:
-                    fill_direct_binary(src_operand, binary_string, SRC_OPERAND_NUMBER, ic, file_number, symbol_table);
+                    fill_direct_binary(src_operand, binary_string, SRC_OPERAND_NUMBER, ic, file_number, symbol_table, file_name);
                     break;
                 case DIRECT_REGISTER:
                 case INDIRECT_REGISTER:
@@ -209,7 +211,7 @@ void fill_second_part_binary_opcode(InstructionLine *instruction_line, char *bin
                     fill_immediate_binary(dst_operand, binary_string, DST_OPERAND_NUMBER);
                     break;
                 case DIRECT:
-                    fill_direct_binary(dst_operand, binary_string, DST_OPERAND_NUMBER, ic, file_number, symbol_table);
+                    fill_direct_binary(dst_operand, binary_string, DST_OPERAND_NUMBER, ic, file_number, symbol_table, file_name);
                     break;
                 case DIRECT_REGISTER:
                 case INDIRECT_REGISTER:
@@ -230,7 +232,7 @@ void fill_second_part_binary_opcode(InstructionLine *instruction_line, char *bin
                     fill_immediate_binary(dst_operand, binary_string, 1);
                     break;
                 case DIRECT:
-                    fill_direct_binary(dst_operand, binary_string, 1, ic , file_number, symbol_table);
+                    fill_direct_binary(dst_operand, binary_string, 1, ic , file_number, symbol_table, file_name);
                     break;
                 case DIRECT_REGISTER:
                 case INDIRECT_REGISTER:
@@ -267,7 +269,7 @@ void fill_immediate_binary(Operand *operand, char *binary_string, int binary_wor
 }
 
 
-void fill_direct_binary(Operand *operand, char *binary_string, int binary_word_number, int ic, int file_number, SymbolTable *symbol_table) {
+void fill_direct_binary(Operand *operand, char *binary_string, int binary_word_number, int ic, int file_number, SymbolTable *symbol_table, char* file_name) {
     Symbol *symbol;                // Pointer to the symbol associated with the operand
     int int_number_to_binary;       // Integer value representing the symbol's address
 
@@ -296,7 +298,7 @@ void fill_direct_binary(Operand *operand, char *binary_string, int binary_word_n
         } else if(binary_word_number == 2){
             ic += 2;
         }
-        add_extern_to_externals_file(symbol->name, file_number, ic);
+        add_extern_to_externals_file(symbol->name, file_name, ic);
         set_binary_string_ARE_representation(binary_string, binary_word_number + 1, 'e');
     } else { // Internal symbol
         set_binary_string_ARE_representation(binary_string,

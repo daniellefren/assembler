@@ -9,8 +9,9 @@
 #include "../include/files_handler.h"
 #include "../include/errors.h"
 
-void create_ob_file(LinesArray *linesArray, int file_number){
-    char ob_file_name[100];
+void create_ob_file(LinesArray *linesArray, char* file_name){
+    char ob_file_name[MAX_FILE_NAME_LEN];
+    char ob_file_name_with_directive[MAX_FILE_NAME_LEN];
     int number_of_command;
     int number_of_directive;
     FILE *object_file;
@@ -21,8 +22,10 @@ void create_ob_file(LinesArray *linesArray, int file_number){
     }
 
     // Generate the object file name with the file number appended
-    add_number_to_string(ob_file_name, sizeof(ob_file_name), OBJECTS_FILE_NAME, file_number);
-    object_file = open_ob_file(ob_file_name);
+//    add_number_to_string(ob_file_name, sizeof(ob_file_name), OBJECTS_FILE_NAME, file_number);
+    get_output_filename(ob_file_name, ob_file_name_with_directive, OBJECT_FILE_EXTENSION, file_name);
+
+    object_file = open_ob_file(ob_file_name_with_directive);
     number_of_command = linesArray->ic - STARTING_IC;
     number_of_directive = linesArray->dc;
 
@@ -172,17 +175,19 @@ void add_directive_line_to_ob_file(InstructionLine *instructionLine, FILE *objec
     }
 }
 
-void add_entry_to_entries_file(char *symbol_name, int file_number, int symbol_address){
-    char entries_file_name[100];
+void add_entry_to_entries_file(char *symbol_name, char* file_name, int symbol_address){
+    char entries_file_name[MAX_FILE_NAME_LEN];
+    char entries_file_name_and_directive[MAX_FILE_NAME_LEN];
     FILE *file;
+    get_output_filename(entries_file_name, entries_file_name_and_directive, ENTRIES_FILE_EXTENSION, file_name);
 
-    add_number_to_string(entries_file_name, sizeof(entries_file_name), ENTRIES_FILE_NAME, file_number);
-    file = fopen(entries_file_name, "a");
+
+    file = fopen(entries_file_name_and_directive, "a");
     if (file == NULL) {
-        print_internal_error(ERROR_CODE_48, entries_file_name);
+        print_internal_error(ERROR_CODE_48, entries_file_name_and_directive);
         exit(EXIT_FAILURE);
     }
-    if(search_in_file(entries_file_name, symbol_name)){
+    if(search_in_file(entries_file_name_and_directive, symbol_name)){
         return;
     }
     char *new_ic = malloc(sizeof(char) *5);
@@ -195,24 +200,50 @@ void add_entry_to_entries_file(char *symbol_name, int file_number, int symbol_ad
 
 
 
-void add_extern_to_externals_file(char *symbol_name, int file_number, int ic){
-    char externals_file_name[100];
+void add_extern_to_externals_file(char *symbol_name, char *file_name, int ic){
+    char externals_file_name[MAX_FILE_NAME_LEN];
+    char externals_file_name_and_directive[MAX_FILE_NAME_LEN];
     char *new_ic = malloc(sizeof(char) *5);
-    add_number_to_string(externals_file_name, sizeof(externals_file_name), EXTERNALS_FILE_NAME, file_number);
+
+    get_output_filename(externals_file_name, externals_file_name_and_directive, EXTERNALS_FILE_EXTENSION, file_name);
+
     strcpy(new_ic, pad_address(ic));
 
-    if(search_in_file(externals_file_name, new_ic)){
+    if(search_in_file(externals_file_name_and_directive, new_ic)){
         return;
     }
 
-    FILE *file = fopen(externals_file_name, "a");
+    FILE *file = fopen(externals_file_name_and_directive, "a");
     if (file == NULL) {
-        print_internal_error(ERROR_CODE_48, externals_file_name);
+        print_internal_error(ERROR_CODE_48, externals_file_name_and_directive);
         exit(EXIT_FAILURE);
     }
     fprintf(file, "%s %s\n", symbol_name, new_ic);
     free(new_ic);
     fclose(file);
+}
+
+void get_output_filename(char *basic_filename, char* final_file_name, const char* extension, char* src_file_name){
+    strcpy(basic_filename, src_file_name);
+    strcpy(final_file_name, OUTPUT_DIRECTORY_NAME);
+
+    replace_extension(basic_filename, extension);
+    strcat(final_file_name, "/");
+    strcat(final_file_name, basic_filename);
+}
+
+void replace_extension(char *file_path, const char *new_extension) {
+    // Find the last occurrence of '.' in the file path
+    char *dot_position = strrchr(file_path, '.');
+
+    if (dot_position != NULL) {
+        // Replace everything after the last dot with the new extension
+        strcpy(dot_position + 1, new_extension);
+    } else {
+        // If no dot is found, you may want to handle it (e.g., add the extension)
+        strcat(file_path, ".");
+        strcat(file_path, new_extension);
+    }
 }
 
 char *pad_address(int address){
@@ -446,4 +477,17 @@ long get_file_size(FILE *file) {
         return -1;
     }
     return size;
+}
+
+char* get_filename(char *file_path) {
+    // Find the last occurrence of '/' in the file path
+    const char *last_slash = strrchr(file_path, '/');
+
+    // If found, return the character after the last slash
+    if (last_slash != NULL) {
+        return last_slash + 1;
+    } else {
+        // If no slash is found, the entire path is the filename
+        return (char *)file_path;
+    }
 }

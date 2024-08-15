@@ -69,6 +69,7 @@ typedef struct {
     Directive *directive;                    /**< Pointer to the Directive struct associated with the line, if applicable. */
     Symbol *symbol;                          /**< Pointer to the Symbol struct associated with the line, if applicable. */
     int file_number;                          /**< The file number of the src assembly file. */
+    char *file_name;                          /**< The file name of the src assembly file. */
     int starting_address;                    /**< The starting address of the instruction in memory. */
     int binary_line_count;                   /**< The number of binary lines generated for the instruction. */
     char *binary_instruction;                /**< Pointer to the binary representation of the instruction. */
@@ -167,9 +168,10 @@ void init_macro_table(MacroTable *table);
 /**
  * Initialize an InstructionLine structure with a given line of text.
  * @param line - The line of text to initialize the InstructionLine with.
+ * @param file_name The filename of the src assembly file
  * @return A pointer to the initialized InstructionLine structure.
  */
-InstructionLine *init_instruction_line(char* line, int file_number);
+InstructionLine *init_instruction_line(char* line, int file_number, char *file_name);
 
 /**
  * Initialize a Command structure.

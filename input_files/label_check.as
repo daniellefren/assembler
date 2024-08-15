@@ -3,7 +3,7 @@ mov XYZ, r9
 
 ABC: .string "danielle"
 
-mov *r1, 4
+mov #4, ABC
 
 ABS: .string "danielle"
 

@@ -4,6 +4,7 @@
 #define STARTING_IC 100
 #define MAX_MACRO_NAMES 150
 #define MAX_SYMBOL_LENGTH 31
+#define MAX_FILE_NAME_LEN 100
 #define BINARY_WORD_LENGTH 15
 #define MAX_COMMAND_LEN 10
 #define MAX_OPERAND_LEN 20
@@ -31,14 +32,16 @@ static const char *DIRECTIVES[] = {
         "data", "string", "struct", "entry", "extern"
 };
 
+static const char *INPUT_DIRECTORY_NAME = "input_files";
 static const char *OUTPUT_DIRECTORY_NAME = "output_files";
 static const char *ERROR_FILE_NAME = "output_files/error_logs%d";
 
 
-static const char *EXTERNALS_FILE_NAME = "output_files/ps%d.ext";
-static const char *ENTRIES_FILE_NAME = "output_files/ps%d.ent";
-static const char *EXPANDED_MACRO_FILE_NAME = "output_files/expanded_macros%d.am";
-static const char *OBJECTS_FILE_NAME = "output_files/ps%d.ob";
+static const char *EXTERNALS_FILE_EXTENSION = "ext";
+static const char *ENTRIES_FILE_EXTENSION = "ent";
+static const char *OBJECT_FILE_EXTENSION = "ob";
+static const char *EXPENDED_MACROS_EXTENSION = "am";
+static const char *SRC_FILE_NAME_EXTENSION = "as";
 
 
 #define COMMANDS_COUNT (sizeof(COMMANDS) / sizeof(COMMANDS[0]))
@@ -53,7 +56,7 @@ enum operand_classification_type {IMMEDIATE = 0, DIRECT = 1, INDIRECT_REGISTER =
 /* Directives types */
 enum directives {DATA, STRING, STRUCT, ENTRY, EXTERN, NOT_DIRECTIVE};
 /* Enum of commands ordered by their opcode */
-enum opcode_command {MOV, CMP, ADD, SUB, LEA, CLR, NOT, INC, DEC, JMP, BNE, RED, PRN, JSR, RTS, STOP, NOT_OPCODE};
+enum opcode_command {MOV = 0, CMP = 1, ADD = 2, SUB = 3, LEA = 4, CLR = 5, NOT = 6, INC = 7, DEC = 8, JMP = 9, BNE = 10, RED = 11, PRN = 12, JSR = 13, RTS = 14, STOP = 15, NOT_OPCODE = 16};
 
 enum instruction_types {
     COMMAND = 1,

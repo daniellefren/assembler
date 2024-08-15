@@ -16,8 +16,9 @@
  * @param lines_array A pointer to the LinesArray structure that stores all lines of the source file after processing.
  * @param symbol_table A pointer to the SymbolTable structure that stores all symbols encountered in the source file.
  * @param file_number An integer representing the number of the current file being processed, used for generating unique output file names.
+ * @param file_name The filename of the src assembly file
  */
-void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTable *symbol_table, int file_number);
+void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTable *symbol_table, int file_number, char *file_name);
 
 /**
  * Pre-processes the assembly source file to expand macros.
@@ -85,9 +86,10 @@ void expand_macro(const Macro *macro, FILE *outputFile);
  * @param lines_array A pointer to the LinesArray structure that stores all lines of the source file after processing.
  * @param macro_table A pointer to the `MacroTable` structure that stores the names and bodies of all macros encountered during the pre-run.
  * @param file_number An integer representing the number of the current file being processed, used for generating unique output file names.
+ * @param file_name The filename of the src assembly file
  * @return 1 if succeeded, else 1
  */
-int read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, LinesArray *lines_array, MacroTable *macro_table, int file_number);
+int read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, LinesArray *lines_array, MacroTable *macro_table, int file_number, char *file_name);
 
 /**
  * @brief Allocates memory and initializes a new symbol for the current instruction line.
@@ -258,7 +260,8 @@ Symbol *add_new_symbol(SymbolTable *symbol_table, char* symbol_name);
  * @param lines_array
  * @param ic
  * @param dc
- * @param file_number
  */
-void final_actions(LinesArray *lines_array, int *ic, int *dc, int file_number);
+void final_actions(LinesArray *lines_array, int *ic, int *dc);
+
+int is_valid_command_line(Command *new_command); // TODO - add doco
 #endif //ASSEMBLER_FIRST_RUN_H

@@ -17,7 +17,7 @@ void add_output_directory(void);
  * @param file_number - The file number used to generate the externals file name.
  * @param ic - Pointer to the instruction counter (IC) which indicates the address of the symbol.
  */
-void add_extern_to_externals_file(char *symbol_name, int file_number, int ic);
+void add_extern_to_externals_file(char *symbol_name, char *file_name, int ic);
 
 /**
  * Add an entry symbol to the entries file.
@@ -26,7 +26,7 @@ void add_extern_to_externals_file(char *symbol_name, int file_number, int ic);
  * @param file_number - The file number used to generate the entries file name.
  * @param symbol_address - The memory address of the entry symbol.
  */
-void add_entry_to_entries_file(char *symbol, int file_number, int symbol_address);
+void add_entry_to_entries_file(char *symbol, char *file_name, int symbol_address);
 
 /**
  * Write a line of text to a file.
@@ -67,9 +67,9 @@ FILE* open_ob_file(char *ob_file_name);
  * @param linesArray A pointer to the `LinesArray` structure containing the lines of assembly code.
  *                   This structure holds the instruction counter (IC) and directive counter (DC)
  *                   along with the actual lines of code.
- * @param file_number An integer representing the file number to be appended to the object file name.
+ * @param file_name The src assembly file name
  */
-void create_ob_file(LinesArray *linesArray, int file_number);
+void create_ob_file(LinesArray *linesArray, char* file_name);
 
 /**
  * Writes the first line to the object file.
@@ -207,6 +207,11 @@ long get_file_size(FILE *file);
  *
  * @param filename
  */
+void replace_extension(char *file_path, const char *new_extension);
+
+char* get_filename(char *file_path); // TODO - add doco
+
+void get_output_filename(char *basic_filename, char* final_file_name, const char* extension, char* src_file_name);
 
 
 #endif //ASSEMBLER_FILES_HANDLER_H
