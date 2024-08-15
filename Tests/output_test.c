@@ -39,44 +39,44 @@ int output_test() {
     for (i = 0; i < number_of_tests; i++) {
         //Get input file name
         strcpy(input_code_fname, test[i]);
+        strcpy(output_correct_fname, input_code_fname);
+
         printf("input_code_fname %s\n", input_code_fname);
-        replace_extension(input_code_fname, SRC_FILE_NAME_EXTENSION);
 
         // Run the assembler on the test file
         run_assembler_on_file(assembly_lines_array, symbol_table, input_code_fname, i + 1);
         printf("\nStarting comparing test number %d\n\n", i+1);
 
-        get_output_filename(output_code_fname, output_code_fname_with_directive, OBJECT_FILE_EXTENSION, get_filename(test[i]));
-        printf("output file %s\n", output_code_fname_with_directive);
         printf("Compare object file\n");
-        replace_extension(input_code_fname, OBJECT_FILE_EXTENSION);
-        compare_output_files(i+1, test[i], output_code_fname_with_directive, input_code_fname, output_correct_fname, "/test1.ob");
-        get_output_filename(output_code_fname, output_code_fname_with_directive, EXTERNALS_FILE_EXTENSION, get_filename(test[i]));
+        get_output_filename(output_code_fname, output_code_fname_with_directive, OBJECT_FILE_EXTENSION, get_filename(test[i]));
+
+        replace_extension(output_code_fname_with_directive, OBJECT_FILE_EXTENSION);
+        replace_extension(output_correct_fname, OBJECT_FILE_EXTENSION);
+
+        compare_output_files(i+1, test[i], output_code_fname_with_directive, input_code_fname, output_correct_fname);
 
         // TODO - compare only if exists
         printf("\nCompare extern file\n");
-        get_output_filename(output_code_fname, output_code_fname_with_directive, ENTRIES_FILE_EXTENSION, get_filename(test[i]));
-        replace_extension(input_code_fname, EXTERNALS_FILE_EXTENSION);
-        printf("output file %s\n", output_code_fname_with_directive);
-        compare_output_files(i+1, test[i], output_code_fname_with_directive, input_code_fname, output_correct_fname, "/test1.ext");
+        replace_extension(output_code_fname_with_directive, EXTERNALS_FILE_EXTENSION);
+        replace_extension(output_correct_fname, EXTERNALS_FILE_EXTENSION);
 
-        get_output_filename(output_code_fname, output_code_fname_with_directive, ENTRIES_FILE_EXTENSION, get_filename(test[i]));
+        compare_output_files(i+1, test[i], output_code_fname_with_directive, input_code_fname, output_code_fname);
+
         printf("\nCompare entry file\n");
-        replace_extension(input_code_fname, ENTRIES_FILE_EXTENSION);
-        printf("output file %s\n", output_code_fname_with_directive);
-        compare_output_files(i+1, test[i], output_code_fname_with_directive, input_code_fname, output_correct_fname, "/test1.ent");
+        replace_extension(output_code_fname_with_directive, ENTRIES_FILE_EXTENSION);
+        replace_extension(output_correct_fname, ENTRIES_FILE_EXTENSION);
+
+        compare_output_files(i+1, test[i], output_code_fname_with_directive, input_code_fname, output_correct_fname);
 
     }
     return 1; // All tests passed
 }
 
-int compare_output_files(int file_number, char* test_file_name, char* output_code_fname, char* input_code_fname, char* output_correct_fname, char* correct_file_name_ending){
+int compare_output_files(int file_number, char* test_file_name, char* output_code_fname, char* input_code_fname, char* output_correct_fname){
     //get output filename
     printf("input is %s, output is %s\n", input_code_fname, output_code_fname);
 
     // Compare object files
-    strcpy(output_correct_fname, test_file_name);
-    strcat(output_correct_fname, correct_file_name_ending);
     if (open_two_files_and_compare(output_correct_fname, output_code_fname) == 0) {
         printf("The output test Failed! \nFor input file %s and output object file %s\n",
                input_code_fname, output_code_fname);
