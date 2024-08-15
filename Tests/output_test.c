@@ -44,7 +44,7 @@ int output_test() {
 
         // Run the assembler on the test file
         run_assembler_on_file(assembly_lines_array, symbol_table, input_code_fname, i + 1);
-        printf("\nStarting comparing test number %d\n\n", i);
+        printf("\nStarting comparing test number %d\n\n", i+1);
 
         printf("Compare object file\n");
         compare_output_files(i+1, test[i], output_code_fname, input_code_fname, output_correct_fname, OBJECTS_FILE_NAME, "/ps.ob");

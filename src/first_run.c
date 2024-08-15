@@ -68,6 +68,12 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
 
     final_actions(lines_array, ic, dc, file_number);
 
+
+    //Declare final ic and dc in lines array
+    lines_array->ic = *ic; //TODO - do i need it? if not, delete from doco
+    lines_array->dc = *dc;
+
+
 //     Free allocated memory for macro names
     for (i = 0; i < MAX_MACRO_NAMES; ++i) {
         free(macro_names[i]);
@@ -86,8 +92,11 @@ void final_actions(LinesArray *lines_array, int *ic, int *dc, int file_number){
     int i;
     for(i = 0;i<lines_array->number_of_line;i++){
         InstructionLine *instruction_line = lines_array->lines[i];
-        if(instruction_line->instruction_type == DATA_DIRECTIVE){
+        if(instruction_line->instruction_type == DATA_DIRECTIVE || instruction_line->instruction_type == ENTRY_DIRECTIVE){
             instruction_line->starting_address += *ic;
+            if(instruction_line->is_symbol){
+                instruction_line->symbol->address += *ic;
+            }
         }
         if(instruction_line->is_symbol){
             if(instruction_line->symbol->is_entry){
@@ -237,25 +246,22 @@ int read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, LinesArra
     }
 
     if (is_directive(line)) {
-        success &= handle_directives(line, dc, symbol_table, ic, file_number, new_instruction_line);
-
         if(has_symbol){
             new_symbol->type = DATA_DIRECTIVE;
             new_symbol->address = *dc;
         }
-
+        success &= handle_directives(line, dc, symbol_table, ic, file_number, new_instruction_line);
     }
     else if (is_command(line)) {
-        new_instruction_line->starting_address=*ic;
-
-        success &= handle_command(line, symbol_table, macro_table, new_instruction_line);
-
-        (*ic)+= (new_instruction_line->binary_line_count);
-
         if(has_symbol){
             new_symbol->type = COMMAND;
             new_symbol->address = *ic;
         }
+        new_instruction_line->starting_address=*ic;
+        success &= handle_command(line, symbol_table, macro_table, new_instruction_line);
+
+        (*ic)+= (new_instruction_line->binary_line_count);
+
     }
     if(has_symbol){
         new_instruction_line->symbol = new_symbol;
@@ -271,6 +277,7 @@ int read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, LinesArra
 }
 
 Symbol* handle_symbol(InstructionLine *new_instruction_line, char* symbol_name, SymbolTable *symbol_table, int file_number){
+    printf("handle_symbol %s\n", symbol_name);
     Symbol *new_symbol;
     new_symbol = find_symbol_by_name(symbol_table, symbol_name);
     if(!new_symbol){
