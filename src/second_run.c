@@ -17,7 +17,7 @@ void start_second_run(LinesArray *assembly_lines_array, SymbolTable *symbol_tabl
     // Iterate over each line in the assembly lines array
     for (i = 0; i < assembly_lines_array->number_of_line; ++i){
         p_line = assembly_lines_array->lines[i];
-        printf("\n****Line number %d Address %d *****  \n\n", i, p_line->starting_address);
+//        printf("\n****Line number %d Address %d *****  \n\n", i, p_line->starting_address);
         allocate_binary_instruction(p_line, p_line->binary_line_count, BINARY_LINE_LENGTH);
         fill_instruction_line_binary(p_line, symbol_table);
         //print_instruction_line(p_line); you can use it to debug the lines
@@ -49,7 +49,7 @@ void fill_instruction_line_binary(InstructionLine *instruction_line, SymbolTable
     else if (is_instruction_line_directive(instruction_line)){
         fill_binary_directive(instruction_line, binary_instruction_p);
     }
-    printf("The binary representation of the line is %s \n", instruction_line->binary_instruction);
+//    printf("The binary representation of the line is %s \n", instruction_line->binary_instruction);
 }
 
 void fill_first_part_binary_opcode(InstructionLine *instruction_line, char *binary_string) {

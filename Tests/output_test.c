@@ -57,7 +57,7 @@ int output_test() {
         replace_extension(output_code_fname_with_directive, EXTERNALS_FILE_EXTENSION);
         replace_extension(output_correct_fname, EXTERNALS_FILE_EXTENSION);
 
-        compare_output_files(i+1, test[i], output_code_fname_with_directive, input_code_fname, output_code_fname);
+        compare_output_files(i+1, test[i], output_code_fname_with_directive, input_code_fname, output_correct_fname);
 
         printf("\nCompare entry file\n");
         replace_extension(output_code_fname_with_directive, ENTRIES_FILE_EXTENSION);
