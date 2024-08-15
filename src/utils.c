@@ -198,7 +198,6 @@ void add_number_to_string(char *buffer, int buffer_size, const char* source, int
 
 int is_directive_data(Directive *directive) {
     if (directive->type == DATA) {
-        printf("The directive is a data directive!\n");
         return 1;
     }
     return 0;
@@ -206,20 +205,17 @@ int is_directive_data(Directive *directive) {
 
 int is_directive_string(Directive *directive) {
     if (directive->type == STRING) {
-        printf("The directive is a string directive!\n");
         return 1;
     }
     return 0;
 }
 
 void fill_octal_string_from_binary(const char *binary_string, int number_of_binary_bits, int offset, char *octal_string) {
-    char octal_value[6] = {0};  // Buffer for octal value (assuming up to 4 octal digits)
-    char extracted_binary[17] = {0};  // Buffer for extracted binary portion (up to 16 bits)
-    printf("Number of binary bits is %d, offset is %d, ocatal string is %s and binary string is %s\n",number_of_binary_bits,offset,octal_string,binary_string);
+    char octal_value[OCTAL_LENGTH + 1] = {0};  // Buffer for octal value (assuming up to 5 octal digits + null)
+    char extracted_binary[EXTRACTED_STRING_LENGTH] = {0};  // Buffer for extracted binary portion (up to 16 bits)
     // Check for invalid input
     if (number_of_binary_bits <= 0 || offset < 0 || offset + number_of_binary_bits > strlen(binary_string)) {
         print_internal_error(ERROR_CODE_42, "");
-        printf("\n\n\n\n");
         return;
     }
 
@@ -232,16 +228,12 @@ void fill_octal_string_from_binary(const char *binary_string, int number_of_bina
     // Extract the desired portion of the binary string
     strncpy(extracted_binary, binary_string + offset, number_of_binary_bits);
     extracted_binary[number_of_binary_bits] = '\0';  // Null-terminate the extracted portion
-    printf("Extracted binary string: %s\n", extracted_binary);
 
     // Convert binary to octal
     binary_to_octal(extracted_binary, octal_value);
 
-    printf("Converted octal value: %s\n", octal_value);
-
     // Copy the octal value to the output string
     strcpy(octal_string, octal_value);
-    printf("Octal string after strcpy: %s\n", octal_string);
 }
 
 

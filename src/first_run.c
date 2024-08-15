@@ -43,7 +43,7 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
     FILE *expanded_macros_file;
     int line_num;
     int i;
-
+    printf("Starting First run\n");
     *ic = STARTING_IC; // Starting point of assembler
 
     init_macro_table(&macro_table);
@@ -89,6 +89,7 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
         print_internal_error(ERROR_CODE_8, "");
         exit(EXIT_FAILURE);
     }
+    printf("Finished First run!\n\n");
 }
 
 
@@ -218,23 +219,15 @@ void expand_macro(const Macro *macro, FILE *outputFile) {
 }
 
 int read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, LinesArray *lines_array, MacroTable *macro_table, int file_number, char *file_name) {
-    printf("filenameee %s\n", file_name);
     char symbol_name[MAX_SYMBOL_LENGTH] = "";
     int has_symbol;
     Symbol *new_symbol;
     InstructionLine *new_instruction_line;
     int success;
-
-    printf("linee %s\n", line);
-
     success = 1;
-
     line = skip_spaces(line);
-
     new_instruction_line = init_instruction_line(line, file_number, file_name);
-
     has_symbol = find_symbol(line, symbol_name);
-
     if (has_symbol) {
         if(!is_valid_symbol(symbol_name, macro_table, symbol_table)){
             return 0;
@@ -282,7 +275,6 @@ int read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, LinesArra
 }
 
 Symbol* handle_symbol(InstructionLine *new_instruction_line, char* symbol_name, SymbolTable *symbol_table, int file_number){
-    printf("handle_symbol %s\n", symbol_name);
     Symbol *new_symbol;
     new_symbol = find_symbol_by_name(symbol_table, symbol_name);
     if(!new_symbol){
@@ -647,11 +639,7 @@ int handle_directives(char *line, int *dc, SymbolTable *symbol_table, int* ic, i
     } else if (strcmp(directive_type, ".extern") == 0){
         new_instruction_line->instruction_type = EXTERN_DIRECTIVE;
         success &= handle_extern_directive(line, new_directive, symbol_table, file_number, ic);
-        printf("name of the symbol %s \n", new_directive->symbol);
 
-        Symbol *symbol = find_symbol_by_name(symbol_table, new_directive->symbol);
-        printf("is extern?? %s\n", symbol->name);
-        printf("is extern?? %d\n", symbol->is_extern);
 
 
     } else if (strcmp(directive_type, ".entry") == 0) {
@@ -669,9 +657,9 @@ int handle_directives(char *line, int *dc, SymbolTable *symbol_table, int* ic, i
 }
 
 int handle_entry_directive(Directive *new_directive, int file_number, SymbolTable *symbol_table, char* line){
-    printf("handle_entry_directive %s\n", line);
-    char *ptr = line;
+    char *ptr;
     Symbol* symbol;
+    ptr = line;
     new_directive->type = ENTRY;
     extract_word_after_keyword(ptr, new_directive->symbol, ".entry");
     symbol = find_symbol_by_name(symbol_table, new_directive->symbol);
@@ -688,10 +676,10 @@ int handle_entry_directive(Directive *new_directive, int file_number, SymbolTabl
 }
 
 int handle_extern_directive(char *line, Directive *new_directive, SymbolTable *symbol_table, int file_number, int *ic) {
-    printf("handle_extern_directive %s\n", line);
     Symbol *symbol;
-    char *ptr = line;
+    char *ptr;
     char symbol_name[SYMBOL_NAME_LEN];
+    ptr = line;
     new_directive->type = EXTERN;
 
     extract_word_after_keyword(ptr, symbol_name, ".extern");

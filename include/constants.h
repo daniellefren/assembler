@@ -22,7 +22,12 @@
 #define BINARY_INSTRUCTION_MAX_LENGTH 46
 #define BINARY_LINE_LENGTH 15
 #define SYMBOL_NAME_LEN 15
-
+#define OPERAND_BINARY_CLASSIFICATION_SIZE 4
+#define FIRST_CLASSIFICATION_OFFSET 3
+#define SECOND_CLASSIFICATION_OFFSET 7
+#define INT_TO_BINARY_NUMBER_OF_BITS 12
+#define REGISTER_TO_BINARY_NUMBER_OF_BITS 3
+#define EXTRACTED_STRING_LENGTH 17
 static const char *COMMANDS[] = {
         "mov", "cmp", "add", "sub", "lea", "clr", "not", "inc", "dec", "jmp", "bne",
         "red", "prn", "jsr", "rts", "stop"

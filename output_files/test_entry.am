@@ -1,0 +1,4 @@
+.entry ABC
+ABC: mov r1,  #3
+BCD: mov *r4, #4
+.entry BCD
