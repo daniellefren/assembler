@@ -317,7 +317,7 @@ int handle_command(char *line, SymbolTable *symbol_table, MacroTable *macro_tabl
         }
     }
 
-    is_valid_command_line(new_command);
+    success &= is_valid_command_line(new_command, line);
 
     new_instruction_line->binary_line_count = find_number_of_lines_in_binary(new_command);
     new_instruction_line->command = new_command;
@@ -327,16 +327,78 @@ int handle_command(char *line, SymbolTable *symbol_table, MacroTable *macro_tabl
     return success;
 }
 
-int is_valid_command_line(Command *new_command){
-    switch (new_command->opcode_command_type) {
-        case MOV:
-        {
-            //TODO -
-            break;
-        }
-
+int is_valid_command_line(Command *new_command, char* line){
+    if(new_command->operand_number == 0){
+        return 1;
     }
+    if(new_command->opcode_command_type == MOV || new_command->opcode_command_type == ADD || new_command->opcode_command_type == SUB){
+        if(new_command->src_operand->classification_type == IMMEDIATE || new_command->src_operand->classification_type == DIRECT ||
+           new_command->src_operand->classification_type == INDIRECT_REGISTER || new_command->src_operand->classification_type == DIRECT_REGISTER) {
+            printf("valueee %s", new_command->src_operand->value);
+            printf("valueee %d", new_command->src_operand->classification_type);
+
+            if (new_command->dst_operand->classification_type == DIRECT ||
+                new_command->dst_operand->classification_type == INDIRECT_REGISTER ||
+                new_command->dst_operand->classification_type == DIRECT_REGISTER) {
+                return 1;
+            }
+        }
+        print_internal_error(ERROR_CODE_59, line);
+        return 0;
+    }
+    if(new_command->opcode_command_type == CMP){
+        if(new_command->src_operand->classification_type == IMMEDIATE || new_command->src_operand->classification_type == DIRECT ||
+           new_command->src_operand->classification_type == INDIRECT_REGISTER || new_command->src_operand->classification_type == DIRECT_REGISTER) {
+            if (new_command->dst_operand->classification_type == IMMEDIATE || new_command->dst_operand->classification_type == DIRECT ||
+                new_command->dst_operand->classification_type == INDIRECT_REGISTER ||
+                new_command->dst_operand->classification_type == DIRECT_REGISTER) {
+                return 1;
+            }
+        }
+        print_internal_error(ERROR_CODE_59, line);
+        return 0;
+    }
+    if(new_command->opcode_command_type == LEA){
+
+        if(new_command->src_operand->classification_type == DIRECT){
+            if (new_command->dst_operand->classification_type == DIRECT ||
+                new_command->dst_operand->classification_type == INDIRECT_REGISTER ||
+                new_command->dst_operand->classification_type == DIRECT_REGISTER) {
+                return 1;
+            }
+        }
+        print_internal_error(ERROR_CODE_59, line);
+        return 0;
+    }
+    if(new_command->opcode_command_type == CLR || new_command->opcode_command_type == NOT || new_command->opcode_command_type == INC ||
+    new_command->opcode_command_type == DEC || new_command->opcode_command_type == RED){
+        if(new_command->dst_operand->classification_type == DIRECT ||
+           new_command->dst_operand->classification_type == INDIRECT_REGISTER ||
+           new_command->dst_operand->classification_type == DIRECT_REGISTER){
+            return 1;
+        }
+        print_internal_error(ERROR_CODE_59, line);
+        return 0;
+    }
+    if(new_command->opcode_command_type == JMP || new_command->opcode_command_type == BNE || new_command->opcode_command_type == JSR){
+        if(new_command->dst_operand->classification_type == DIRECT ||
+           new_command->dst_operand->classification_type == INDIRECT_REGISTER){
+            return 1;
+        }
+        print_internal_error(ERROR_CODE_59, line);
+        return 0;
+    }
+    if(new_command->opcode_command_type == PRN){
+        if(new_command->dst_operand->classification_type == IMMEDIATE || new_command->dst_operand->classification_type == DIRECT ||
+        new_command->dst_operand->classification_type == INDIRECT_REGISTER || new_command->dst_operand->classification_type == DIRECT_REGISTER){
+            return 1;
+        }
+        print_internal_error(ERROR_CODE_59, line);
+        return 0;
+    }
+    return 0;
 }
+
 
 void define_operands_from_line(Command *new_command, char* line){
     // Skip leading spaces
