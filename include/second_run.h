@@ -13,8 +13,9 @@
  *                             all the lines of code, along with associated metadata like
  *                             starting addresses and binary content.
  * @param file_number An integer representing the file number to be appended.
+ * @param file_name The file name of the src assembly file
  */
-void start_second_run(LinesArray *assembly_lines_array, int file_number, SymbolTable *symbol_table);
+void start_second_run(LinesArray *assembly_lines_array, int file_number, SymbolTable *symbol_table, char* file_name);
 
 /**
  * Fills the binary representation for an instruction line. Depending on whether the instruction
@@ -175,8 +176,9 @@ void fill_immediate_binary(Operand *operand, char *binary_string, int binary_wor
  * @param ic The instruction counter (starting address of the instruction).
  * @param file_number The current file number, used for tracking external symbols.
  * @param symbol_table Pointer to the symbol table for resolving symbols.
+ * @param file_name File name that the instruction was in
  */
-void fill_direct_binary(Operand *operand, char *binary_string, int binary_word_number, int ic, int file_number, SymbolTable *symbol_table);
+void fill_direct_binary(Operand *operand, char *binary_string, int binary_word_number, int ic, int file_number, SymbolTable *symbol_table, char* file_name);
 
 /**
  * @brief Fills the binary string with the register values of the source and/or destination operands.

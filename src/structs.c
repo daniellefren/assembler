@@ -128,7 +128,7 @@ void init_macro_table(MacroTable *table) {
     table->capacity = 10;
 }
 
-InstructionLine *init_instruction_line(char* line, int file_number){
+InstructionLine *init_instruction_line(char* line, int file_number, char* file_name){
     // Allocate memory for instruction line
     InstructionLine *new_instruction_line = (InstructionLine *)malloc(sizeof(InstructionLine));
     if (new_instruction_line == NULL) {
@@ -148,6 +148,7 @@ InstructionLine *init_instruction_line(char* line, int file_number){
     new_instruction_line->binary_line_count=0;
     new_instruction_line->file_number = file_number;
 
+    new_instruction_line->file_name = strdup(file_name);
 
     return new_instruction_line;
 }

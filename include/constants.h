@@ -4,6 +4,7 @@
 #define STARTING_IC 100
 #define MAX_MACRO_NAMES 150
 #define MAX_SYMBOL_LENGTH 31
+#define MAX_FILE_NAME_LEN 100
 #define BINARY_WORD_LENGTH 15
 #define MAX_COMMAND_LEN 10
 #define MAX_OPERAND_LEN 20
@@ -39,6 +40,10 @@ static const char *EXTERNALS_FILE_NAME = "output_files/ps%d.ext";
 static const char *ENTRIES_FILE_NAME = "output_files/ps%d.ent";
 static const char *EXPANDED_MACRO_FILE_NAME = "output_files/expanded_macros%d.am";
 static const char *OBJECTS_FILE_NAME = "output_files/ps%d.ob";
+static const char *EXTERNALS_FILE_EXTENSION = "ext";
+static const char *ENTRIES_FILE_EXTENSION = "ent";
+static const char *OBJECT_FILE_EXTENSION = "ob";
+static const char *EXPENDED_MACROS_EXTENSION = "am";
 
 
 #define COMMANDS_COUNT (sizeof(COMMANDS) / sizeof(COMMANDS[0]))
