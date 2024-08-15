@@ -21,6 +21,8 @@
 int main(int argc, char *argv[]) {
     LinesArray *assembly_lines_array = NULL;
     SymbolTable *symbol_table = NULL;
+    char file_name[MAX_FILE_NAME_LEN];
+    char final_file_name[MAX_FILE_NAME_LEN];
     int file_number;
     int number_of_files;
     number_of_files = argc - 1;
@@ -40,7 +42,14 @@ int main(int argc, char *argv[]) {
     else{
         //Run assembler on all files
         for(file_number=1;file_number<=number_of_files;file_number++){
-            run_assembler_on_file(assembly_lines_array, symbol_table, argv[file_number], file_number);
+            strcpy(file_name, INPUT_DIRECTORY_NAME);
+            strcat(file_name, "/");
+            strcat(file_name, argv[file_number]);
+            strcat(file_name, ".");
+            strcat(file_name, SRC_FILE_NAME_EXTENSION);
+            printf("filenamee %s\n", file_name);
+
+            run_assembler_on_file(assembly_lines_array, symbol_table, file_name, file_number);
         }
     }
 

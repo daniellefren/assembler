@@ -262,4 +262,6 @@ Symbol *add_new_symbol(SymbolTable *symbol_table, char* symbol_name);
  * @param dc
  */
 void final_actions(LinesArray *lines_array, int *ic, int *dc);
+
+int is_valid_command_line(Command *new_command); // TODO - add doco
 #endif //ASSEMBLER_FIRST_RUN_H

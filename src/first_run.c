@@ -325,12 +325,25 @@ int handle_command(char *line, SymbolTable *symbol_table, MacroTable *macro_tabl
         }
     }
 
+    is_valid_command_line(new_command);
+
     new_instruction_line->binary_line_count = find_number_of_lines_in_binary(new_command);
     new_instruction_line->command = new_command;
 
 
 
     return success;
+}
+
+int is_valid_command_line(Command *new_command){
+    switch (new_command->opcode_command_type) {
+        case MOV:
+        {
+
+            break;
+        }
+
+    }
 }
 
 void define_operands_from_line(Command *new_command, char* line){
