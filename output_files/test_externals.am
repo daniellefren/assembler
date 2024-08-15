@@ -1,3 +1,3 @@
 .extern MAIN
-mov MAIN, #5
+mov #5, MAIN
 jmp MAIN
