@@ -292,6 +292,7 @@ void add_output_directory() {
 }
 
 FILE* open_file(char *file_name, char *mode) {
+    printf("file name %s\n", file_name);
     FILE *file;
 
     // Attempt to open the file
@@ -304,15 +305,19 @@ FILE* open_file(char *file_name, char *mode) {
 }
 
 int open_two_files_and_compare(char *file1_name, char *file2_name) {
+
     int result;
     FILE *file1;
     FILE *file2;
-    printf("***PROBLEM HERE!!!\n");
-    if(file_exists(file1_name) == 0 || file_exists(file1_name) == 0){ //TODO Fix the problem with names of the files
+
+    if(file_exists(file1_name) == 0 && file_exists(file1_name) == 0){
+        printf("Both files does not exist\n");
         return 1;
     }
-    printf("***PROBLEM HERE!!!\n");
-
+    else if(file_exists(file1_name) == 0 || file_exists(file1_name) == 0){
+        printf("One of the given files does not exist!\n");
+        return 0;
+    }
 
     file1 = open_file(file1_name, "r");
     file2 = open_file(file2_name, "r");
@@ -320,6 +325,7 @@ int open_two_files_and_compare(char *file1_name, char *file2_name) {
     result = compare_files(file1, file2); //return 0 for different
     fclose(file1);
     fclose(file2);
+
 
     if (result == 1) {
         printf("Files are identical.\n");
