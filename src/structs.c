@@ -215,8 +215,6 @@ void allocate_binary_instruction(InstructionLine *p_line, size_t binary_line_cou
     size_t count_to_allocate;
     // Calculate the total size needed in bytes, adding 1 for the null terminator.
     count_to_allocate= binary_line_count * binary_line_length + 1;
-    printf("The binary line count - %lu\n", binary_line_count);
-
     if (binary_line_count == 0){
         print_internal_error(ERROR_CODE_35, "");
         exit(EXIT_FAILURE);
