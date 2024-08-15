@@ -38,7 +38,6 @@ int output_test() {
     for (i = 0; i < number_of_tests; i++) {
 
         //Get input file name
-
         strcpy(input_code_fname, test[i]);
         strcat(input_code_fname, "/ps.as");
 
