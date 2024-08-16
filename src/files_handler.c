@@ -217,6 +217,14 @@ void get_output_filename(char *basic_filename, char* final_file_name, const char
     strcat(final_file_name, basic_filename);
 }
 
+void get_input_filename(char* file_name, char* given_file_name){
+    strcpy(file_name, INPUT_DIRECTORY_NAME);
+    strcat(file_name, "/");
+    strcat(file_name, given_file_name);
+    strcat(file_name, ".");
+    strcat(file_name, SRC_FILE_NAME_EXTENSION);
+}
+
 void replace_extension(char *file_path, const char *new_extension) {
     // Find the last occurrence of '.' in the file path
     char *dot_position = strrchr(file_path, '.');
@@ -246,7 +254,7 @@ char *pad_address(int address){
 int write_line_to_file(char *line, char* new_file_name) {
     FILE *outputFile = fopen(new_file_name, "a"); // Open in append mode
     if (!outputFile) {
-        printf("error in write_line_to_file");
+        print_internal_error(ERROR_CODE_48, "write_line_to_file");
 
         print_internal_error(ERROR_CODE_48, new_file_name);
         exit(EXIT_FAILURE);
@@ -292,7 +300,6 @@ void add_output_directory() {
 }
 
 FILE* open_file(char *file_name, char *mode) {
-    printf("file name %s\n", file_name);
     FILE *file;
 
     // Attempt to open the file
@@ -418,11 +425,11 @@ int compare_files(FILE *file1, FILE *file2) {
 
     // Read the first lines from both files
     if (fgets(line1, sizeof(line1), file1) == NULL) {
-        printf("Debug - File1 is empty or an error occurred.\n");
+        print_internal_error(ERROR_CODE_62, "File1");
     }
 
     if (fgets(line2, sizeof(line2), file2) == NULL) {
-        printf("Debug - File2 is empty or an error occurred.\n");
+        print_internal_error(ERROR_CODE_62, "File2");
     }
 
     while (fgets(line1, sizeof(line1), file1) != NULL &&
@@ -454,26 +461,26 @@ long get_file_size(FILE *file) {
     long size;
     // Move the file pointer to the end of the file
     if (fseek(file, 0, SEEK_END) == -1){
-        printf("Error - fseek\n");
-        return -1;
+        print_internal_error(ERROR_CODE_60, "");
+        exit(EXIT_FAILURE);
     }
     // Get the current file pointer position, which is the size of the file
     size = ftell(file);
     if (size == -1){
-        printf("Error - ftell\n");
-        return -1;
+        print_internal_error(ERROR_CODE_61, "");
+        exit(EXIT_FAILURE);
     }
     // Move the file pointer back to the beginning of the file
     if (fseek(file, 0, SEEK_SET) == -1){
-        printf("Error - fseek\n");
-        return -1;
+        print_internal_error(ERROR_CODE_60, "");
+        exit(EXIT_FAILURE);
     }
     return size;
 }
 
 char* get_filename(char *file_path) {
     // Find the last occurrence of '/' in the file path
-    const char *last_slash = strrchr(file_path, '/');
+    char *last_slash = strrchr(file_path, '/');
 
     // If found, return the character after the last slash
     if (last_slash != NULL) {

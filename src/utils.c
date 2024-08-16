@@ -50,8 +50,6 @@ void string_append(const char *first_string, const char *second_string, char *ap
 
 
 void print_command(Command *command) {
-    printf("Command name is %s\n", command->command_name);
-
     if (command->operand_number > 0) {
         printf("Src Operand value is %s, its type is %u and the classification type is %d\n",
                command->src_operand->value, command->src_operand->type, command->src_operand->classification_type);

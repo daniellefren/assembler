@@ -73,7 +73,11 @@ Error errors[] = {
         {ERROR_CODE_56, "Unable to create directory"},
         {ERROR_CODE_57, "this instruction line is not a command"},
         {ERROR_CODE_58, "this instruction line is not a data directive"},
-        {ERROR_CODE_59, "Operand is not valid in this command"}
+        {ERROR_CODE_59, "Operand is not valid in this command"},
+        {ERROR_CODE_60, "Error in fseek"},
+        {ERROR_CODE_61, "Error in ftell"},
+        {ERROR_CODE_62, "An error accured while reading file"},
+        {ERROR_CODE_63, "Not enough parameters in command line"},
 
 
 };

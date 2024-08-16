@@ -6,7 +6,6 @@
 #define ASSEMBLER_ASSEMBLER_H
 #include "../include/first_run.h"
 #include "../include/second_run.h"
-#include "../include/test_first_run.h"
 #include "../include/errors.h"
 #include "../include/files_handler.h"
 #include "../Tests/output_test.h"
@@ -27,6 +26,5 @@
  * @param file_number - An identifier number used to generate output file names.
  */
 void run_assembler_on_file(LinesArray *assembly_lines_array, SymbolTable *symbol_table, char* filename, int file_number);
-void get_input_filename(char* file_name, char* given_file_name);
-int main(int argc, char *argv[]);
+
 #endif //ASSEMBLER_ASSEMBLER_H

@@ -1,5 +1,5 @@
 XYZ: .data 7, -57, +17, 9, 15
-mov XYZ, r9
+mov XYZ, r4
 
 ABC: .string "danielle"
 
