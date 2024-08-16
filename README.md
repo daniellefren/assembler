@@ -69,10 +69,13 @@ cd input_files
 touch <your_file_name>.as
 cd ..
 ```
-2. Then run the following command - This will create all the output files in the `output_files\` directory.
+2. Then run the following command
 ```sh
-./assembler file_name_1 ... file_name_n
+./assembler <file_name_1> ... <file_name_n?
 ```
+* You should write only the file name, without the directory or the file extension
+
+This will create all the output files in the `output_files\` directory.
 
 For each file from the input files, will be created:
 1. `<your_file_name>.am` (The src file after the pre-assembler)

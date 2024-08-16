@@ -204,7 +204,7 @@ int is_directive(char *line);
  * @param file_number An integer representing the number of the current file being processed, used for generating unique output file names.
  * @param new_instruction_line A pointer to the `InstructionLine` structure that the symbol will be associated with.
  */
-int handle_directives(char *line, int *dc, SymbolTable *symbol_table, int* ic, int file_number, InstructionLine *new_instruction_line);
+int handle_directives(char *line, int *dc, SymbolTable *symbol_table, int* ic, int file_number, InstructionLine *new_instruction_line, int has_symbol, Symbol *new_symbol);
 
 /**
  * handle entry directive line - Mark symbol as entry in symbol table and add to entries file
@@ -263,5 +263,28 @@ Symbol *add_new_symbol(SymbolTable *symbol_table, char* symbol_name);
  */
 void final_actions(LinesArray *lines_array, int *ic, int *dc);
 
-int is_valid_command_line(Command *new_command, char* line); // TODO - add doco
+/**
+ * Check if the operands of the command line are valid by specific rules
+ * @param new_command A pointer to the `Command` structure New given Command
+ * @param line The assembly src line that contins the given command
+ * @return 1 if the command is valid, else 0
+ */
+int is_valid_operands_in_command_line(Command *new_command, char* line);
+
+/**
+ * Check if valid operands  by classification type for command with one operand
+ * @param new_command A pointer to the `Command` structure New given Command
+ * @param line The line of assembly code to be processed.
+ * @return 1 if valid, else 0
+ */
+int check_one_operand_command(Command* new_command, char* line);
+
+/**
+ * Check if valid operands  by classification type for command with two operands
+ * @param new_command A pointer to the `Command` structure New given Command
+ * @param line The line of assembly code to be processed.
+ * @return 1 if valid, else 0
+ */
+int check_two_operand_command(Command* new_command, char* line);
+
 #endif //ASSEMBLER_FIRST_RUN_H

@@ -3,15 +3,6 @@
 #include "../include/assembler.h"
 
 
-void get_input_filename(char* file_name, char* given_file_name){
-    strcpy(file_name, INPUT_DIRECTORY_NAME);
-    strcat(file_name, "/");
-    strcat(file_name, given_file_name);
-    strcat(file_name, ".");
-    strcat(file_name, SRC_FILE_NAME_EXTENSION);
-}
-
-
 int main(int argc, char *argv[]) {
     LinesArray *assembly_lines_array = NULL;
     SymbolTable *symbol_table = NULL;
@@ -20,19 +11,15 @@ int main(int argc, char *argv[]) {
     int file_number;
     int number_of_files;
     number_of_files = argc - 1;
-
-
   
     // Check if the correct number of arguments is provided
     if (argc < 2) {
-        fprintf(stderr, "Usage: %s <file_path>\n", argv[0]);
+        print_internal_error(ERROR_CODE_63, "");
         return EXIT_FAILURE;
     }
 
     add_output_directory();
     delete_files_in_directory(OUTPUT_DIRECTORY_NAME);
-
-
 
     if(strcmp(argv[1], "test") == 0){
         if(output_test()){

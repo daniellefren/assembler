@@ -204,15 +204,44 @@ int compare_files(FILE *file1, FILE *file2);
 long get_file_size(FILE *file);
 
 /**
- *
- * @param filename
+ * Replaces the file extension in a file path with a new extension.
+ * @param file_path A pointer to a character array containing the file path to be modified.
+ *                  The file path is modified in place.
+ * @param new_extension A pointer to a string containing the new file extension. This extension
+ *                      should not include a leading dot (`.`) as it is automatically handled
+ *                      by the function.
  */
 void replace_extension(char *file_path, const char *new_extension);
 
+/**
+ * Extracts the filename from a given file path.
+ * @param file_path A pointer to a string containing the full file path.
+ * @return A pointer to the filename within the file path
+ */
 char* get_filename(char *file_path); // TODO - add doco
 
+/**
+ * Constructs the full output file path with the given extension and stores it in the final file name.
+ * @param basic_filename basic_filename A pointer to a character array where the basic filename (derived from the source file name)
+ *                       will be stored after replacing the extension.
+ * @param final_file_name A pointer to a character array where the full output file path will be stored.
+ * @param extension A pointer to a string containing the new file extension (without a leading dot) to be used for the output file.
+ * @param src_file_name A pointer to a string containing the original source file name (with its original extension).
+ */
 void get_output_filename(char *basic_filename, char* final_file_name, const char* extension, char* src_file_name);
 
+/**
+* @brief Constructs the full input file path by combining a directory, given file name, and extension.
+ *
+ * This function takes a base directory name, a given file name, and a file extension,
+ * and combines them to form a complete file path. The resulting file path is stored
+ * in the `file_name` buffer.
+ *
+ * @param file_name A pointer to a character array where the constructed file path will be stored.
+ *                  This buffer must be large enough to hold the entire file path.
+ * @param given_file_name A pointer to the file name provided by the user (without the directory or extension).
+ */
+void get_input_filename(char* file_name, char* given_file_name);
 
 #endif //ASSEMBLER_FILES_HANDLER_H
 

@@ -70,9 +70,23 @@ typedef enum ERROR_CODES {
     ERROR_CODE_56,
     ERROR_CODE_57,
     ERROR_CODE_58,
-    ERROR_CODE_59
+    ERROR_CODE_59,
+    ERROR_CODE_60,
+    ERROR_CODE_61,
+    ERROR_CODE_62,
+    ERROR_CODE_63
 } ERROR_CODES;
 
+/**
+ * Prints an internal error message to the standard error stream.
+ * @param error_code An integer representing the specific error code. This code is used
+ *                   to look up the corresponding error message from a predefined array
+ *                   of error messages.
+ * @param data A pointer to a string containing additional data to be included in the error
+ *             message. If `data` is `NULL`, only the error code and its associated message
+ *             are printed.
+ *
+ */
 void print_internal_error(int error_code, char* data);
 
 #endif //ASSEMBLER_ERRORS_H
