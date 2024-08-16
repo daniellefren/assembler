@@ -74,7 +74,7 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
 
 
     //Declare final ic and dc in lines array
-    lines_array->ic = *ic; //TODO - do i need it? if not, delete from doco
+    lines_array->ic = *ic;
     lines_array->dc = *dc;
 
 
@@ -334,8 +334,6 @@ int is_valid_command_line(Command *new_command, char* line){
     if(new_command->opcode_command_type == MOV || new_command->opcode_command_type == ADD || new_command->opcode_command_type == SUB){
         if(new_command->src_operand->classification_type == IMMEDIATE || new_command->src_operand->classification_type == DIRECT ||
            new_command->src_operand->classification_type == INDIRECT_REGISTER || new_command->src_operand->classification_type == DIRECT_REGISTER) {
-            printf("valueee %s", new_command->src_operand->value);
-            printf("valueee %d", new_command->src_operand->classification_type);
 
             if (new_command->dst_operand->classification_type == DIRECT ||
                 new_command->dst_operand->classification_type == INDIRECT_REGISTER ||

@@ -179,7 +179,7 @@ char *pad_address(int ic);
  * Delete all files from a given directory
  * @param dir_path The path of the dir to delete files from
  */
-void delete_files_in_directory(char *dir_path);
+void delete_files_in_directory(const char *dir_path);
 
 /**
  * Check if file exists

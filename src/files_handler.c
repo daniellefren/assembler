@@ -361,7 +361,7 @@ int search_in_file(char *filename, const char *search_str) {
     return found;
 }
 
-void delete_files_in_directory(char *dir_path) {
+void delete_files_in_directory(const char *dir_path) {
     DIR *dir;
     dir = opendir(dir_path);
     struct dirent *entry;

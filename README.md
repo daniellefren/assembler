@@ -87,7 +87,8 @@ In order to run all Tests, you should run the program the following way -
 ```sh
 ./assembler test
 ```
-if you get the messege `All Tests Passed!!!` well, you can guess what that means
+if you get the messege `All Tests Passed!` well, you can guess what that means
+
 
 # Royi David and Danielle Frenklakh ©
 
