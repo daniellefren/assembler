@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <limits.h>
-#include <stdbool.h>
 #include "../include/second_run.h"
 #include "../include/files_handler.h"
 #include "../include/errors.h"
@@ -14,20 +12,20 @@ void start_second_run(LinesArray *assembly_lines_array, SymbolTable *symbol_tabl
 
     printf("Starting Second run \n");
 
-    // Iterate over each line in the assembly lines array
+    /* Iterate over each line in the assembly lines array */
     for (i = 0; i < assembly_lines_array->number_of_line; ++i){
         p_line = assembly_lines_array->lines[i];
-//        printf("\n****Line number %d Address %d *****  \n\n", i, p_line->starting_address);
+        /*printf("\n****Line number %d Address %d *****  \n\n", i, p_line->starting_address); */
         allocate_binary_instruction(p_line, p_line->binary_line_count, BINARY_LINE_LENGTH);
         fill_instruction_line_binary(p_line, symbol_table);
-        //print_instruction_line(p_line); you can use it to debug the lines
+        /*print_instruction_line(p_line); you can use it to debug the lines */
     }
     create_ob_file(assembly_lines_array, get_filename(file_name));
     printf("Finished Second run!\n\n");
 }
 
 void fill_instruction_line_binary(InstructionLine *instruction_line, SymbolTable *symbol_table){
-    // Pointer to the binary instruction array within the instruction line
+    /* Pointer to the binary instruction array within the instruction line*/
     char *binary_instruction_p;
     int binary_line_count;
 
@@ -38,7 +36,7 @@ void fill_instruction_line_binary(InstructionLine *instruction_line, SymbolTable
         return;
     }
 
-    // Initialize the binary instruction array with zeros
+    /* Initialize the binary instruction array with zeros */
     fill_the_binary_with_zero(binary_instruction_p, BINARY_LINE_LENGTH * binary_line_count);
     if (is_instruction_line_opcode(instruction_line)){
         fill_first_part_binary_opcode(instruction_line, binary_instruction_p);
@@ -49,30 +47,31 @@ void fill_instruction_line_binary(InstructionLine *instruction_line, SymbolTable
     else if (is_instruction_line_directive(instruction_line)){
         fill_binary_directive(instruction_line, binary_instruction_p);
     }
-//    printf("The binary representation of the line is %s \n", instruction_line->binary_instruction);
+    /*printf("The binary representation of the line is %s \n", instruction_line->binary_instruction);*/
 }
 
 void fill_first_part_binary_opcode(InstructionLine *instruction_line, char *binary_string) {
-    int binary_string_number = 1; //first part binary
-    int first_operand_classification = -1; // Set to -1 to indicate no second operand if only one operand is present
+    int binary_string_number; /*first part binary*/
+    int first_operand_classification; /* Set to -1 to indicate no second operand if only one operand is present */
     int second_operand_classification;
-
-    // Convert the opcode value to its binary representation and store it in binary_string
+    binary_string_number = 1;
+    first_operand_classification = -1;
+    /* Convert the opcode value to its binary representation and store it in binary_string*/
     set_binary_string_opcode_representation(instruction_line->command->opcode_command_type, binary_string);
 
-    // Set the ARE (Addressing, Register, or External) representation in the binary string
+    /* Set the ARE (Addressing, Register, or External) representation in the binary string*/
     set_binary_string_ARE_representation(binary_string, binary_string_number, 'a');
 
     if (instruction_line->command->operand_number <= 0) {
-        return; // No operands present, exit function
+        return; /* No operands present, exit function */
 
-    } else if (instruction_line->command->operand_number > 1){ //2 operand mean src and dst
+    } else if (instruction_line->command->operand_number > 1){ /*2 operand mean src and dst*/
         first_operand_classification = instruction_line->command->src_operand->classification_type;
 
     }
-    second_operand_classification = instruction_line->command->dst_operand->classification_type; //1 operand can be just dst
+    second_operand_classification = instruction_line->command->dst_operand->classification_type; /*1 operand can be just dst*/
 
-    // Convert operand classifications to their binary representation and update the binary string
+    /* Convert operand classifications to their binary representation and update the binary string*/
     set_binary_string_operand_representation(first_operand_classification,
                                              second_operand_classification, binary_string);
 }
@@ -84,22 +83,22 @@ void set_binary_string_operand_representation(int first_operand_classification_t
     int offset;
 
     if (is_operand_classification_type_valid(first_operand_classification_type)) {
-        //bit 5 = method 3, bit 6 method 2, bit 7 method 1, bit 8 method 0
+        /*bit 5 = method 3, bit 6 method 2, bit 7 method 1, bit 8 method 0*/
         offset = FIRST_CLASSIFICATION_OFFSET + OPERAND_BINARY_CLASSIFICATION_SIZE - first_operand_classification_type;
         binary_string[offset] = '1';
     }
     if (is_operand_classification_type_valid(second_operand_classification_type)) {
-        //bit 9 = method 3, bit 10 method 2, bit 11 method 1, bit 12 method 0
+        /*bit 9 = method 3, bit 10 method 2, bit 11 method 1, bit 12 method 0*/
         offset = SECOND_CLASSIFICATION_OFFSET + OPERAND_BINARY_CLASSIFICATION_SIZE - second_operand_classification_type;
         binary_string[offset] = '1';
     }
 }
 
 void set_binary_string_ARE_representation(char *binary_string, int binary_string_number, char ARE) {
-    // Calculate the offset based on binary string number
+    /* Calculate the offset based on binary string number*/
     int offset = ARE_STARTING_OFFSET + (BINARY_WORD_LENGTH * (binary_string_number - 1));
 
-    // Adjust the offset based on ARE character
+    /* Adjust the offset based on ARE character*/
     switch (ARE) {
         case 'a':
             offset += 1;
@@ -115,13 +114,13 @@ void set_binary_string_ARE_representation(char *binary_string, int binary_string
             exit(EXIT_FAILURE);
     }
 
-    // Set the ARE bit in the binary string
+    /* Set the ARE bit in the binary string */
     binary_string[offset] = '1';
 }
 
 
 void fill_the_binary_with_zero(char *binary_string, size_t length) {
-    // Check if the length is valid to avoid unnecessary operations or buffer overflows
+    /* Check if the length is valid to avoid unnecessary operations or buffer overflows */
     size_t i;
     if (length <= 0) {
         print_internal_error(ERROR_CODE_37, "");
@@ -142,39 +141,39 @@ void set_binary_string_opcode_representation(int opcode_number, char *binary_str
         exit(EXIT_FAILURE);
     }
 
-    // Mask the opcode number to fit within the size defined by OPCODE_SIZE
+    /* Mask the opcode number to fit within the size defined by OPCODE_SIZE */
     int binary_value = opcode_number & ((1 << OPCODE_SIZE) - 1);
 
-    // Convert the binary value to a string of '0's and '1's
+    /* Convert the binary value to a string of '0's and '1's */
     for (i = 0; i < OPCODE_SIZE; i++) {
-        // Check each bit from the most significant to the least significant
+        /* Check each bit from the most significant to the least significant */
         if (binary_value & (1 << (OPCODE_SIZE - 1 - i))) {
-            binary_string[i] = '1'; // Set '1' if the bit is set
+            binary_string[i] = '1'; /* Set '1' if the bit is set */
         } else {
-            binary_string[i] = '0'; // Set '0' if the bit is not set
+            binary_string[i] = '0'; /* Set '0' if the bit is not set */
         }
     }
 }
 
 
 void fill_second_part_binary_opcode(InstructionLine *instruction_line, char *binary_string, SymbolTable *symbol_table) {
-    int operand_number;          // Number of operands in the instruction
-    Operand *src_operand;        // Pointer to the source operand
-    Operand *dst_operand;        // Pointer to the destination operand
-    int ic;                      // Instruction counter (starting address of the instruction)
+    int operand_number;          /* Number of operands in the instruction */
+    Operand *src_operand;        /* Pointer to the source operand*/
+    Operand *dst_operand;        /* Pointer to the destination operand */
+    int ic;                      /* Instruction counter (starting address of the instruction) */
     char file_name[100];
 
-    // Initialize local variables from the instruction line
+    /* Initialize local variables from the instruction line */
     operand_number = instruction_line->command->operand_number;
     src_operand = instruction_line->command->src_operand;
     dst_operand = instruction_line->command->dst_operand;
     strcpy(file_name, instruction_line->file_name);
     ic = instruction_line->starting_address;
 
-    // Process the binary representation based on the number of operands
+    /* Process the binary representation based on the number of operands */
     switch (operand_number) {
-        case 2: // Instruction has both source and destination operands
-            // Handle the source operand
+        case 2: /* Instruction has both source and destination operands */
+            /* Handle the source operand */
             switch (src_operand->classification_type) {
                 case IMMEDIATE:
                     fill_immediate_binary(src_operand, binary_string, SRC_OPERAND_NUMBER);
@@ -189,7 +188,7 @@ void fill_second_part_binary_opcode(InstructionLine *instruction_line, char *bin
                 case METHOD_UNKNOWN:
                     break;
             }
-            // Handle the destination operand
+            /* Handle the destination operand */
             switch (dst_operand->classification_type) {
                 case IMMEDIATE:
                     fill_immediate_binary(dst_operand, binary_string, DST_OPERAND_NUMBER);
@@ -200,7 +199,7 @@ void fill_second_part_binary_opcode(InstructionLine *instruction_line, char *bin
                 case DIRECT_REGISTER:
                 case INDIRECT_REGISTER:
                     if (is_classification_type_register(src_operand->classification_type)) {
-                        // If both source and destination operands are registers, combine them in the same binary word
+                        /* If both source and destination operands are registers, combine them in the same binary word */
                         fill_register_binary(NULL, dst_operand, binary_string, 1);
                     } else {
                         fill_register_binary(NULL, dst_operand, binary_string, DST_OPERAND_NUMBER);
@@ -210,7 +209,7 @@ void fill_second_part_binary_opcode(InstructionLine *instruction_line, char *bin
                     break;
             }
             break;
-        case 1: // Instruction has only a destination operand
+        case 1: /* Instruction has only a destination operand */
             switch (dst_operand->classification_type) {
                 case IMMEDIATE:
                     fill_immediate_binary(dst_operand, binary_string, 1);
@@ -226,7 +225,7 @@ void fill_second_part_binary_opcode(InstructionLine *instruction_line, char *bin
                     break;
             }
             break;
-        case 0: // Instruction has no operands
+        case 0: /* Instruction has no operands */
             break;
         default:
             print_internal_error(ERROR_CODE_23, int_to_string(operand_number));
@@ -235,21 +234,21 @@ void fill_second_part_binary_opcode(InstructionLine *instruction_line, char *bin
 }
 
 void fill_immediate_binary(Operand *operand, char *binary_string, int binary_word_number) {
-    int int_number_to_binary;  // Integer value to be converted to binary
+    int int_number_to_binary;  /* Integer value to be converted to binary */
 
     if (operand == NULL) {
         print_internal_error(ERROR_CODE_24, " Operand is empty");
         return;
     }
 
-    // Convert the operand's immediate value from string to integer
+    /* Convert the operand's immediate value from string to integer */
     int_number_to_binary = char_to_int(operand->value);
 
-    // Convert the integer to binary and store it in the binary string
+    /* Convert the integer to binary and store it in the binary string */
     int_to_binary_string(int_number_to_binary, binary_string, binary_word_number * BINARY_LINE_LENGTH,
                          INT_TO_BINARY_NUMBER_OF_BITS);
 
-    // Set the ARE (Absolute, Relocatable, External) bit for the binary word
+    /* Set the ARE (Absolute, Relocatable, External) bit for the binary word */
     set_binary_string_ARE_representation(binary_string, binary_word_number + 1, 'a');
 }
 

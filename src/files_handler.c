@@ -38,7 +38,7 @@ void create_ob_file(LinesArray *linesArray, char* file_name){
 FILE* open_ob_file(char *ob_file_name) {
     FILE *file;
 
-    // Attempt to open the file in write mode ("w" will create a new file or overwrite an existing file)
+    /* Attempt to open the file in write mode ("w" will create a new file or overwrite an existing file) */
     file = fopen(ob_file_name, "w");
     if (file == NULL) {
         print_internal_error(ERROR_CODE_48, ob_file_name);
@@ -54,7 +54,7 @@ void add_first_line_to_ob_file(int number_of_command, int number_of_directive, F
         exit(EXIT_FAILURE);
     }
 
-    // Write the number of commands and directives to the first line of the file
+    /* Write the number of commands and directives to the first line of the file */
     fprintf(object_file, "  %d %d\n", number_of_command, number_of_directive);
 }
 
@@ -62,7 +62,7 @@ void add_first_line_to_ob_file(int number_of_command, int number_of_directive, F
 void add_all_command_lines_to_ob_file(LinesArray *lines_array, FILE *object_file){
     int i;
     InstructionLine *p_line;
-    // Iterate over all lines in the lines array
+    /* Iterate over all lines in the lines array */
     for (i = 0; i < lines_array->number_of_line; ++i) {
         p_line = lines_array->lines[i];
         if (p_line == NULL) {
@@ -80,7 +80,7 @@ void add_all_command_lines_to_ob_file(LinesArray *lines_array, FILE *object_file
 void add_all_directive_lines_to_ob_file(LinesArray *lines_array, FILE *object_file){
     int i;
     InstructionLine *p_line;
-    // Iterate over all lines in the lines array
+    /* Iterate over all lines in the lines array */
     for (i = 0; i < lines_array->number_of_line; ++i) {
         p_line = lines_array->lines[i];
         if (p_line == NULL) {
@@ -98,8 +98,8 @@ void add_all_directive_lines_to_ob_file(LinesArray *lines_array, FILE *object_fi
 
 void add_command_line_to_ob_file(InstructionLine *instructionLine, FILE *object_file){
     int i;
-    char *octal_number;            // Pointer to hold the octal string representation of the binary instruction
-    int instruction_address;       // Variable to store the starting address of the instruction
+    char *octal_number;            /* Pointer to hold the octal string representation of the binary instruction */
+    int instruction_address;       /* Variable to store the starting address of the instruction */
 
     // Allocate memory for the octal number string (5 digits + null terminator)
     octal_number = (char *)malloc((OCTAL_LENGTH + 1) * sizeof(char));
