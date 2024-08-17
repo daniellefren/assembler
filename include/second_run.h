@@ -191,4 +191,4 @@ void fill_direct_binary(Operand *operand, char *binary_string, int binary_word_n
  * @param binary_word_number The position in the binary string where the binary word should be stored.
  */
 void fill_register_binary(Operand *src_operand, Operand *dst_operand, char *binary_string, int binary_word_number);
-#endif //ASSEMBLER_SECOND_RUN_H
+#endif

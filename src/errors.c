@@ -59,11 +59,11 @@ Error errors[] = {
         {ERROR_CODE_47,  "Unknown directive"},
 
 
-        // File related errors
+        /* File related errors */
         {ERROR_CODE_48,  "Could not open file"},
         {ERROR_CODE_49,  "Could not open file for writing macros"},
 
-        //Additional errors
+        /*Additional errors */
         {ERROR_CODE_50, "Symbol is not valid -- Already exists"},
         {ERROR_CODE_51, "Symbol is NUll"},
         {ERROR_CODE_52, "Unable to open directory"},

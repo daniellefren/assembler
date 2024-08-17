@@ -287,4 +287,4 @@ int check_one_operand_command(Command* new_command, char* line);
  */
 int check_two_operand_command(Command* new_command, char* line);
 
-#endif //ASSEMBLER_FIRST_RUN_H
+#endif

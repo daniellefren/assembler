@@ -35,7 +35,7 @@ Command COMMANDS_STRUCT[] = {
 void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTable *symbol_table, int file_number, char* file_name) {
     int success;
     char line[MAX_LINE_LENGTH];
-    char *macro_names[MAX_MACRO_NAMES];  // Array to store pointers to macro names
+    char *macro_names[MAX_MACRO_NAMES];  /* Array to store pointers to macro names */
     char expended_macro_file_name[MAX_FILE_NAME_LEN];
     char expended_macro_file_name_with_directive[MAX_FILE_NAME_LEN];
     char src_file_name[MAX_FILE_NAME_LEN];
@@ -45,19 +45,19 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
     int i;
 
     printf("Starting First run\n");
-    *ic = STARTING_IC; // Starting point of assembler
+    *ic = STARTING_IC; /* Starting point of assembler */
 
     init_macro_table(&macro_table);
     init_macro_name_array(macro_names);
-    rewind(file); // Reset file pointer to the beginning before calling pre_run
+    rewind(file); /* Reset file pointer to the beginning before calling pre_run */
 
     strcpy(src_file_name, get_filename(file_name));
 
-    //add file num to expended_macro_file_name to make new file for the assembly input file
+    /*add file num to expended_macro_file_name to make new file for the assembly input file*/
     get_output_filename(expended_macro_file_name, expended_macro_file_name_with_directive, EXPENDED_MACROS_EXTENSION, src_file_name);
 
-    //Pre run in order to expand macros from asse,bly input file
-    success = pre_run(&macro_table, macro_names, file, expended_macro_file_name_with_directive); // Keeps track of the number of encountered macros
+    /*Pre run in order to expand macros from asse,bly input file */
+    success = pre_run(&macro_table, macro_names, file, expended_macro_file_name_with_directive); /* Keeps track of the number of encountered macros */
 
     expanded_macros_file = fopen(expended_macro_file_name_with_directive, "r");
     line_num = 0;
@@ -72,7 +72,7 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
 
     final_actions(lines_array, ic, dc);
 
-//  Free allocated memory for macro names
+/*  Free allocated memory for macro names */
     for (i = 0; i < MAX_MACRO_NAMES; ++i) {
         free(macro_names[i]);
     }
@@ -103,8 +103,8 @@ void final_actions(LinesArray *lines_array, int *ic, int *dc){
             }
         }
     }
-    //Declare final ic and dc in lines array
-    lines_array->ic = *ic; //TODO - do i need it? if not, delete from doco
+    /*Declare final ic and dc in lines array*/
+    lines_array->ic = *ic;
     lines_array->dc = *dc;
 }
 
@@ -120,7 +120,7 @@ int pre_run(MacroTable *macro_table, char **macro_names, FILE *file, char* new_f
     while (fgets(line, MAX_LINE_LENGTH, file) != NULL) {
         if (!ignore_line(line)) {
             if (is_macro_definition_start(line)) {
-                sscanf(line, "%*s %s", macro_name);  // Skip "%macro" and capture the name
+                sscanf(line, "%*s %s", macro_name);  /* Skip "%macro" and capture the name */
                 if(is_known_assembly_keyword(macro_name)){
                     print_internal_error(ERROR_CODE_1, macro_name);
                     return 0;
@@ -130,7 +130,7 @@ int pre_run(MacroTable *macro_table, char **macro_names, FILE *file, char* new_f
                 } else {
                     print_internal_error(ERROR_CODE_26, int_to_string(MAX_MACRO_NAMES));
                 }
-                is_in_macro = handle_macro_definition(file, macro_table, line); // Pass macro_table directly
+                is_in_macro = handle_macro_definition(file, macro_table, line); /* Pass macro_table directly */
             } else if (is_macro_invocation(line, macro_name, macro_names)) {
                 expand_macro(&macro, stdout);
                 write_expanded_macros_to_file(macro_table, new_file_name);
@@ -168,19 +168,19 @@ int is_macro_definition_end(char *line) {
 
 int is_macro_invocation(char *line, char *macro_name, char **macro_names) {
     int i;
-    // Extract potential macro name
+    /* Extract potential macro name */
     sscanf(line, "%s", macro_name);
 
-    // Check if the extracted name is not empty and exists in macro_names
+    /* Check if the extracted name is not empty and exists in macro_names */
     if (macro_name[0] != '\0') {
         for (i = 0; i < MAX_MACRO_NAMES && macro_names[i][0] != '\0'; ++i) {
             if (strcmp(macro_name, macro_names[i]) == 0) {
-                return 1; // Macro name found in the array
+                return 1; /* Macro name found in the array */
             }
         }
     }
 
-    return 0; // Not a macro invocation or name not found
+    return 0; /* Not a macro invocation or name not found */
 }
 
 int handle_macro_definition(FILE *file, MacroTable *macro_table, const char *firstLine) {
@@ -189,7 +189,7 @@ int handle_macro_definition(FILE *file, MacroTable *macro_table, const char *fir
     char macro_name[MAX_SYMBOL_LENGTH];
 
     sscanf(firstLine, "%s", macro_name);
-    strcpy(macro.name, macro_name + 7);  // Skip "%macro"
+    strcpy(macro.name, macro_name + 7);  /* Skip "%macro" */
     macro.lineCount = 0;
 
     while (fgets(line, sizeof(line), file)) {
@@ -227,7 +227,7 @@ int read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, LinesArra
             return 0;
         }
         line = strchr(line, ':') + 1;
-//      Skip spaces after .data directive
+/*      Skip spaces after .data directive */
         while (*line && isspace((unsigned char)*line)) {
             line++;
         }
@@ -403,17 +403,17 @@ int check_two_operand_command(Command* new_command, char* line){
 
 
 void define_operands_from_line(Command *new_command, char* line){
-    // Skip leading spaces
+    /* Skip leading spaces */
     while (*line == ' ' || *line == '\t') {
         line++;
     }
 
-    // Find the command part and move past it
+    /* Find the command part and move past it */
     while (*line != ' ' && *line != '\t' && *line != '\0') {
         line++;
     }
 
-    // Skip spaces after command
+    /* Skip spaces after command */
     while (*line == ' ' || *line == '\t') {
         line++;
     }
@@ -422,15 +422,15 @@ void define_operands_from_line(Command *new_command, char* line){
         case 0:
             return;
         case 1:
-            // Extract the first operand
+            /* Extract the first operand */
             sscanf(line, "%s", new_command->dst_operand->value);
             return;
 
         case 2:
-            // Extract the first operand
+            /* Extract the first operand */
             sscanf(line, "%[^,]", new_command->src_operand->value);
 
-            // Extract the second operand
+            /* Extract the second operand */
             extract_second_operand_from_line(line, new_command);
             return;
 
@@ -441,18 +441,18 @@ void define_operands_from_line(Command *new_command, char* line){
 }
 
 void extract_second_operand_from_line(char* line, Command *new_command){
-    // Move past the first operand and the comma
+    /* Move past the first operand and the comma */
     line = strchr(line, ',');
     if (line != NULL) {
-        line++; // Skip the comma
+        line++; /* Skip the comma */
     }
 
-    // Skip spaces before second operand
+    /* Skip spaces before second operand */
     while (*line == ' ' || *line == '\t') {
         line++;
     }
 
-    // Extract the second operand
+    /* Extract the second operand */
     sscanf(line, "%s", new_command->dst_operand->value);
 }
 
@@ -461,14 +461,14 @@ int define_operand_types(Operand *operand, MacroTable *macro_table, SymbolTable 
 
     operand->type = INVALID;
     if (operand->value[0] == '#') {
-        // Check if the rest is a valid integer
-        length = check_if_valid_integer(operand->value + 1); //The first is # so send the rest
+        /* Check if the rest is a valid integer */
+        length = check_if_valid_integer(operand->value + 1); /*The first is # so send the rest */
         if(length){
             operand->type = INTEGER;
         }
     }
     else if (operand->value[0] == '*') {
-        if (operand->value[1] == 'r' && operand->value[2] >= '0' && operand->value[2] <= '7'){ //TODO - make const
+        if (operand->value[1] == 'r' && operand->value[2] >= '0' && operand->value[2] <= '7'){
             operand->type = REGISTER;
         }
     }
@@ -490,34 +490,34 @@ int is_valid_symbol(const char *symbol_name, MacroTable *macro_table, SymbolTabl
     int i;
     size_t length;
 
-    //Check length of the symbol
+    /*Check length of the symbol */
     length = strlen(symbol_name);
     if (length == 0 || length > MAX_SYMBOL_LENGTH) {
         print_internal_error(ERROR_CODE_5, symbol_name);
         return 0;
     }
 
-    //check if not assembly keyword
+    /*check if not assembly keyword */
     if(is_known_assembly_keyword(symbol_name)){
         print_internal_error(ERROR_CODE_3, symbol_name);
         return 0;
     }
 
-    //check if symbol matches an existing macro name
+    /*check if symbol matches an existing macro name */
     for (i = 0; i < macro_table->count; i++) {
         if (strcmp(symbol_name, macro_table->macros[i].name) == 0) {
             print_internal_error(ERROR_CODE_4, symbol_name);
-            return 0; // symbol matches an existing macro name
+            return 0; /* symbol matches an existing macro name */
         }
     }
 
-    //Check if the first character is a letter
+    /*Check if the first character is a letter */
     if (!isalpha((unsigned char)symbol_name[0])) {
         print_internal_error(ERROR_CODE_6, symbol_name);
         return 0;
     }
 
-    //  Check if other characters are letters/numbers
+    /*  Check if other characters are letters/numbers */
     for (i = 1; i < length; ++i) {
         if (!isalnum((unsigned char)symbol_name[i])) {
             print_internal_error(ERROR_CODE_7, symbol_name);
@@ -525,13 +525,13 @@ int is_valid_symbol(const char *symbol_name, MacroTable *macro_table, SymbolTabl
         }
     }
 
-    return 1; // Valid symbol
+    return 1; /* Valid symbol */
 }
 
 int find_number_of_lines_in_binary(Command *new_command){
-    int number_of_binary_lines = new_command->operand_number + 1; //The default for number of binary lines for data word is the operand number
+    int number_of_binary_lines = new_command->operand_number + 1; /*The default for number of binary lines for data word is the operand number */
 
-    //If both operands are indirective or directive register classification, then they share the same data word
+    /*If both operands are indirective or directive register classification, then they share the same data word*/
     if(new_command->operand_number == 2){
         if ((new_command->src_operand->classification_type == INDIRECT_REGISTER ||
              new_command->src_operand->classification_type == DIRECT_REGISTER) &&
@@ -547,28 +547,28 @@ int find_number_of_lines_in_binary(Command *new_command){
 
 int classify_operand(Operand *new_operand) {
     int length;
-    new_operand->classification_type = METHOD_UNKNOWN; // set default
+    new_operand->classification_type = METHOD_UNKNOWN; /* set default*/
 
-    // Immediate addressing - starts with #
+    /* Immediate addressing - starts with #*/
     if (new_operand->type == INTEGER) {
-        new_operand->classification_type = IMMEDIATE; // Immediate addressing
-        length = check_if_valid_integer(new_operand->value + 1); //The first is # so send the rest
+        new_operand->classification_type = IMMEDIATE; /* Immediate addressing*/
+        length = check_if_valid_integer(new_operand->value + 1); /*The first is # so send the res*/
         extract_numbers(new_operand->value, length);
     }
     else if(new_operand->type == SYMBOL){
-        new_operand->classification_type = DIRECT; // Direct addressing
+        new_operand->classification_type = DIRECT; /* Direct addressing */
     }
 
-    // Register indirect addressing - starts with *
+    /* Register indirect addressing - starts with */
     else if (new_operand->value[0] == '*' && new_operand->type == REGISTER) {
-        new_operand->classification_type = INDIRECT_REGISTER; // Indirect Register addressing
+        new_operand->classification_type = INDIRECT_REGISTER; /* Indirect Register addressing*/
         extract_numbers(new_operand->value, sizeof(new_operand->value));
 
     }
 
-    // Register addressing - starts with r followed by a digit
+    /* Register addressing - starts with r followed by a digit */
     else if (new_operand->type == REGISTER) {
-        new_operand->classification_type = DIRECT_REGISTER; // Direct Register addressing
+        new_operand->classification_type = DIRECT_REGISTER; /* Direct Register addressing */
         extract_numbers(new_operand->value, length);
     }
     else{
@@ -596,22 +596,22 @@ void get_operands_data_for_command(char* command_name, Command *new_command){
 int find_symbol(char *line, char *symbol) {
     char *start;
     size_t len;
-    // Skip leading whitespace
+    /* Skip leading whitespace */
     while (*line && isspace((unsigned char)*line)) {
         line++;
     }
 
     start = line;
 
-    // Find the end of the symbol (until space or colon)
+    /* Find the end of the symbol (until space or colon) */
     while (*start && !isspace((unsigned char)*start) && *start != ':') {
         start++;
     }
-    // If a colon is found, we assume it is a symbol
+    /* If a colon is found, we assume it is a symbol */
     if (*start == ':') {
         len = start - line;
         strncpy(symbol, line, len);
-        symbol[len] = '\0'; // Null-terminate the symbol
+        symbol[len] = '\0'; /* Null-terminate the symbol*/
 
         return 1;
     }
@@ -627,13 +627,13 @@ int is_known_assembly_keyword(const char *key) {
 
     for (i = 0; i < COMMANDS_COUNT; ++i) {
         if (strcmp(key, COMMANDS[i]) == 0) {
-            return 1; //key is a known command
+            return 1; /*key is a known command */
         }
     }
 
     for (i = 0; i < DIRECTIVES_COUNT; ++i) {
         if (strcmp(key, DIRECTIVES[i]) == 0) {
-            return 1; //key is a known directive
+            return 1; /*key is a known directive */
         }
     }
 
@@ -657,15 +657,15 @@ int is_command(char *line) {
 int is_directive(char *line) {
     int i;
     size_t len;
-    // Skip leading spaces
+    /* Skip leading spaces */
     while (*line && isspace((unsigned char)*line)) {
         line++;
     }
 
-    // Check if the line starts with a dot
+    /* Check if the line starts with a dot */
     if (*line == '.') {
         line++;
-        // Iterate over the directives array and check if any directive matches
+        /* Iterate over the directives array and check if any directive matches */
         for (i = 0; i < sizeof(DIRECTIVES) / sizeof(DIRECTIVES[0]); i++) {
             len = strlen(DIRECTIVES[i]);
             if (strncmp(line, DIRECTIVES[i], len) == 0 && isspace((unsigned char)line[len])) {
@@ -686,7 +686,7 @@ int handle_directives(char *line, int *dc, SymbolTable *symbol_table, int* ic, i
     new_instruction_line->instruction_type=DATA_DIRECTIVE;
     new_instruction_line->starting_address=*dc;
 
-    // Read the directive type from the line
+    /* Read the directive type from the line */
     if (sscanf(line, "%s", directive_type) != 1) {
         print_internal_error(ERROR_CODE_32, "");
         new_directive->type = NOT_DIRECTIVE;
@@ -757,10 +757,10 @@ int handle_extern_directive(char *line, Directive *new_directive, SymbolTable *s
     }
     Symbol *sss = find_symbol_by_name(symbol_table, symbol_name);
 
-    symbol->address = 0; // external address, will be filled by linker
+    symbol->address = 0; /* external address, will be filled by linker */
     symbol->type = EXTERN_DIRECTIVE;
     symbol->is_extern = 1;
-//    add_extern_to_externals_file(symbol, file_number, ic);
+/*    add_extern_to_externals_file(symbol, file_number, ic); */
 
     return 1;
 }
@@ -772,32 +772,32 @@ void handle_string_directive(char *line, Directive *new_directive, InstructionLi
     size_t length;
     new_directive->type = STRING;
 
-    // Find the first quote
+    /* Find the first quote */
     start = strchr(line, '\"');
     if (start) {
-        // Find the closing quote
+        /* Find the closing quote */
         end = strchr(start + 1, '\"');
         if (end) {
-            // Calculate the length of the string inside the quotes
+            /* Calculate the length of the string inside the quotes */
             length = end - start - 1;
 
-            // Allocate memory for the values array
-            new_directive->value = (char **)malloc(sizeof(char *) * 2); // One for the string and one for NULL terminator
+            /* Allocate memory for the values array */
+            new_directive->value = (char **)malloc(sizeof(char *) * 2); /* One for the string and one for NULL terminator */
             if (new_directive->value == NULL) {
                 print_internal_error(ERROR_CODE_9, "new_directive->value - data");
                 exit(EXIT_FAILURE);
             }
 
-            // Allocate memory for the string and copy it
+            /* Allocate memory for the string and copy it */
             new_directive->value[0] = (char *)malloc(length + 1);
             if (new_directive->value[0] == NULL) {
                 print_internal_error(ERROR_CODE_9, "new_directive->value - string");
                 exit(EXIT_FAILURE);
             }
             strncpy(new_directive->value[0], start + 1, length);
-            new_directive->value[0][length] = '\0'; // Null-terminate the string
+            new_directive->value[0][length] = '\0'; /* Null-terminate the string */
 
-            // Set the second element to NULL
+            /* Set the second element to NULL */
             new_directive->value[1] = NULL;
             new_directive->data_values_count = 1;
             instruction_line->binary_line_count=length + 1;
@@ -814,10 +814,10 @@ void handle_data_directive(char *line, Directive *new_directive, InstructionLine
     int i;
     char *end;
     int number;
-    char buffer[12]; // Buffer to hold the string representation of the number
+    char buffer[12]; /* Buffer to hold the string representation of the number */
 
     new_directive->type = DATA;
-    // Move the pointer to the first character after ".data"
+    /* Move the pointer to the first character after ".data" */
     ptr = line + strlen(".data");
 
     values_count = 0;
@@ -828,9 +828,9 @@ void handle_data_directive(char *line, Directive *new_directive, InstructionLine
         }
         if (isdigit(*ptr) || (*ptr == '-' && isdigit(*(ptr + 1))) || (*ptr == '+' && isdigit(*(ptr + 1)))) {
             number = strtol(ptr, &end, 10);
-            ptr = end; // Move ptr to the end of the parsed number
+            ptr = end; /* Move ptr to the end of the parsed number */
 
-            // Convert number to string and store in values
+            /* Convert number to string and store in values */
             snprintf(buffer, sizeof(buffer), "%d", number);
 
             values[values_count] = strdup(buffer);
@@ -841,14 +841,14 @@ void handle_data_directive(char *line, Directive *new_directive, InstructionLine
 
     }
 
-    // Allocate memory for the values in the directive
+    /* Allocate memory for the values in the directive */
     new_directive->value = (char **)malloc(values_count * sizeof(char *));
     if (new_directive->value == NULL) {
         print_internal_error(ERROR_CODE_13, "");
         exit(EXIT_FAILURE);
     }
 
-    // Copy the values to the directive
+    /* Copy the values to the directive */
     for (i = 0; i < values_count; i++) {
         new_directive->value[i] = values[i];
     }
@@ -872,9 +872,9 @@ Symbol *add_new_symbol(SymbolTable *symbol_table, char* symbol_name) {
         exit(EXIT_FAILURE);
     }
     strcpy(new_symbol->name, symbol_name);
-//     Check if the array needs to be resized
+/*     Check if the array needs to be resized */
     if (symbol_table->size >= symbol_table->capacity) {
-//         Double the capacity or set an initial capacity if it's zero
+/*         Double the capacity or set an initial capacity if it's zero */
         size_t new_capacity = (symbol_table->capacity == 0) ? 10 : symbol_table->capacity * 2;
         Symbol **new_symbols = realloc(symbol_table->symbols, new_capacity * sizeof(Symbol *));
         if (!new_symbols) {
@@ -887,7 +887,7 @@ Symbol *add_new_symbol(SymbolTable *symbol_table, char* symbol_name) {
         symbol_table->capacity = new_capacity;
     }
 
-    // Add the new instruction line to the array
+    /* Add the new instruction line to the array */
     symbol_table->symbols[symbol_table->size] = new_symbol;
     symbol_table->size++;
     return new_symbol;

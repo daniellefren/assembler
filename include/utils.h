@@ -1,4 +1,3 @@
-
 #ifndef ASSEMBLER_UTILS_H
 #define ASSEMBLER_UTILS_H
 #include "../include/structs.h"
@@ -203,4 +202,4 @@ char* int_to_string(int number);
  */
 void strip_newline(char *line);
 
-#endif //ASSEMBLER_UTILS_H
+#endif
