@@ -218,7 +218,7 @@ void replace_extension(char *file_path, const char *new_extension);
  * @param file_path A pointer to a string containing the full file path.
  * @return A pointer to the filename within the file path
  */
-char* get_filename(char *file_path); // TODO - add doco
+char* get_filename(char *file_path);
 
 /**
  * Constructs the full output file path with the given extension and stores it in the final file name.

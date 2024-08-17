@@ -4,7 +4,7 @@
 Error errors[] = {
         {ERROR_CODE_0,  "No Error"},
 
-        // Reading assembly lines
+        /* Reading assembly lines */
         {ERROR_CODE_1,  "Macro is a known assembly keyword"},
         {ERROR_CODE_2,  "Symbol is not valid -- a space between the symbol and the ':'"},
         {ERROR_CODE_3,  "Symbol is not valid -- is a known assembly word"},
@@ -15,7 +15,7 @@ Error errors[] = {
         {ERROR_CODE_8,  "Program stopped running because of incorrect given assembly code"},
 
 
-        // Memory allocation failed
+        /* Memory allocation failed */
         {ERROR_CODE_9,  "Unable to allocate memory"},
         {ERROR_CODE_10,  "Unable to allocate memory for macro table"},
         {ERROR_CODE_11,  "Unable to allocate memory for symbol"},
@@ -31,7 +31,7 @@ Error errors[] = {
         {ERROR_CODE_21,  "Unable to allocate memory for macro name in Macro"},
         {ERROR_CODE_22,  "Unable to allocate memory for binary instruction in Instruction line"},
 
-        //Internal errors
+        /*Internal errors */
         {ERROR_CODE_23,  "Invalid number of operands"},
         {ERROR_CODE_24,  "Not valid operand type"},
         {ERROR_CODE_25,  "Not valid classification type"},

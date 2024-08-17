@@ -9,7 +9,7 @@
 #include "../include/errors.h"
 
 void lower_string(char *string){
-// Convert command_name to lowercase
+/* Convert command_name to lowercase */
     int i;
     for (i = 0; string[i]; i++) {
         string[i] = tolower(string[i]);
@@ -19,17 +19,17 @@ void lower_string(char *string){
 char *trim_spaces(char *str) {
     char *end;
 
-    // Trim leading space
+    /* Trim leading space */
     while (isspace((unsigned char)*str)) str++;
 
-    if (*str == 0)  // All spaces?
+    if (*str == 0)  /* All spaces? */
         return str;
 
-    // Trim trailing space
+    /* Trim trailing space */
     end = str + strlen(str) - 1;
     while (end > str && isspace((unsigned char)*end)) end--;
 
-    // Write new null terminator character
+    /* Write new null terminator character */
     end[1] = '\0';
 
     return str;
@@ -43,7 +43,7 @@ void string_append(const char *first_string, const char *second_string, char *ap
         exit(EXIT_FAILURE);
     }
 
-    // Copy first_string and append second_string
+    /* Copy first_string and append second_string */
     strcpy(appended_string, first_string);
     strcat(appended_string, second_string);
 }
@@ -105,12 +105,12 @@ void print_instruction_line(InstructionLine *instructionLine) {
 
 
 void erase_file_data(const char *filename) {
-    FILE *file = fopen(filename, "w"); // Open the file in write mode
+    FILE *file = fopen(filename, "w"); /* Open the file in write mode */
     if (file == NULL) {
         print_internal_error(ERROR_CODE_48, filename);
         exit(EXIT_FAILURE);
     }
-    fclose(file); // Closing the file truncates it to zero length
+    fclose(file); /* Closing the file truncates it to zero length */
 }
 
 void extract_numbers(char *input, int length) {
@@ -118,7 +118,7 @@ void extract_numbers(char *input, int length) {
     const char *p = input;
     char *numbers;
 
-    // Allocate memory for the new string
+    /* Allocate memory for the new string */
     numbers = (char *)malloc((length + 1) * sizeof(char));
     if (numbers == NULL) {
         print_internal_error(ERROR_CODE_9, "extract_numbers");
@@ -131,7 +131,7 @@ void extract_numbers(char *input, int length) {
         if (isdigit((unsigned char)*p)) {
             *q++ = *p++;
         } else if (*p == '-' && isdigit((unsigned char)*(p + 1))) {
-            *q++ = *p++; // Add the negative sign and move to the next character
+            *q++ = *p++; /* Add the negative sign and move to the next character */
             while (isdigit((unsigned char)*p)) {
                 *q++ = *p++;
             }
@@ -140,7 +140,7 @@ void extract_numbers(char *input, int length) {
         }
     }
 
-    *q = '\0'; // Null-terminate the new string
+    *q = '\0'; /* Null-terminate the new string */
     strcpy(input, numbers);
 
     free(numbers);
@@ -151,13 +151,13 @@ int char_to_int(char *str) {
     int sign = 1;
     int num = 0;
 
-    // Check for optional negative sign
+    /* Check for optional negative sign */
     if (*str == '-') {
         sign = -1;
         str++;
     }
 
-    // Convert string to integer
+    /* Convert string to integer */
     while (*str >= '0' && *str <= '9') {
         num = num * 10 + (*str - '0');
         str++;
@@ -170,17 +170,17 @@ void extract_word_after_keyword(const char *input, char *output, const char *key
     const char *p = strstr(input, keyword);
 
     if (p != NULL) {
-        p += strlen(keyword); // Move the pointer past the keyword
+        p += strlen(keyword); /* Move the pointer past the keyword */
         while (isspace((unsigned char)*p)) {
-            p++; // Skip any leading whitespace
+            p++; /* Skip any leading whitespace */
         }
-        // Copy the word after the keyword to the output buffer
+        /* Copy the word after the keyword to the output buffer */
         while (*p != '\0' && !isspace((unsigned char)*p)) {
             *output++ = *p++;
         }
-        *output = '\0'; // Null-terminate the output string
+        *output = '\0'; /* Null-terminate the output string */
     } else {
-        output[0] = '\0'; // If the keyword is not found, output is an empty string
+        output[0] = '\0'; /* If the keyword is not found, output is an empty string */
     }
 }
 
@@ -209,28 +209,28 @@ int is_directive_string(Directive *directive) {
 }
 
 void fill_octal_string_from_binary(const char *binary_string, int number_of_binary_bits, int offset, char *octal_string) {
-    char octal_value[OCTAL_LENGTH + 1] = {0};  // Buffer for octal value (assuming up to 5 octal digits + null)
-    char extracted_binary[EXTRACTED_STRING_LENGTH] = {0};  // Buffer for extracted binary portion (up to 16 bits)
-    // Check for invalid input
+    char octal_value[OCTAL_LENGTH + 1] = {0};  /* Buffer for octal value (assuming up to 5 octal digits + null) */
+    char extracted_binary[EXTRACTED_STRING_LENGTH] = {0};  /* Buffer for extracted binary portion (up to 16 bits) */
+    /* Check for invalid input */
     if (number_of_binary_bits <= 0 || offset < 0 || offset + number_of_binary_bits > strlen(binary_string)) {
         print_internal_error(ERROR_CODE_42, "");
         return;
     }
 
-    // Ensure the number of bits is a multiple of 3
+    /* Ensure the number of bits is a multiple of 3 */
     if (number_of_binary_bits % 3 != 0) {
         print_internal_error(ERROR_CODE_43, int_to_string(number_of_binary_bits));
         return;
     }
 
-    // Extract the desired portion of the binary string
+    /* Extract the desired portion of the binary string */
     strncpy(extracted_binary, binary_string + offset, number_of_binary_bits);
-    extracted_binary[number_of_binary_bits] = '\0';  // Null-terminate the extracted portion
+    extracted_binary[number_of_binary_bits] = '\0';  /* Null-terminate the extracted portion */
 
-    // Convert binary to octal
+    /* Convert binary to octal */
     binary_to_octal(extracted_binary, octal_value);
 
-    // Copy the octal value to the output string
+    /* Copy the octal value to the output string */
     strcpy(octal_string, octal_value);
 }
 
@@ -246,19 +246,19 @@ void binary_to_octal(const char *binary_string, char *octal_string) {
 
     value = 0;
 
-    // Initialize octal_string with '0's and null-terminate
+    /* Initialize octal_string with '0's and null-terminate */
     memset(octal_string, '0', OCTAL_LENGTH);
     octal_string[OCTAL_LENGTH] = '\0';
 
-    // Convert binary string to decimal
+    /* Convert binary string to decimal */
     for (i = 0; i < BINARY_WORD_LENGTH; i++) {
         value = (value << 1) | (binary_string[i] - '0');
     }
 
-    // Convert decimal to octal
+    /* Convert decimal to octal */
     for (i = OCTAL_LENGTH - 1; i >= 0; i--) {
-        octal_string[i] = (value & 7) + '0';  // Extract the last 3 bits and convert to octal
-        value >>= 3; // Shift right by 3 bits (1 octal digit)
+        octal_string[i] = (value & 7) + '0';  /* Extract the last 3 bits and convert to octal */
+        value >>= 3; /* Shift right by 3 bits (1 octal digit) */
     }
 }
 
@@ -266,36 +266,36 @@ int check_if_valid_integer(char *str) {
     int i = 0;
     int length = 0;
 
-    // Check for an optional negative sign
+    /* Check for an optional negative sign */
     if (str[i] == '-') {
         i++;
     }
 
-    // Ensure that the string contains at least one digit
+    /* Ensure that the string contains at least one digit */
     if (str[i] == '\0') {
-        return 0;  // No digits found, invalid integer
+        return 0;  /* No digits found, invalid integer */
     }
 
-    // Check each character to ensure it's a digit
+    /* Check each character to ensure it's a digit */
     for (; str[i] != '\0'; i++) {
         if (!isdigit((unsigned char)str[i])) {
-            return 0;  // Invalid character found
+            return 0;  /* Invalid character found */
         }
         length++;
     }
 
-    return length;  // All checks passed, valid integer
+    return length;  /* All checks passed, valid integer */
 }
 
 void int_to_binary_string(int num, char *binary_string, int offset, int num_bits) {
     int i;
 
-    // Handle negative numbers using two's complement
+    /* Handle negative numbers using two's complement */
     if (num < 0) {
-        num = (1 << num_bits) + num;  // Convert negative num to its two's complement
+        num = (1 << num_bits) + num;  /* Convert negative num to its two's complement */
     }
 
-    // Convert to binary representation
+    /* Convert to binary representation */
     for (i = 0; i < num_bits; i++) {
         binary_string[offset + num_bits - 1 - i] = (num & (1 << i)) ? '1' : '0';
     }
@@ -305,13 +305,13 @@ void int_to_binary_string(int num, char *binary_string, int offset, int num_bits
 void char_to_binary_string(char c, char *binary_string, int offset, int num_bits) {
     int i;
     unsigned char uc;
-    // Ensure binary_string is large enough
+    /* Ensure binary_string is large enough */
     if (binary_string == NULL || offset + num_bits > sizeof(char) * strlen(binary_string)) {
         print_internal_error(ERROR_CODE_45, "");
         return;
     }
 
-    // Convert character to binary representation
+    /* Convert character to binary representation */
     uc = (unsigned char)c;
 
     for (i = offset + num_bits - 1; i >= offset; i--) {
@@ -334,7 +334,7 @@ int ignore_line(char *line) {
 }
 
 char* int_to_string(int number) {
-    char *str = (char *)malloc(20 * sizeof(char)); // Allocate memory on the heap
+    char *str = (char *)malloc(20 * sizeof(char)); /* Allocate memory on the heap */
     if (str == NULL) {
         print_internal_error(ERROR_CODE_9, "int_to_string");
         exit(EXIT_FAILURE);

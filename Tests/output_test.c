@@ -27,7 +27,7 @@ int output_test() {
 
     printf("Starting tests\n");
 
-    // Define the test cases
+    /* Define the test cases */
 
     char *test[] = {"./Tests/Test_global/test1.as",
                     "./Tests/Test_entries/test_entry.as",
@@ -37,13 +37,13 @@ int output_test() {
 
     number_of_tests = count_strings(test);
     is_success = 1;
-    // Iterate over each test case
+    /* Iterate over each test case*/
     for (i = 0; i < number_of_tests; i++) {
-        //Get input file name
+        /*Get input file name */
         strcpy(input_code_fname, test[i]);
         strcpy(output_correct_fname, input_code_fname);
 
-        // Run the assembler on the test file
+        /* Run the assembler on the test file */
         run_assembler_on_file(assembly_lines_array, symbol_table, input_code_fname, i + 1);
         get_output_filename(output_code_fname, output_code_fname_with_directive, OBJECT_FILE_EXTENSION, get_filename(test[i]));
 
@@ -65,7 +65,7 @@ int compare_output_files(char* output_code_fname, char* input_code_fname, char* 
     replace_extension(output_code_fname, file_extension);
     replace_extension(output_correct_fname, file_extension);
 
-    // Compare object files
+    /* Compare object files */
     if (open_two_files_and_compare(output_correct_fname, output_code_fname) == 0) {
         printf("The output test Failed! \nFor input file %s and output object file %s\n",
                input_code_fname, output_code_fname);
