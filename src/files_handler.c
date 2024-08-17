@@ -2,6 +2,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <sys/stat.h>
+#include <string.h>
+#include <stdio.h>
 #include <sys/types.h>
 #include <dirent.h>
 #include <unistd.h>
@@ -161,6 +163,7 @@ void add_directive_line_to_ob_file(InstructionLine *instructionLine, FILE *objec
 }
 
 void add_entry_to_entries_file(char *symbol_name, char* file_name, int symbol_address){
+    char *new_ic;
     char entries_file_name[MAX_FILE_NAME_LEN];
     char entries_file_name_and_directive[MAX_FILE_NAME_LEN];
     FILE *file;
@@ -175,7 +178,8 @@ void add_entry_to_entries_file(char *symbol_name, char* file_name, int symbol_ad
     if(search_in_file(entries_file_name_and_directive, symbol_name)){
         return;
     }
-    char *new_ic = malloc(sizeof(char) *5);
+
+    new_ic = malloc(sizeof(char) *5);
     strcpy(new_ic, pad_address(symbol_address));
 
     fprintf(file, "%s %s\n", symbol_name, new_ic);
@@ -186,6 +190,7 @@ void add_entry_to_entries_file(char *symbol_name, char* file_name, int symbol_ad
 
 
 void add_extern_to_externals_file(char *symbol_name, char *file_name, int ic){
+    FILE *file;
     char externals_file_name[MAX_FILE_NAME_LEN];
     char externals_file_name_and_directive[MAX_FILE_NAME_LEN];
     char *new_ic = malloc(sizeof(char) *5);
@@ -198,7 +203,7 @@ void add_extern_to_externals_file(char *symbol_name, char *file_name, int ic){
         return;
     }
 
-    FILE *file = fopen(externals_file_name_and_directive, "a");
+    file = fopen(externals_file_name_and_directive, "a");
     if (file == NULL) {
         print_internal_error(ERROR_CODE_48, externals_file_name_and_directive);
         exit(EXIT_FAILURE);

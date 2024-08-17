@@ -135,14 +135,14 @@ void fill_the_binary_with_zero(char *binary_string, size_t length) {
 
 void set_binary_string_opcode_representation(int opcode_number, char *binary_string) {
     int i;
-
+    int binary_value;
     if (binary_string == NULL) {
         print_internal_error(ERROR_CODE_38, "");
         exit(EXIT_FAILURE);
     }
 
     /* Mask the opcode number to fit within the size defined by OPCODE_SIZE */
-    int binary_value = opcode_number & ((1 << OPCODE_SIZE) - 1);
+    binary_value = opcode_number & ((1 << OPCODE_SIZE) - 1);
 
     /* Convert the binary value to a string of '0's and '1's */
     for (i = 0; i < OPCODE_SIZE; i++) {

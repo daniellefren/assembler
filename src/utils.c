@@ -69,7 +69,7 @@ void print_directive(Directive *directive) {
 
     if (is_directive_data(directive)) {
         if (directive->data_values_count > 0) {
-            printf("The length of the directive is %zu and the values are:", directive->data_values_count);
+            printf("The length of the directive is %lu\n", (unsigned long) directive->data_values_count);
             for (i = 0; i < directive->data_values_count; ++i) {
                 if (directive->value != NULL) {
                     printf(" %s", directive->value[i]);
@@ -81,8 +81,8 @@ void print_directive(Directive *directive) {
         }
     } else {
         if (directive->value != NULL) {
-            printf("The length of the directive is %zu and the value is %s\n",
-                   directive->data_values_count, directive->value[0]);
+            printf("The length of the directive is %lu and the value is %s\n",
+                   (unsigned long) directive->data_values_count, directive->value[0]);
         } else {
             print_internal_error(ERROR_CODE_41, "");
         }

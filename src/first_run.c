@@ -5,7 +5,6 @@
 
 #include "../include/structs.h"
 #include "../include/first_run.h"
-#include "../include/constants.h"
 #include "../include/utils.h"
 #include "../include/files_handler.h"
 #include "../include/errors.h"
@@ -755,7 +754,6 @@ int handle_extern_directive(char *line, Directive *new_directive, SymbolTable *s
     if (!symbol) {
         return 0;
     }
-    Symbol *sss = find_symbol_by_name(symbol_table, symbol_name);
 
     symbol->address = 0; /* external address, will be filled by linker */
     symbol->type = EXTERN_DIRECTIVE;

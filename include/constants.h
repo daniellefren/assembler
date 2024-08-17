@@ -28,7 +28,7 @@
 #define INT_TO_BINARY_NUMBER_OF_BITS 12
 #define REGISTER_TO_BINARY_NUMBER_OF_BITS 3
 #define EXTRACTED_STRING_LENGTH 17
-static const char *COMMANDS[] = {
+static const char *COMMANDS[] = { /*TODO - delete */
         "mov", "cmp", "add", "sub", "lea", "clr", "not", "inc", "dec", "jmp", "bne",
         "red", "prn", "jsr", "rts", "stop"
 };
