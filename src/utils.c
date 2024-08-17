@@ -35,19 +35,6 @@ char *trim_spaces(char *str) {
     return str;
 }
 
-void string_append(const char *first_string, const char *second_string, char *appended_string, size_t appended_string_size) {
-    size_t first_string_size = strlen(first_string);
-    size_t second_string_size = strlen(second_string);
-    if (first_string_size + second_string_size + 1 > appended_string_size) {
-        print_internal_error(ERROR_CODE_40, "");
-        exit(EXIT_FAILURE);
-    }
-
-    /* Copy first_string and append second_string */
-    strcpy(appended_string, first_string);
-    strcat(appended_string, second_string);
-}
-
 
 void print_command(Command *command) {
     if (command->operand_number > 0) {
@@ -104,7 +91,7 @@ void print_instruction_line(InstructionLine *instructionLine) {
 
 
 
-void erase_file_data(const char *filename) {
+void erase_file_data(char *filename) {
     FILE *file = fopen(filename, "w"); /* Open the file in write mode */
     if (file == NULL) {
         print_internal_error(ERROR_CODE_48, filename);
@@ -166,7 +153,7 @@ int char_to_int(char *str) {
     return num * sign;
 }
 
-void extract_word_after_keyword(const char *input, char *output, const char *keyword) {
+void extract_word_after_keyword(char *input, char *output, char *keyword) {
     const char *p = strstr(input, keyword);
 
     if (p != NULL) {
@@ -190,10 +177,6 @@ void remove_first_character(char *str) {
     }
 }
 
-void add_number_to_string(char *buffer, int buffer_size, const char* source, int number) {
-    snprintf(buffer, buffer_size, source, number);
-}
-
 int is_directive_data(Directive *directive) {
     if (directive->type == DATA) {
         return 1;
@@ -208,7 +191,7 @@ int is_directive_string(Directive *directive) {
     return 0;
 }
 
-void fill_octal_string_from_binary(const char *binary_string, int number_of_binary_bits, int offset, char *octal_string) {
+void fill_octal_string_from_binary(char *binary_string, int number_of_binary_bits, int offset, char *octal_string) {
     char octal_value[OCTAL_LENGTH + 1] = {0};  /* Buffer for octal value (assuming up to 5 octal digits + null) */
     char extracted_binary[EXTRACTED_STRING_LENGTH] = {0};  /* Buffer for extracted binary portion (up to 16 bits) */
     /* Check for invalid input */
@@ -235,7 +218,7 @@ void fill_octal_string_from_binary(const char *binary_string, int number_of_bina
 }
 
 
-void binary_to_octal(const char *binary_string, char *octal_string) {
+void binary_to_octal(char *binary_string, char *octal_string) {
     int i;
     int value;
 

@@ -19,15 +19,6 @@ char *trim_spaces(char *str);
 char* itoa(int val, int base);
 
 /**
- * Append one string to another, ensuring the destination buffer is large enough.
- * @param first_string - The first string to append.
- * @param second_string - The second string to append.
- * @param appended_string - The destination buffer for the appended string.
- * @param appended_string_size - The size of the destination buffer.
- */
-void string_append(const char *first_string, const char *second_String, char *appended_string, size_t appended_string_size);
-
-/**
  * Print the details of a command structure.
  * @param command - A pointer to the Command structure to print.
  */
@@ -49,7 +40,7 @@ void print_directive(Directive *directive);
  * Erase the contents of a file by truncating it.
  * @param filename - The name of the file to erase.
  */
-void erase_file_data(const char *filename);
+void erase_file_data(char *filename);
 
 /**
  * Extract numeric characters, including negative numbers, from a string.
@@ -101,7 +92,7 @@ int is_directive_string(Directive *directive);
  * @param octal_string The buffer to store the resulting octal string.
  *
  */
-void fill_octal_string_from_binary(const char *binary_string, int number_of_binary_bits, int offset, char *octal_string);
+void fill_octal_string_from_binary(char *binary_string, int number_of_binary_bits, int offset, char *octal_string);
 
 /**
  * Converts a binary string to an octal string.
@@ -113,7 +104,7 @@ void fill_octal_string_from_binary(const char *binary_string, int number_of_bina
  * @param octal_string The buffer to store the resulting octal string.
  *
  */
-void binary_to_octal(const char *binary_string, char *octal_string);
+void binary_to_octal(char *binary_string, char *octal_string);
 
 /**
  * Converts an integer to a binary string representation.
@@ -171,22 +162,13 @@ int ignore_line(char *line);
  * @param output - The buffer to store the extracted word.
  * @param keyword - The keyword to search for in the input string.
  */
-void extract_word_after_keyword(const char *input, char *output, const char *keyword);
+void extract_word_after_keyword(char *input, char *output, char *keyword);
 
 /**
  * Remove the first character from a string.
  * @param str - The string from which the first character will be removed.
  */
 void remove_first_character(char *str);
-
-/**
- * Add a number to a formatted string.
- * @param buffer - The buffer where the result will be stored.
- * @param source - The source format string.
- * @param buffer_size - The size of the buffer.
- * @param number - The number to add to the string.
- */
-void add_number_to_string(char *buffer, int buffer_size, const char* source, int number);
 
 /**
  * Converts an integer to a string representation.

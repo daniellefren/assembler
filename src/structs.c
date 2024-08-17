@@ -255,10 +255,10 @@ Symbol *find_symbol_by_name(SymbolTable* symbol_table, char* symbol_name){
     return NULL;
 }
 
-bool is_classification_type_register(enum operand_classification_type classification_type){
+int is_classification_type_register(enum operand_classification_type classification_type){
     if ((classification_type == INDIRECT_REGISTER) || (classification_type == DIRECT_REGISTER)) {
-        return true;
+        return 1;
     }
-    return false;
+    return 0;
 
 }

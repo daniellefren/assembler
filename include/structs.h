@@ -285,5 +285,5 @@ Symbol *find_symbol_by_name(SymbolTable* symbol_table, char* symbol_name);
  * @return true if the classification type is INDIRECT_REGISTER or DIRECT_REGISTER;
  *         otherwise, false.
  */
-bool is_classification_type_register(enum operand_classification_type classification_type);
+int is_classification_type_register(enum operand_classification_type classification_type);
 #endif

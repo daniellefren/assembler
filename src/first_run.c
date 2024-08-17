@@ -182,7 +182,7 @@ int is_macro_invocation(char *line, char *macro_name, char **macro_names) {
     return 0; /* Not a macro invocation or name not found */
 }
 
-int handle_macro_definition(FILE *file, MacroTable *macro_table, const char *firstLine) {
+int handle_macro_definition(FILE *file, MacroTable *macro_table, char *firstLine) {
     Macro macro;
     char line[MAX_LINE_LENGTH];
     char macro_name[MAX_SYMBOL_LENGTH];
@@ -204,7 +204,7 @@ int handle_macro_definition(FILE *file, MacroTable *macro_table, const char *fir
     return 1;
 }
 
-void expand_macro(const Macro *macro, FILE *outputFile) {
+void expand_macro(Macro *macro, FILE *outputFile) {
     int i;
     for (i = 0; i < macro->lineCount; ++i) {
         fprintf(outputFile, "%s", macro->body[i]);
@@ -222,7 +222,7 @@ int read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, LinesArra
     new_instruction_line = init_instruction_line(line, file_number, file_name);
     has_symbol = find_symbol(line, symbol_name);
     if (has_symbol) {
-        if(!is_valid_symbol(symbol_name, macro_table, symbol_table)){
+        if(!is_valid_symbol(symbol_name, macro_table)){
             return 0;
         }
         line = strchr(line, ':') + 1;
@@ -474,7 +474,7 @@ int define_operand_types(Operand *operand, MacroTable *macro_table, SymbolTable 
     else if (operand->value[0] == 'r' && operand->value[1] >= '0' && operand->value[1] <= '7'){
         operand->type = REGISTER;
     }
-    else if(is_valid_symbol(operand->value, macro_table, symbol_table)){
+    else if(is_valid_symbol(operand->value, macro_table)){
         operand->type = SYMBOL;
     }
     else{
@@ -485,7 +485,7 @@ int define_operand_types(Operand *operand, MacroTable *macro_table, SymbolTable 
 }
 
 
-int is_valid_symbol(const char *symbol_name, MacroTable *macro_table, SymbolTable *symbol_table) {
+int is_valid_symbol(char *symbol_name, MacroTable *macro_table) {
     int i;
     size_t length;
 
@@ -621,7 +621,7 @@ int find_symbol(char *line, char *symbol) {
     return 0;
 }
 
-int is_known_assembly_keyword(const char *key) {
+int is_known_assembly_keyword(char *key) {
     int i;
 
     for (i = 0; i < COMMANDS_COUNT; ++i) {
