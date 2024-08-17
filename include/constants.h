@@ -77,4 +77,4 @@ enum operand_types {
     INVALID = 3
 };
 
-#endif //ASSEMBLER_CONSTANTS_H
+#endif
