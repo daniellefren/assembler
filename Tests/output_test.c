@@ -55,6 +55,10 @@ int output_test(void) {
         printf("\nCompare entry file\n");
         is_success &= compare_output_files( output_code_fname_with_directive, input_code_fname, output_correct_fname, ENTRIES_FILE_EXTENSION);
 
+        if(is_success){
+            printf("All tests passed for test %d\n", i+1);
+        }
+
     }
     return is_success;
 }
