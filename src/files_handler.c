@@ -101,7 +101,7 @@ void add_command_line_to_ob_file(InstructionLine *instructionLine, FILE *object_
     char *octal_number;            /* Pointer to hold the octal string representation of the binary instruction */
     int instruction_address;       /* Variable to store the starting address of the instruction */
 
-    // Allocate memory for the octal number string (5 digits + null terminator)
+    /* Allocate memory for the octal number string (5 digits + null terminator) */
     octal_number = (char *)malloc((OCTAL_LENGTH + 1) * sizeof(char));
     if (octal_number == NULL) {
         print_internal_error(ERROR_CODE_55, "");
@@ -113,12 +113,12 @@ void add_command_line_to_ob_file(InstructionLine *instructionLine, FILE *object_
         print_internal_error(ERROR_CODE_57, "");
         exit(EXIT_FAILURE);
     }
-    // Loop through each binary line in the instruction
+    /* Loop through each binary line in the instruction */
     for (i = 0; i < instructionLine->binary_line_count; ++i) {
 
-        // Convert the binary instruction to an octal string
+        /* Convert the binary instruction to an octal string */
         fill_octal_string_from_binary(instructionLine->binary_instruction, BINARY_WORD_LENGTH, i * BINARY_WORD_LENGTH, octal_number);
-        if ((instruction_address < 1000) && (instruction_address > 99)){ //IC start from 100 so no need to add more then one 0 at the starts
+        if ((instruction_address < 1000) && (instruction_address > 99)){ /*IC start from 100 so no need to add more then one 0 at the starts */
             fprintf(object_file, "0%d %s\n", instruction_address, octal_number);
         }
         else {
@@ -132,11 +132,11 @@ void add_command_line_to_ob_file(InstructionLine *instructionLine, FILE *object_
 
 void add_directive_line_to_ob_file(InstructionLine *instructionLine, FILE *object_file){
     int i;
-    char *octal_number;            // Pointer to hold the octal string representation of the binary instruction
-    int instruction_address;       // Variable to store the starting address of the instruction
+    char *octal_number;            /* Pointer to hold the octal string representation of the binary instruction */
+    int instruction_address;       /* Variable to store the starting address of the instruction */
     char *padded_instruction_address = malloc(sizeof(char) *5);
 
-    // Allocate memory for the octal number string (5 digits + null terminator)
+    /* Allocate memory for the octal number string (5 digits + null terminator) */
     octal_number = (char *)malloc((OCTAL_LENGTH + 1) * sizeof(char));
     if (octal_number == NULL) {
         print_internal_error(ERROR_CODE_55, "");
@@ -149,9 +149,9 @@ void add_directive_line_to_ob_file(InstructionLine *instructionLine, FILE *objec
         exit(EXIT_FAILURE);
     }
 
-    // Loop through each binary line in the instruction
+    /* Loop through each binary line in the instruction */
     for (i = 0; i < instructionLine->binary_line_count; ++i) {
-        // Convert the binary instruction to an octal string
+        /* Convert the binary instruction to an octal string */
         fill_octal_string_from_binary(instructionLine->binary_instruction, BINARY_WORD_LENGTH, i * BINARY_WORD_LENGTH, octal_number);
         strcpy(padded_instruction_address, pad_address(instruction_address));
 
@@ -226,14 +226,14 @@ void get_input_filename(char* file_name, char* given_file_name){
 }
 
 void replace_extension(char *file_path, const char *new_extension) {
-    // Find the last occurrence of '.' in the file path
+    /* Find the last occurrence of '.' in the file path */
     char *dot_position = strrchr(file_path, '.');
 
     if (dot_position != NULL) {
-        // Replace everything after the last dot with the new extension
+        /* Replace everything after the last dot with the new extension */
         strcpy(dot_position + 1, new_extension);
     } else {
-        // If no dot is found, you may want to handle it (e.g., add the extension)
+        /* If no dot is found, you may want to handle it (e.g., add the extension) */
         strcat(file_path, ".");
         strcat(file_path, new_extension);
     }
@@ -252,30 +252,30 @@ char *pad_address(int address){
 }
 
 int write_line_to_file(char *line, char* new_file_name) {
-    FILE *outputFile = fopen(new_file_name, "a"); // Open in append mode
+    FILE *outputFile = fopen(new_file_name, "a"); /* Open in append mode */
     if (!outputFile) {
         print_internal_error(ERROR_CODE_48, "write_line_to_file");
 
         print_internal_error(ERROR_CODE_48, new_file_name);
         exit(EXIT_FAILURE);
     }
-    // Write the string to the file
+    /* Write the string to the file */
     fprintf(outputFile, "%s", line);
 
     fclose(outputFile);
-    return 0;  // Indicate success
+    return 0;  /* Indicate success */
 }
 
 void write_expanded_macros_to_file(MacroTable *macro_table, char* new_file_name) {
     int i;
     int j;
-    FILE *outputFile = fopen(new_file_name, "a"); // Open in append mode
+    FILE *outputFile = fopen(new_file_name, "a"); /* Open in append mode */
     if (!outputFile) {
         print_internal_error(ERROR_CODE_49, new_file_name);
         exit(EXIT_FAILURE);
     }
 
-    // Write each macro's body to the file
+    /* Write each macro's body to the file */
     for (i = 0; i < macro_table->count; ++i) {
         for (j = 0; j < macro_table->macros[i].lineCount; ++j) {
             fprintf(outputFile, "%s", macro_table->macros[i].body[j]);
@@ -289,9 +289,9 @@ void add_output_directory() {
     const char *dirName = OUTPUT_DIRECTORY_NAME;
     struct stat st = {0};
 
-    // Check if the directory exists
+    /* Check if the directory exists */
     if (stat(dirName, &st) == -1) {
-        // Directory does not exist, create it
+        /* Directory does not exist, create it */
         if (mkdir(dirName, 0755) == 1) {
             print_internal_error(ERROR_CODE_56, dirName);
             exit(EXIT_FAILURE);
@@ -302,7 +302,7 @@ void add_output_directory() {
 FILE* open_file(char *file_name, char *mode) {
     FILE *file;
 
-    // Attempt to open the file
+    /* Attempt to open the file */
     file = fopen(file_name, mode);
     if (file == NULL) {
         print_internal_error(ERROR_CODE_48, file_name);
@@ -329,7 +329,7 @@ int open_two_files_and_compare(char *file1_name, char *file2_name) {
     file1 = open_file(file1_name, "r");
     file2 = open_file(file2_name, "r");
 
-    result = compare_files(file1, file2); //return 0 for different
+    result = compare_files(file1, file2); /*return 0 for different */
     fclose(file1);
     fclose(file2);
 
@@ -347,10 +347,10 @@ int open_two_files_and_compare(char *file1_name, char *file2_name) {
 int search_in_file(char *filename, const char *search_str) {
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
-        return 0; // Means the file does not exist, and therefore the string does not exist in the file
+        return 0; /* Means the file does not exist, and therefore the string does not exist in the file*/
     }
 
-    char line[256];  // Buffer to store each line from the file
+    char line[256];  /* Buffer to store each line from the file */
     int line_number = 0;
     int found = 0;
 
@@ -358,8 +358,8 @@ int search_in_file(char *filename, const char *search_str) {
         line_number++;
         if (strstr(line, search_str) != NULL) {
             found = 1;
-            // Uncomment the next line if you want to stop after finding the first occurrence
-            // break;
+            /* Uncomment the next line if you want to stop after finding the first occurrence */
+            /* break; */
         }
     }
 
@@ -374,30 +374,29 @@ void delete_files_in_directory(const char *dir_path) {
     struct dirent *entry;
     char file_path[1024];
 
-    // Check if directory is successfully opened
+    /* Check if directory is successfully opened */
     if (dir == NULL) {
         print_internal_error(ERROR_CODE_52, dir_path);
         exit(EXIT_FAILURE);
     }
 
-    // Iterate over all files in the directory
+    /* Iterate over all files in the directory */
     while ((entry = readdir(dir)) != NULL) {
-        // Skip "." and ".."
+        /* Skip "." and ".." */
         if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
             continue;
         }
 
-        // Construct the full path to the file
+        /* Construct the full path to the file */
         snprintf(file_path, sizeof(file_path), "%s/%s", dir_path, entry->d_name);
 
-        // Remove the file
+        /* Remove the file */
         if (remove(file_path) == 1) {
             print_internal_error(ERROR_CODE_53, file_path);
         }
 
     }
 
-    // Close the directory
     closedir(dir);
 }
 
@@ -408,12 +407,12 @@ int file_exists(const char *filename) {
 
 
 int compare_files(FILE *file1, FILE *file2) {
-    char line1[256]; // Buffer to store lines from file1
-    char line2[256]; // Buffer to store lines from file2
-    int line_number = 1; // Line counter to keep track of the line being compared
+    char line1[256]; /* Buffer to store lines from file1 */
+    char line2[256]; /* Buffer to store lines from file2 */
+    int line_number = 1; /* Line counter to keep track of the line being compared */
 
-    // Read lines from both files until end-of-file or error
-    // Check if files are opened successfully
+    /* Read lines from both files until end-of-file or error */
+    /* Check if files are opened successfully*/
     if (file1 == NULL) {
         print_internal_error(ERROR_CODE_48, "file 1");
         exit(EXIT_FAILURE);
@@ -423,7 +422,7 @@ int compare_files(FILE *file1, FILE *file2) {
         exit(EXIT_FAILURE);
     }
 
-    // Read the first lines from both files
+    /* Read the first lines from both files */
     if (fgets(line1, sizeof(line1), file1) == NULL) {
         print_internal_error(ERROR_CODE_62, "File1");
     }
@@ -436,41 +435,41 @@ int compare_files(FILE *file1, FILE *file2) {
            fgets(line2, sizeof(line2), file2) != NULL) {
         strip_newline(line1);
         strip_newline(line2);
-        // Compare the lines from both files
+        /* Compare the lines from both files */
         if (strcmp(line1, line2) != 0) {
-            // If lines are different, print the line number and the differing lines
+            /* If lines are different, print the line number and the differing lines */
             printf("Difference found at line %d:\n", line_number);
             printf("File1: %s\n", line1);
             printf("File2: %s\n", line2);
-            return 0; // Return 0 to indicate that the files are different
+            return 0; /* Return 0 to indicate that the files are different */
         }
-        line_number++; // Increment the line number for the next comparison
+        line_number++; /* Increment the line number for the next comparison */
     }
 
-    // Check if one file ended before the other
+    /* Check if one file ended before the other */
     if (fgets(line1, sizeof(line1), file1) != NULL || fgets(line2, sizeof(line2), file2) != NULL) {
         printf("Files have different lengths.\n");
-        return 0; // Return 0 to indicate that the files are different
+        return 0; /* Return 0 to indicate that the files are different */
     }
 
-    // If we reach this point, files are identical
-    return 1; // Return 1 to indicate that the files are identical
+    /* If we reach this point, files are identical Return 1 to indicate that the files are identical */
+    return 1;
 }
 
 long get_file_size(FILE *file) {
     long size;
-    // Move the file pointer to the end of the file
+    /* Move the file pointer to the end of the file */
     if (fseek(file, 0, SEEK_END) == -1){
         print_internal_error(ERROR_CODE_60, "");
         exit(EXIT_FAILURE);
     }
-    // Get the current file pointer position, which is the size of the file
+    /* Get the current file pointer position, which is the size of the file */
     size = ftell(file);
     if (size == -1){
         print_internal_error(ERROR_CODE_61, "");
         exit(EXIT_FAILURE);
     }
-    // Move the file pointer back to the beginning of the file
+    /* Move the file pointer back to the beginning of the file */
     if (fseek(file, 0, SEEK_SET) == -1){
         print_internal_error(ERROR_CODE_60, "");
         exit(EXIT_FAILURE);
@@ -479,14 +478,14 @@ long get_file_size(FILE *file) {
 }
 
 char* get_filename(char *file_path) {
-    // Find the last occurrence of '/' in the file path
+    /* Find the last occurrence of '/' in the file path */
     char *last_slash = strrchr(file_path, '/');
 
-    // If found, return the character after the last slash
+    /* If found, return the character after the last slash */
     if (last_slash != NULL) {
         return last_slash + 1;
     } else {
-        // If no slash is found, the entire path is the filename
+        /* If no slash is found, the entire path is the filename */
         return (char *)file_path;
     }
 }
