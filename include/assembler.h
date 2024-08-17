@@ -1,7 +1,3 @@
-//
-// Created by Royi David on 13/08/2024.
-//
-
 #ifndef ASSEMBLER_ASSEMBLER_H
 #define ASSEMBLER_ASSEMBLER_H
 #include "../include/first_run.h"
@@ -27,4 +23,4 @@
  */
 void run_assembler_on_file(LinesArray *assembly_lines_array, SymbolTable *symbol_table, char* filename, int file_number);
 
-#endif //ASSEMBLER_ASSEMBLER_H
+#endif

@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include "../include/assembler.h"
 
-
 int main(int argc, char *argv[]) {
     LinesArray *assembly_lines_array = NULL;
     SymbolTable *symbol_table = NULL;
@@ -11,8 +10,8 @@ int main(int argc, char *argv[]) {
     int file_number;
     int number_of_files;
     number_of_files = argc - 1;
-  
-    // Check if the correct number of arguments is provided
+
+    /* Check if the correct number of arguments is provided */
     if (argc < 2) {
         print_internal_error(ERROR_CODE_63, "");
         return EXIT_FAILURE;
@@ -29,7 +28,7 @@ int main(int argc, char *argv[]) {
         }
     }
     else{
-        //Run assembler on all files
+        /* Run assembler on all files */
         for(file_number=1;file_number<=number_of_files;file_number++){
             strcpy(file_name, argv[file_number]);
             get_input_filename(final_file_name, file_name);
@@ -38,7 +37,6 @@ int main(int argc, char *argv[]) {
     }
 
     return EXIT_SUCCESS;
-
 }
 
 void run_assembler_on_file(LinesArray *assembly_lines_array, SymbolTable *symbol_table, char* filename, int file_number){
@@ -51,23 +49,22 @@ void run_assembler_on_file(LinesArray *assembly_lines_array, SymbolTable *symbol
     assembly_lines_array = init_lines_array(10);
     symbol_table = init_symbol_table(10);
 
-    // Open the file in read mode
+    /* Open the file in read mode */
     file = fopen(filename, "r");
     if (file == NULL) {
         print_internal_error(ERROR_CODE_48, filename);
         exit(EXIT_FAILURE);
     }
 
-    // Call the first_run function with the file pointer
+    /* Call the first_run function with the file pointer */
     first_run(file, &ic, &dc, assembly_lines_array, symbol_table, file_number, filename);
 
-    // Close the file
+    /* Close the file */
     fclose(file);
 
-    //call the second_run function with the LinesArray table
+    /* Call the second_run function with the LinesArray table */
     start_second_run(assembly_lines_array, symbol_table, filename);
 
     free_lines_array(assembly_lines_array);
     free_symbol_table(symbol_table);
 }
-

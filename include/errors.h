@@ -89,4 +89,4 @@ typedef enum ERROR_CODES {
  */
 void print_internal_error(int error_code, char* data);
 
-#endif //ASSEMBLER_ERRORS_H
+#endif

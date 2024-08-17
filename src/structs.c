@@ -5,7 +5,6 @@
 #include "../include/structs.h"
 #include "../include/errors.h"
 
-
 /* Lines array functions*/
 
 LinesArray *init_lines_array(int initial_capacity) {
@@ -43,8 +42,9 @@ SymbolTable *init_symbol_table(int initial_capacity) {
 }
 
 void free_lines_array(LinesArray *lines_array) {
+    unsigned int i;
     if (lines_array->lines) {
-        for (unsigned int i = 0; i < lines_array->number_of_line; i++) {
+        for (i = 0; i < lines_array->number_of_line; i++) {
             free_instruction_line(lines_array->lines[i]);
         }
         free(lines_array->lines);
@@ -55,7 +55,6 @@ void free_lines_array(LinesArray *lines_array) {
 void free_macro_table(MacroTable *macro_table) {
     free(macro_table->macros);
 }
-
 
 void free_instruction_line(InstructionLine *instruction_line) {
     size_t i;
@@ -69,9 +68,9 @@ void free_instruction_line(InstructionLine *instruction_line) {
         free(instruction_line->command);
     }
     else if(instruction_line->instruction_type == DATA_DIRECTIVE ||
-                instruction_line->instruction_type == EXTERN_DIRECTIVE ||
-                instruction_line->instruction_type == ENTRY_DIRECTIVE){
-        // Assuming that `directive->value` is allocated dynamically and needs to be freed
+            instruction_line->instruction_type == EXTERN_DIRECTIVE ||
+            instruction_line->instruction_type == ENTRY_DIRECTIVE){
+        /* Assuming that `directive->value` is allocated dynamically and needs to be freed */
         if (instruction_line->directive->value) {
             for (i = 0; i < instruction_line->directive->data_values_count; i++) {
                 free(instruction_line->directive->value[i]);
@@ -85,8 +84,6 @@ void free_instruction_line(InstructionLine *instruction_line) {
     }
 }
 
-
-
 void free_binary_instruction(InstructionLine *p_line) {
     free(p_line->binary_instruction);
 }
@@ -97,12 +94,11 @@ void free_symbol_table(SymbolTable *symbol_table) {
     }
 }
 
-
-// Function to add an instruction line to the LinesArray
+/* Function to add an instruction line to the LinesArray */
 void addInstructionLine(LinesArray *lines_array, InstructionLine *instruction_line) {
-    // Check if the array needs to be resized
+    /* Check if the array needs to be resized */
     if (lines_array->number_of_line >= lines_array->capacity) {
-        // Double the capacity or set an initial capacity if it's zero
+        /* Double the capacity or set an initial capacity if it's zero */
         size_t new_capacity = (lines_array->capacity == 0) ? 10 : lines_array->capacity * 2;
         InstructionLine **new_lines = realloc(lines_array->lines, new_capacity * sizeof(InstructionLine *));
         if (!new_lines) {
@@ -112,8 +108,8 @@ void addInstructionLine(LinesArray *lines_array, InstructionLine *instruction_li
         lines_array->lines = new_lines;
         lines_array->capacity = new_capacity;
     }
-//
-//    // Add the new instruction line to the array
+
+    /* Add the new instruction line to the array */
     lines_array->lines[lines_array->number_of_line] = instruction_line;
     lines_array->number_of_line++;
 }
@@ -129,7 +125,7 @@ void init_macro_table(MacroTable *table) {
 }
 
 InstructionLine *init_instruction_line(char* line, int file_number, char* file_name){
-    // Allocate memory for instruction line
+    /* Allocate memory for instruction line */
     InstructionLine *new_instruction_line = (InstructionLine *)malloc(sizeof(InstructionLine));
     if (new_instruction_line == NULL) {
         print_internal_error(ERROR_CODE_16, "");
@@ -159,12 +155,11 @@ Command *init_command(){
         print_internal_error(ERROR_CODE_18, "");
         exit(EXIT_FAILURE);
     }
-    // Allocate memory for operands
+    /* Allocate memory for operands */
     new_command->src_operand = init_operand();
     new_command->dst_operand = init_operand();
 
-
-    //Allocate memory for command name
+    /* Allocate memory for command name */
     new_command->command_name = malloc(MAX_COMMAND_LEN * sizeof(char));
     if (new_command->command_name == NULL) {
         print_internal_error(ERROR_CODE_19, "");
@@ -197,7 +192,7 @@ Directive *init_directive(){
     return new_directive;
 }
 
-// Initialize macro name array
+/* Initialize macro name array */
 void init_macro_name_array(char **macroNames) {
     int i;
     for (i = 0; i < MAX_MACRO_NAMES; ++i) {
@@ -206,14 +201,13 @@ void init_macro_name_array(char **macroNames) {
             print_internal_error(ERROR_CODE_21, "");
             exit(EXIT_FAILURE);
         }
-        macroNames[i][0] = '\0'; // Ensure the string is initialized
+        macroNames[i][0] = '\0'; /* Ensure the string is initialized */
     }
 }
 
-
 void allocate_binary_instruction(InstructionLine *p_line, size_t binary_line_count, size_t binary_line_length) {
     size_t count_to_allocate;
-    // Calculate the total size needed in bytes, adding 1 for the null terminator.
+    /* Calculate the total size needed in bytes, adding 1 for the null terminator. */
     count_to_allocate= binary_line_count * binary_line_length + 1;
     if (binary_line_count == 0){
         print_internal_error(ERROR_CODE_35, "");
@@ -226,13 +220,12 @@ void allocate_binary_instruction(InstructionLine *p_line, size_t binary_line_cou
     }
 }
 
-
 char *get_instruction_line_binary(LinesArray *linesArray, int number_of_line) {
     return linesArray->lines[number_of_line]->binary_instruction;
 }
 
 int is_instruction_line_directive(InstructionLine *instructionLine){
-    // Check if the `directive` field is not NULL
+    /* Check if the `directive` field is not NULL */
     if (instructionLine->directive != NULL){
         return 1;
     }
@@ -240,7 +233,7 @@ int is_instruction_line_directive(InstructionLine *instructionLine){
 }
 
 int is_instruction_line_opcode(InstructionLine *instructionLine){
-    // Check if the `command` field is not NULL
+    /* Check if the `command` field is not NULL */
     if (instructionLine->command != NULL){
         return 1;
     }
@@ -248,10 +241,9 @@ int is_instruction_line_opcode(InstructionLine *instructionLine){
 }
 
 int is_operand_classification_type_valid(enum operand_classification_type operandClassificationType){
-    // Check if the operand classification type is within the valid range
+    /* Check if the operand classification type is within the valid range */
     return (operandClassificationType >= IMMEDIATE) && (operandClassificationType <= DIRECT_REGISTER);
 }
-
 
 Symbol *find_symbol_by_name(SymbolTable* symbol_table, char* symbol_name){
     int i;

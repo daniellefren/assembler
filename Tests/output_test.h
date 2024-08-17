@@ -29,4 +29,4 @@ int count_strings(char *strings[]);
  */
 int compare_output_files(char* output_code_fname, char* input_code_fname, char* output_correct_fname, const char* file_extension);
 
-#endif //ASSEMBLER_OUTPUT_TEST_H
+#endif

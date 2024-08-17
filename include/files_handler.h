@@ -1,4 +1,3 @@
-
 #ifndef ASSEMBLER_FILES_HANDLER_H
 #define ASSEMBLER_FILES_HANDLER_H
 #include "../include/utils.h"
@@ -243,6 +242,6 @@ void get_output_filename(char *basic_filename, char* final_file_name, const char
  */
 void get_input_filename(char* file_name, char* given_file_name);
 
-#endif //ASSEMBLER_FILES_HANDLER_H
+#endif
 
 

@@ -254,25 +254,25 @@ void fill_immediate_binary(Operand *operand, char *binary_string, int binary_wor
 
 
 void fill_direct_binary(Operand *operand, char *binary_string, int binary_word_number, int ic, SymbolTable *symbol_table, char* file_name) {
-    Symbol *symbol;                // Pointer to the symbol associated with the operand
-    int int_number_to_binary;       // Integer value representing the symbol's address
+    Symbol *symbol;                /* Pointer to the symbol associated with the operand */
+    int int_number_to_binary;       /* Integer value representing the symbol's address */
 
     if (operand == NULL) {
         print_internal_error(ERROR_CODE_24, " Operand is empty");
         return;
     }
 
-    // Find the symbol by name in the symbol table
+    /* Find the symbol by name in the symbol table */
     symbol = find_symbol_by_name(symbol_table, operand->value);
     if (symbol == NULL) {
         print_internal_error(ERROR_CODE_51, " Symbol is empty");
         return;
     }
-    // Convert symbol address to binary and update the binary string
+    /* Convert symbol address to binary and update the binary string */
     int_number_to_binary = symbol->address;
     int_to_binary_string(int_number_to_binary, binary_string, binary_word_number * BINARY_LINE_LENGTH, 12);
 
-    if (symbol->is_extern) { // External symbol
+    if (symbol->is_extern) { /* External symbol */
         if (binary_word_number == 1) {
             ic += 1;
         } else if(binary_word_number == 2){
@@ -280,15 +280,15 @@ void fill_direct_binary(Operand *operand, char *binary_string, int binary_word_n
         }
         add_extern_to_externals_file(symbol->name, file_name, ic);
         set_binary_string_ARE_representation(binary_string, binary_word_number + 1, 'e');
-    } else { // Internal symbol
+    } else { /* Internal symbol */
         set_binary_string_ARE_representation(binary_string,
                                              binary_word_number + 1, 'r');
     }
 }
 
 void fill_register_binary(Operand *src_operand, Operand *dst_operand, char *binary_string, int binary_word_number) {
-    char *src_register_value;  // Value of the source register
-    char *dst_register_value;  // Value of the destination register
+    char *src_register_value;  /* Value of the source register */
+    char *dst_register_value;  /* Value of the destination register */
 
     if (src_operand != NULL) {
         src_register_value = src_operand->value;
@@ -302,18 +302,18 @@ void fill_register_binary(Operand *src_operand, Operand *dst_operand, char *bina
                                   BINARY_LINE_LENGTH * binary_word_number);
     }
 
-    // Set the ARE (Absolute, Relocatable, External) bit for the binary word
+    /* Set the ARE (Absolute, Relocatable, External) bit for the binary word */
     set_binary_string_ARE_representation(binary_string, binary_word_number + 1, 'a');
 }
 
 void register_to_binary_string(char *register_value, int operand_number, char *binary_string, int offset) {
     int register_number = char_to_int(register_value);
 
-    // Convert register number to binary and place in the correct bit positions
-    if (operand_number == 2) { // Destination register (bits 9-11)
+    /* Convert register number to binary and place in the correct bit positions */
+    if (operand_number == 2) { /* Destination register (bits 9-11) */
         int_to_binary_string(register_number, binary_string, offset + DST_REGISTER_OFFSET,
                              REGISTER_TO_BINARY_NUMBER_OF_BITS);
-    } else if (operand_number == 1) { // Source register (bits 6-8)
+    } else if (operand_number == 1) { /* Source register (bits 6-8) */
         int_to_binary_string(register_number, binary_string, offset + SRC_REGISTER_OFFSET,
                              REGISTER_TO_BINARY_NUMBER_OF_BITS);
     }
@@ -326,7 +326,7 @@ void fill_binary_directive(InstructionLine *instruction_line, char *binary_strin
     Directive *directive;
     directive = instruction_line->directive;
 
-    // Process DATA directive
+    /* Process DATA directive */
     if (is_directive_data(directive)) {
         if (directive->value == NULL) {
             print_internal_error(ERROR_CODE_33, "");
@@ -342,7 +342,7 @@ void fill_binary_directive(InstructionLine *instruction_line, char *binary_strin
                                  BINARY_LINE_LENGTH);
         }
     }
-    // Process STRING directive
+    /* Process STRING directive */
     else if (is_directive_string(directive)) {
         if (directive->value == NULL) {
             print_internal_error(ERROR_CODE_33, "");
@@ -358,4 +358,3 @@ void fill_binary_directive(InstructionLine *instruction_line, char *binary_strin
         }
     }
 }
-
