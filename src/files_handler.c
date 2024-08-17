@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <string.h>
-#include <stdio.h>
 #include <sys/types.h>
 #include <dirent.h>
 #include <unistd.h>
@@ -290,15 +289,24 @@ void write_expanded_macros_to_file(MacroTable *macro_table, char* new_file_name)
     fclose(outputFile);
 }
 
-void add_output_directory() {
-    const char *dirName = OUTPUT_DIRECTORY_NAME;
+void add_output_directory(void) {
+    const char *dir_name = OUTPUT_DIRECTORY_NAME;
+    char *modifiable_dir_name;
     struct stat st = {0};
 
+    modifiable_dir_name = malloc(strlen(dir_name) + 1);
+    if (modifiable_dir_name == NULL) {
+        // Handle memory allocation failure
+        print_internal_error(ERROR_CODE_9, modifiable_dir_name);
+        exit(EXIT_FAILURE);
+    }
+    strcpy(modifiable_dir_name, dir_name);
+
     /* Check if the directory exists */
-    if (stat(dirName, &st) == -1) {
+    if (stat(modifiable_dir_name, &st) == -1) {
         /* Directory does not exist, create it */
-        if (mkdir(dirName, 0755) == 1) {
-            print_internal_error(ERROR_CODE_56, dirName);
+        if (mkdir(modifiable_dir_name, 0755) == 1) {
+            print_internal_error(ERROR_CODE_56, modifiable_dir_name);
             exit(EXIT_FAILURE);
         }
     }
@@ -350,14 +358,16 @@ int open_two_files_and_compare(char *file1_name, char *file2_name) {
 
 
 int search_in_file(char *filename, char *search_str) {
-    FILE *file = fopen(filename, "r");
-    if (file == NULL) {
-        return 0; /* Means the file does not exist, and therefore the string does not exist in the file*/
-    }
-
+    FILE *file;
     char line[256];  /* Buffer to store each line from the file */
     int line_number = 0;
     int found = 0;
+
+
+    file = fopen(filename, "r");
+    if (file == NULL) {
+        return 0; /* Means the file does not exist, and therefore the string does not exist in the file*/
+    }
 
     while (fgets(line, sizeof(line), file)) {
         line_number++;
@@ -375,11 +385,17 @@ int search_in_file(char *filename, char *search_str) {
 
 void delete_files_in_directory(const char *dir_path) {
     DIR *dir;
-    dir = opendir(dir_path);
     struct dirent *entry;
     char file_path[1024];
     char *dir_path_final;
+
+    dir = opendir(dir_path);
     dir_path_final = malloc(strlen(dir_path) + 1);
+    if (dir_path_final == NULL) {
+        // Handle memory allocation failure
+        print_internal_error(ERROR_CODE_9, dir_path_final);
+        exit(EXIT_FAILURE);
+    }
 
     /* Check if directory is successfully opened */
     if (dir == NULL) {
