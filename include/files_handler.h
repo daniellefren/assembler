@@ -165,7 +165,7 @@ int open_two_files_and_compare(char *file1_name, char *file2_name);
  * - Returns 0 if the string is not found.
  * - Returns -1 if the file could not be opened or another error occurred.
  * */
-int search_in_file(char *filename, const char *search_str);
+int search_in_file(char *filename, char *search_str);
 
 /**
  * Add 0 in the beginning of a given address if necessary
@@ -185,7 +185,7 @@ void delete_files_in_directory(const char *dir_path);
  * @param filename The filename to check
  * @return 1 if yes, else 0
  */
-int file_exists(const char *filename);
+int file_exists(char *filename);
 
 /**
  * Compare between two given files

@@ -349,7 +349,7 @@ int open_two_files_and_compare(char *file1_name, char *file2_name) {
 }
 
 
-int search_in_file(char *filename, const char *search_str) {
+int search_in_file(char *filename, char *search_str) {
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
         return 0; /* Means the file does not exist, and therefore the string does not exist in the file*/
@@ -378,10 +378,12 @@ void delete_files_in_directory(const char *dir_path) {
     dir = opendir(dir_path);
     struct dirent *entry;
     char file_path[1024];
+    char *dir_path_final;
+    dir_path_final = malloc(strlen(dir_path) + 1);
 
     /* Check if directory is successfully opened */
     if (dir == NULL) {
-        print_internal_error(ERROR_CODE_52, dir_path);
+        print_internal_error(ERROR_CODE_52, dir_path_final);
         exit(EXIT_FAILURE);
     }
 
@@ -406,7 +408,7 @@ void delete_files_in_directory(const char *dir_path) {
 }
 
 
-int file_exists(const char *filename) {
+int file_exists(char *filename) {
     return access(filename, F_OK) == 0;
 }
 

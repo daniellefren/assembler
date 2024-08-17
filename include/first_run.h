@@ -69,14 +69,14 @@ int is_macro_invocation(char *line, char *macroName, char **macroNames);
  * @param firstLine A string containing the first line of the macro definition, typically the line that begins with "%macro".
  * @return Returns `0` if the macro definition is complete, or `1` if the end of the file is reached before completing the macro.
  */
-int handle_macro_definition(FILE *file, MacroTable *macroTable, const char *firstLine);
+int handle_macro_definition(FILE *file, MacroTable *macroTable, char *firstLine);
 
 /**
  * Insert to expanded macro file
  * @param macro The new macro
  * @param outputFile file to write the new code with the extracted macros
  */
-void expand_macro(const Macro *macro, FILE *outputFile);
+void expand_macro(Macro *macro, FILE *outputFile);
 
 /**
  * Processes a single line of assembly code, handling symbols, commands, and directives.
@@ -139,10 +139,9 @@ int define_operand_types(Operand *operand, MacroTable *macro_table, SymbolTable 
  * Function to check if a string is a valid symbol name
  * @param symbol Given symbol to check
  * @param macro_table A pointer to the `MacroTable` structure that stores the names and bodies of all macros encountered during the pre-run.
- * @param symbol_table A pointer to the SymbolTable structure that stores all symbols encountered in the source file.
  * @return 1 if valid, else 0
  */
-int is_valid_symbol(const char *symbol, MacroTable *macro_table, SymbolTable *symbol_table);
+int is_valid_symbol(char *symbol, MacroTable *macro_table);
 
 /**
  * Get number of binary lines for command based on the classification types of the operands
@@ -179,7 +178,7 @@ int find_symbol(char *line, char *symbol);
  * @param key Given key to check
  * @return 1 if symbol is an assembly keyword, else 0
  */
-int is_known_assembly_keyword(const char *key);
+int is_known_assembly_keyword(char *key);
 
 /**
  * Function to check if a line is a command
