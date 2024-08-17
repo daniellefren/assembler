@@ -184,4 +184,11 @@ char* int_to_string(int number);
  */
 void strip_newline(char *line);
 
+/**
+ * Creates a duplicate of the given string.
+ * @param src A pointer to the null-terminated string to be duplicated.
+ * @return A pointer to the newly allocated string which is a duplicate of `src`.
+ *         If memory allocation fails, the function returns `NULL`. */
+char *strdup(const char *src);
+
 #endif

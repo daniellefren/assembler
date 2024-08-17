@@ -1,10 +1,7 @@
 #ifndef ASSEMBLER_STRUCTS_H
 #define ASSEMBLER_STRUCTS_H
 #include "constants.h"
-#include <stdbool.h>
 
-#define INITIAL_IC 100
-#define MAX_MACRO_LENGTH 100
 
 /**
  * Struct representing a directive in the assembly code.

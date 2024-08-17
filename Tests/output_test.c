@@ -13,7 +13,7 @@
  *
  * @return 1 if all tests pass, 0 if any test fails.
  */
-int output_test() {
+int output_test(void) {
 
     int i;
     int number_of_tests;
@@ -22,18 +22,16 @@ int output_test() {
     char output_code_fname_with_directive[100];
     char output_correct_fname[100];
     int is_success;
-    LinesArray *assembly_lines_array;
-    SymbolTable *symbol_table;
+    char *test[4];
 
     printf("Starting tests\n");
 
     /* Define the test cases */
 
-    char *test[] = {"./Tests/Test_global/test1.as",
-                    "./Tests/Test_entries/test_entry.as",
-                    "./Tests/Test_externals/test_externals.as",
-                    NULL
-    };
+    test[0] = "./Tests/Test_global/test1.as";
+    test[1] = "./Tests/Test_entries/test_entry.as";
+    test[2] = "./Tests/Test_externals/test_externals.as";
+    test[3] = NULL;
 
     number_of_tests = count_strings(test);
     is_success = 1;
@@ -44,7 +42,7 @@ int output_test() {
         strcpy(output_correct_fname, input_code_fname);
 
         /* Run the assembler on the test file */
-        run_assembler_on_file(assembly_lines_array, symbol_table, input_code_fname, i + 1);
+        run_assembler_on_file(input_code_fname, i + 1);
         get_output_filename(output_code_fname, output_code_fname_with_directive, OBJECT_FILE_EXTENSION, get_filename(test[i]));
 
         printf("\nStarting comparing test number %d\n\n", i+1);

@@ -6,7 +6,7 @@
  * Run the tests
  * @return 1 if all tests passed, else 0
  */
-int output_test();
+int output_test(void);
 /**
  * @brief Counts the number of strings in a null-terminated array of strings.
  *

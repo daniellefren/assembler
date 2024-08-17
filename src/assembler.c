@@ -3,8 +3,6 @@
 #include "../include/assembler.h"
 
 int main(int argc, char *argv[]) {
-    LinesArray *assembly_lines_array = NULL;
-    SymbolTable *symbol_table = NULL;
     char file_name[MAX_FILE_NAME_LEN];
     char final_file_name[MAX_FILE_NAME_LEN];
     int file_number;
@@ -32,16 +30,18 @@ int main(int argc, char *argv[]) {
         for(file_number=1;file_number<=number_of_files;file_number++){
             strcpy(file_name, argv[file_number]);
             get_input_filename(final_file_name, file_name);
-            run_assembler_on_file(assembly_lines_array, symbol_table, final_file_name, file_number);
+            run_assembler_on_file(final_file_name, file_number);
         }
     }
 
     return EXIT_SUCCESS;
 }
 
-void run_assembler_on_file(LinesArray *assembly_lines_array, SymbolTable *symbol_table, char* filename, int file_number){
+void run_assembler_on_file(char* filename, int file_number){
     FILE *file;
     int ic, dc;
+    LinesArray *assembly_lines_array = NULL;
+    SymbolTable *symbol_table = NULL;
 
     ic = 0;
     dc = 0;

@@ -546,6 +546,7 @@ int find_number_of_lines_in_binary(Command *new_command){
 
 int classify_operand(Operand *new_operand) {
     int length;
+    length = 0;
     new_operand->classification_type = METHOD_UNKNOWN; /* set default*/
 
     /* Immediate addressing - starts with #*/

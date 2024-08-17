@@ -28,7 +28,10 @@
 #define INT_TO_BINARY_NUMBER_OF_BITS 12
 #define REGISTER_TO_BINARY_NUMBER_OF_BITS 3
 #define EXTRACTED_STRING_LENGTH 17
-static const char *COMMANDS[] = { /*TODO - delete */
+#define INITIAL_IC 100
+#define MAX_MACRO_LENGTH 100
+
+static const char *COMMANDS[] = {
         "mov", "cmp", "add", "sub", "lea", "clr", "not", "inc", "dec", "jmp", "bne",
         "red", "prn", "jsr", "rts", "stop"
 };
@@ -39,7 +42,6 @@ static const char *DIRECTIVES[] = {
 
 static const char *INPUT_DIRECTORY_NAME = "input_files";
 static const char *OUTPUT_DIRECTORY_NAME = "output_files";
-static const char *ERROR_FILE_NAME = "output_files/error_logs%d";
 
 
 static const char *EXTERNALS_FILE_EXTENSION = "ext";

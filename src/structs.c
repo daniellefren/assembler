@@ -149,7 +149,7 @@ InstructionLine *init_instruction_line(char* line, int file_number, char* file_n
     return new_instruction_line;
 }
 
-Command *init_command(){
+Command *init_command(void){
     Command *new_command = (Command *)malloc(10 * sizeof(Command));
     if (new_command == NULL) {
         print_internal_error(ERROR_CODE_18, "");
@@ -169,7 +169,7 @@ Command *init_command(){
     return new_command;
 }
 
-Operand *init_operand(){
+Operand *init_operand(void){
     Operand *operand = (Operand *)malloc(sizeof(Operand));
     if (operand == NULL) {
         print_internal_error(ERROR_CODE_20, "");
@@ -183,7 +183,7 @@ Operand *init_operand(){
     return operand;
 }
 
-Directive *init_directive(){
+Directive *init_directive(void){
     Directive *new_directive = (Directive *)malloc(10 * sizeof(Directive));
     if (new_directive == NULL) {
         print_internal_error(ERROR_CODE_18, "");

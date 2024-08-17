@@ -16,11 +16,9 @@
  * 6. Executes the second run of the assembler to generate the final output files (e.g., object file, externals, entries).
  * 7. Frees the memory allocated for the LinesArray and SymbolTable.
  *
- * @param assembly_lines_array - Pointer to the LinesArray structure that will hold the parsed assembly lines.
- * @param symbol_table - Pointer to the SymbolTable structure that will hold the symbols found during parsing.
  * @param filename - The name of the assembly source file to be processed.
  * @param file_number - An identifier number used to generate output file names.
  */
-void run_assembler_on_file(LinesArray *assembly_lines_array, SymbolTable *symbol_table, char* filename, int file_number);
+void run_assembler_on_file(char* filename, int file_number);
 
 #endif
