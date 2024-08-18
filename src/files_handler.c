@@ -9,6 +9,9 @@
 
 #include "../include/files_handler.h"
 #include "../include/errors.h"
+#include "../include/constants.h"
+#include "../include/utils.h"
+
 
 void create_ob_file(LinesArray *linesArray, char* file_name){
     char ob_file_name[MAX_FILE_NAME_LEN];
@@ -360,8 +363,11 @@ int open_two_files_and_compare(char *file1_name, char *file2_name) {
 int search_in_file(char *filename, char *search_str) {
     FILE *file;
     char line[256];  /* Buffer to store each line from the file */
-    int line_number = 0;
-    int found = 0;
+    int line_number;
+    int found;
+
+    line_number = 0;
+    found = 0;
 
 
     file = fopen(filename, "r");
@@ -387,21 +393,18 @@ void delete_files_in_directory(const char *dir_path) {
     DIR *dir;
     struct dirent *entry;
     char file_path[1024];
+    size_t dir_path_len;
     char *dir_path_final;
+    dir_path_final = (char *)dir_path;
+    strcpy(dir_path_final, dir_path);
 
-    dir = opendir(dir_path);
-    dir_path_final = malloc(strlen(dir_path) + 1);
-    if (dir_path_final == NULL) {
-        /* Handle memory allocation failure */
-        print_internal_error(ERROR_CODE_9, dir_path_final);
-        exit(EXIT_FAILURE);
-    }
-
-    /* Check if directory is successfully opened */
+    dir = opendir(dir_path_final);
     if (dir == NULL) {
         print_internal_error(ERROR_CODE_52, dir_path_final);
         exit(EXIT_FAILURE);
     }
+
+    dir_path_len = strlen(dir_path_final);
 
     /* Iterate over all files in the directory */
     while ((entry = readdir(dir)) != NULL) {
@@ -411,13 +414,19 @@ void delete_files_in_directory(const char *dir_path) {
         }
 
         /* Construct the full path to the file */
-        snprintf(file_path, sizeof(file_path), "%s/%s", dir_path, entry->d_name);
+        if (dir_path_len + 1 + strlen(entry->d_name) >= sizeof(file_path)) {
+            print_internal_error(ERROR_CODE_53, "File path too long");
+            continue;
+        }
+
+        strcpy(file_path, dir_path_final);
+        strcat(file_path, "/");
+        strcat(file_path, entry->d_name);
 
         /* Remove the file */
         if (remove(file_path) == 1) {
             print_internal_error(ERROR_CODE_53, file_path);
         }
-
     }
 
     closedir(dir);

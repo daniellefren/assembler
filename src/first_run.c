@@ -830,8 +830,7 @@ void handle_data_directive(char *line, Directive *new_directive, InstructionLine
             ptr = end; /* Move ptr to the end of the parsed number */
 
             /* Convert number to string and store in values */
-            snprintf(buffer, sizeof(buffer), "%d", number);
-
+            sprintf(buffer, "%d", number);
             values[values_count] = strdup(buffer);
             values_count++;
         } else {
