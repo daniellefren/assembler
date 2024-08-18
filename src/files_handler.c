@@ -299,6 +299,7 @@ void add_output_directory(void) {
 
     modifiable_dir_name = malloc(strlen(dir_name) + 1);
     if (modifiable_dir_name == NULL) {
+        /* Handle memory allocation failure */
         print_internal_error(ERROR_CODE_9, modifiable_dir_name);
         exit(EXIT_FAILURE);
     }
@@ -397,13 +398,13 @@ void delete_files_in_directory(const char *dir_path) {
     dir_path_final = (char *)dir_path;
     strcpy(dir_path_final, dir_path);
 
-    dir = opendir(dir_path);
+    dir = opendir(dir_path_final);
     if (dir == NULL) {
         print_internal_error(ERROR_CODE_52, dir_path_final);
         exit(EXIT_FAILURE);
     }
 
-    dir_path_len = strlen(dir_path);
+    dir_path_len = strlen(dir_path_final);
 
     /* Iterate over all files in the directory */
     while ((entry = readdir(dir)) != NULL) {
@@ -418,7 +419,7 @@ void delete_files_in_directory(const char *dir_path) {
             continue;
         }
 
-        strcpy(file_path, dir_path);
+        strcpy(file_path, dir_path_final);
         strcat(file_path, "/");
         strcat(file_path, entry->d_name);
 
