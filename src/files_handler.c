@@ -296,7 +296,7 @@ void add_output_directory(void) {
 
     modifiable_dir_name = malloc(strlen(dir_name) + 1);
     if (modifiable_dir_name == NULL) {
-        // Handle memory allocation failure
+        /* Handle memory allocation failure */
         print_internal_error(ERROR_CODE_9, modifiable_dir_name);
         exit(EXIT_FAILURE);
     }
@@ -392,7 +392,7 @@ void delete_files_in_directory(const char *dir_path) {
     dir = opendir(dir_path);
     dir_path_final = malloc(strlen(dir_path) + 1);
     if (dir_path_final == NULL) {
-        // Handle memory allocation failure
+        /* Handle memory allocation failure */
         print_internal_error(ERROR_CODE_9, dir_path_final);
         exit(EXIT_FAILURE);
     }
