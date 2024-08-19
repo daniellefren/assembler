@@ -831,7 +831,12 @@ void handle_data_directive(char *line, Directive *new_directive, InstructionLine
 
             /* Convert number to string and store in values */
             sprintf(buffer, "%d", number);
-            values[values_count] = strdup(buffer);
+            values[values_count] = (char *)malloc(strlen(buffer) + 1);
+            if (values[values_count] == NULL) {
+                print_internal_error(ERROR_CODE_13, "");
+                exit(EXIT_FAILURE);
+            }
+            strcpy(values[values_count], buffer);
             values_count++;
         } else {
             ptr++;

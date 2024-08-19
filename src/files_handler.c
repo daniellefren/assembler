@@ -394,17 +394,14 @@ void delete_files_in_directory(const char *dir_path) {
     struct dirent *entry;
     char file_path[1024];
     size_t dir_path_len;
-    char *dir_path_final;
-    dir_path_final = (char *)dir_path;
-    strcpy(dir_path_final, dir_path);
 
-    dir = opendir(dir_path_final);
+    dir = opendir(dir_path);
     if (dir == NULL) {
-        print_internal_error(ERROR_CODE_52, dir_path_final);
+        print_internal_error(ERROR_CODE_52, dir_path);
         exit(EXIT_FAILURE);
     }
 
-    dir_path_len = strlen(dir_path_final);
+    dir_path_len = strlen(dir_path);
 
     /* Iterate over all files in the directory */
     while ((entry = readdir(dir)) != NULL) {
@@ -419,7 +416,7 @@ void delete_files_in_directory(const char *dir_path) {
             continue;
         }
 
-        strcpy(file_path, dir_path_final);
+        strcpy(file_path, dir_path);
         strcat(file_path, "/");
         strcat(file_path, entry->d_name);
 
