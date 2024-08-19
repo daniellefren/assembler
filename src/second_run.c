@@ -11,7 +11,7 @@ void start_second_run(LinesArray *assembly_lines_array, SymbolTable *symbol_tabl
     InstructionLine *p_line;
 
     printf("Starting Second run \n");
-
+    fflush(stdout);
     /* Iterate over each line in the assembly lines array */
     for (i = 0; i < assembly_lines_array->number_of_line; ++i){
         p_line = assembly_lines_array->lines[i];
