@@ -272,8 +272,9 @@ Symbol* handle_symbol(InstructionLine *new_instruction_line, char* symbol_name, 
     new_symbol = find_symbol_by_name(symbol_table, symbol_name);
     if(!new_symbol){
         new_symbol = add_new_symbol(symbol_table, symbol_name);
-        if(!new_symbol){
-            return NULL;
+        if(new_symbol == NULL){
+            print_internal_error(ERROR_CODE_64, symbol_name);
+            exit(EXIT_FAILURE);
         }
         new_symbol->is_extern=0;
         new_symbol->is_entry=0;
@@ -704,14 +705,14 @@ int handle_directives(char *line, int *dc, SymbolTable *symbol_table, int* ic, i
             new_symbol->type = EXTERN_DIRECTIVE;
         }
         new_instruction_line->instruction_type = EXTERN_DIRECTIVE;
-        success &= handle_extern_directive(line, new_directive, symbol_table, file_number, ic);
+        success &= handle_extern_directive(line, new_directive, symbol_table);
 
     } else if (strcmp(directive_type, ".entry") == 0) {
         if(has_symbol){
             new_symbol->type = ENTRY_DIRECTIVE;
         }
         new_instruction_line->instruction_type = ENTRY_DIRECTIVE;
-        success &= handle_entry_directive(new_directive, file_number, symbol_table, line);
+        success &= handle_entry_directive(new_directive, symbol_table, line);
     } else {
         new_directive->type = NOT_DIRECTIVE;
         print_internal_error(ERROR_CODE_47, directive_type);
@@ -723,7 +724,7 @@ int handle_directives(char *line, int *dc, SymbolTable *symbol_table, int* ic, i
     return success;
 }
 
-int handle_entry_directive(Directive *new_directive, int file_number, SymbolTable *symbol_table, char* line){
+int handle_entry_directive(Directive *new_directive, SymbolTable *symbol_table, char* line){
     char *ptr;
     Symbol* symbol;
     ptr = line;
@@ -742,7 +743,7 @@ int handle_entry_directive(Directive *new_directive, int file_number, SymbolTabl
     return 1;
 }
 
-int handle_extern_directive(char *line, Directive *new_directive, SymbolTable *symbol_table, int file_number, int *ic) {
+int handle_extern_directive(char *line, Directive *new_directive, SymbolTable *symbol_table) {
     Symbol *symbol;
     char *ptr;
     char symbol_name[SYMBOL_NAME_LEN];
@@ -751,7 +752,7 @@ int handle_extern_directive(char *line, Directive *new_directive, SymbolTable *s
 
     extract_word_after_keyword(ptr, symbol_name, ".extern");
     strcpy(new_directive->symbol, symbol_name);
-    symbol = add_new_symbol(symbol_table, symbol_name);
+    symbol = add_new_symbol(symbol_table, new_directive->symbol);
     if (!symbol) {
         return 0;
     }
@@ -863,6 +864,8 @@ void handle_data_directive(char *line, Directive *new_directive, InstructionLine
 
 Symbol *add_new_symbol(SymbolTable *symbol_table, char* symbol_name) {
     Symbol *new_symbol;
+
+    new_symbol = NULL;
 
     if(find_symbol_by_name(symbol_table, symbol_name)){
         print_internal_error(ERROR_CODE_50, symbol_name);

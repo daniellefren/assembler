@@ -78,6 +78,7 @@ Error errors[] = {
         {ERROR_CODE_61, "Error in ftell"},
         {ERROR_CODE_62, "An error accured while reading file"},
         {ERROR_CODE_63, "Not enough parameters in command line"},
+        {ERROR_CODE_64, "Unable to add symbol"}
 
 
 };
