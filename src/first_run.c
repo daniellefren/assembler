@@ -71,13 +71,12 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
 
 /*  Free allocated memory for macro names */
     for (i = 0; i < MAX_MACRO_NAMES; ++i) {
+        printf("PROBLEM HERE!!\n");
+        fflush(stdout);
         free(macro_names[i]);
     }
-    printf("PROBLEM HERE!!\n");
-    fflush(stdout);
+
     free_macro_table(&macro_table);
-    printf("PROBLEM HERE!!\n");
-    fflush(stdout);
 
     if(!success){
         print_internal_error(ERROR_CODE_8, "");
