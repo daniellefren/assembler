@@ -45,8 +45,6 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
 
     printf("Starting First run\n");
     *ic = STARTING_IC; /* Starting point of assembler */
-    printf("PROBLEM HERE!!\n");
-    fflush(stdout);
     init_macro_table(&macro_table);
     init_macro_name_array(macro_names);
     rewind(file); /* Reset file pointer to the beginning before calling pre_run */
@@ -58,7 +56,8 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
 
     /*Pre run in order to expand macros from asse,bly input file */
     success = pre_run(&macro_table, macro_names, file, expended_macro_file_name_with_directive); /* Keeps track of the number of encountered macros */
-
+    printf("PROBLEM HERE!!\n");
+    fflush(stdout);
     expanded_macros_file = fopen(expended_macro_file_name_with_directive, "r");
     line_num = 0;
     while (fgets(line, MAX_LINE_LENGTH, expanded_macros_file) != NULL) {
