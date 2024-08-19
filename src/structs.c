@@ -82,6 +82,7 @@ void free_instruction_line(InstructionLine *instruction_line) {
     if (instruction_line->binary_instruction){
         free(instruction_line->binary_instruction);
     }
+    free(instruction_line->file_name);
 }
 
 void free_binary_instruction(InstructionLine *p_line) {
@@ -124,7 +125,7 @@ void init_macro_table(MacroTable *table) {
     table->capacity = 10;
 }
 
-InstructionLine *init_instruction_line(char* line, int file_number, char* file_name){
+InstructionLine *init_instruction_line(char* line, int file_number, char* file_name) {
     /* Allocate memory for instruction line */
     InstructionLine *new_instruction_line = (InstructionLine *)malloc(sizeof(InstructionLine));
     if (new_instruction_line == NULL) {
@@ -132,22 +133,33 @@ InstructionLine *init_instruction_line(char* line, int file_number, char* file_n
         exit(EXIT_FAILURE);
     }
 
-    new_instruction_line->line_content = strdup(line);
-
+    /* Allocate memory for line_content and copy the line */
+    new_instruction_line->line_content = (char *)malloc(strlen(line) + 1);
     if (new_instruction_line->line_content == NULL) {
         print_internal_error(ERROR_CODE_17, "");
         free(new_instruction_line);
         exit(EXIT_FAILURE);
     }
+    strcpy(new_instruction_line->line_content, line);
 
+    /* Set the length of the line */
     new_instruction_line->length = strlen(line);
-    new_instruction_line->binary_line_count=0;
+    new_instruction_line->binary_line_count = 0;
     new_instruction_line->file_number = file_number;
 
-    new_instruction_line->file_name = strdup(file_name);
+    /* Allocate memory for file_name and copy the file_name */
+    new_instruction_line->file_name = (char *)malloc(strlen(file_name) + 1);
+    if (new_instruction_line->file_name == NULL) {
+        print_internal_error(ERROR_CODE_17, "");
+        free(new_instruction_line->line_content);
+        free(new_instruction_line);
+        exit(EXIT_FAILURE);
+    }
+    strcpy(new_instruction_line->file_name, file_name);
 
     return new_instruction_line;
 }
+
 
 Command *init_command(void){
     Command *new_command = (Command *)malloc(10 * sizeof(Command));

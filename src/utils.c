@@ -332,14 +332,3 @@ void strip_newline(char *line) {
         line[len - 1] = '\0';
     }
 }
-
-char *strdup(const char *src) {
-    /* Allocate memory for the new string*/
-    char *dst = malloc(strlen(src) + 1);
-    /* Return NULL if malloc fails*/
-    if (dst == NULL) return NULL;
-    /* Copy the source string to the destination*/
-    strcpy(dst, src);
-    /* Return the pointer to the new string*/
-    return dst;
-}
