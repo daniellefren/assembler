@@ -37,6 +37,7 @@ int output_test(void) {
     is_success = 1;
     /* Iterate over each test case*/
     for (i = 0; i < number_of_tests; i++) {
+        printf("\nStarting to create test number %d\n\n", i+1);
         /*Get input file name */
         strcpy(input_code_fname, test[i]);
         strcpy(output_correct_fname, input_code_fname);
