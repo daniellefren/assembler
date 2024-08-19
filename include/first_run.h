@@ -221,23 +221,20 @@ int handle_directives(char *line, int *dc, SymbolTable *symbol_table, int* ic, i
 /**
  * handle entry directive line - Mark symbol as entry in symbol table and add to entries file
  * @param new_directive A pointer to the `Directive` structure
- * @param file_number An integer representing the number of the current file being processed, used for generating unique output file names.
  * @param symbol_table A pointer to the SymbolTable structure that stores all symbols encountered in the source file.
  * @param line The line of assembly code containing the directive to be processed.
  * @return 1 if succefully ran, else 0
  */
-int handle_entry_directive(Directive *new_directive, int file_number, SymbolTable *symbol_table, char* line);
+int handle_entry_directive(Directive *new_directive, SymbolTable *symbol_table, char* line);
 
 /**
  * handle extern directive line - Add extern symbol to symbol table and add to externals file
  * @param line The line of assembly code containing the directive to be processed.
  * @param new_directive A pointer to the `Directive` structure
  * @param symbol_table A pointer to the SymbolTable structure that stores all symbols encountered in the source file.
- * @param file_number An integer representing the number of the current file being processed, used for generating unique output file names.
- * @param ic Pointer to the instruction counter, which tracks the memory address of the commands.
  * @return 1 if successfully ran, else 0
  */
-int handle_extern_directive(char *line, Directive *new_directive, SymbolTable *symbol_table, int file_number, int *ic);
+int handle_extern_directive(char *line, Directive *new_directive, SymbolTable *symbol_table);
 
 /**
  * Processes a `.string` directive and extracts the string value into the directive structure.
