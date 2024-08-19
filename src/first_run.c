@@ -56,8 +56,6 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
 
     /*Pre run in order to expand macros from asse,bly input file */
     success = pre_run(&macro_table, macro_names, file, expended_macro_file_name_with_directive); /* Keeps track of the number of encountered macros */
-    printf("PROBLEM HERE!!\n");
-    fflush(stdout);
     expanded_macros_file = fopen(expended_macro_file_name_with_directive, "r");
     line_num = 0;
     while (fgets(line, MAX_LINE_LENGTH, expanded_macros_file) != NULL) {
@@ -68,7 +66,8 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
     }
 
     fclose(file);
-
+    printf("PROBLEM HERE!!\n");
+    fflush(stdout);
     final_actions(lines_array, ic, dc);
 
 /*  Free allocated memory for macro names */
@@ -76,12 +75,15 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
         free(macro_names[i]);
     }
     free_macro_table(&macro_table);
-
+    printf("PROBLEM HERE!!\n");
+    fflush(stdout);
 
     if(!success){
         print_internal_error(ERROR_CODE_8, "");
         exit(EXIT_FAILURE);
     }
+    printf("PROBLEM HERE!!\n");
+    fflush(stdout);
     printf("Finished First run!\n\n");
 }
 
