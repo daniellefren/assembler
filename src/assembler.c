@@ -61,8 +61,6 @@ void run_assembler_on_file(char* filename, int file_number){
 
     /* Close the file */
     fclose(file);
-    printf("PROBLEM HERE!!\n");
-    fflush(stdout);
     /* Call the second_run function with the LinesArray table */
     start_second_run(assembly_lines_array, symbol_table, filename);
 

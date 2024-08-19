@@ -45,7 +45,8 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
 
     printf("Starting First run\n");
     *ic = STARTING_IC; /* Starting point of assembler */
-
+    printf("PROBLEM HERE!!\n");
+    fflush(stdout);
     init_macro_table(&macro_table);
     init_macro_name_array(macro_names);
     rewind(file); /* Reset file pointer to the beginning before calling pre_run */
