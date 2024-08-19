@@ -69,9 +69,9 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
 
     final_actions(lines_array, ic, dc);
 
-    for (i = 0; i < macro_table.count; ++i) {
-        free(macro_names[i]);
-    }
+
+/*    free(macro_names[i]);*/
+
 
     free_macro_table(&macro_table);
 
