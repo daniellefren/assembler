@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
     }
 
     add_output_directory();
-//    delete_files_in_directory(OUTPUT_DIRECTORY_NAME);
+    /*delete_files_in_directory(OUTPUT_DIRECTORY_NAME);*/
 
     if(strcmp(argv[1], "test") == 0){
         if(output_test()){
