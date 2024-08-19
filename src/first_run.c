@@ -69,10 +69,7 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
 
     final_actions(lines_array, ic, dc);
 
-/*  Free allocated memory for macro names */
-    for (i = 0; i < MAX_MACRO_NAMES; ++i) {
-        printf("PROBLEM HERE!!\n");
-        fflush(stdout);
+    for (i = 0; i < macro_table.count; ++i) {
         free(macro_names[i]);
     }
 
