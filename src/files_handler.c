@@ -397,7 +397,7 @@ void delete_files_in_directory(const char *dir_path) {
 
     dir = opendir(dir_path);
     if (dir == NULL) {
-        print_internal_error(ERROR_CODE_52, dir_path);
+        print_internal_error(ERROR_CODE_52, (char *)dir_path);
         exit(EXIT_FAILURE);
     }
 
