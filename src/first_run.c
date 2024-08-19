@@ -66,14 +66,15 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
     }
 
     fclose(file);
-    printf("PROBLEM HERE!!\n");
-    fflush(stdout);
+
     final_actions(lines_array, ic, dc);
 
 /*  Free allocated memory for macro names */
     for (i = 0; i < MAX_MACRO_NAMES; ++i) {
         free(macro_names[i]);
     }
+    printf("PROBLEM HERE!!\n");
+    fflush(stdout);
     free_macro_table(&macro_table);
     printf("PROBLEM HERE!!\n");
     fflush(stdout);
@@ -82,8 +83,7 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
         print_internal_error(ERROR_CODE_8, "");
         exit(EXIT_FAILURE);
     }
-    printf("PROBLEM HERE!!\n");
-    fflush(stdout);
+
     printf("Finished First run!\n\n");
 }
 
