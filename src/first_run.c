@@ -62,11 +62,11 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
         }
         line_num++;
     }
-    /*
+
     fclose(file);
 
     final_actions(lines_array, ic, dc);
-
+    /*
     free_macro_table(macro_table);
 
     if(!success){
