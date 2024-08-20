@@ -66,15 +66,15 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
     fclose(file);
 
     final_actions(lines_array, ic, dc);
-    /*
-    free_macro_table(macro_table);
+
+    /*free_macro_table(macro_table);*/
 
     if(!success){
         print_internal_error(ERROR_CODE_8, "");
         exit(EXIT_FAILURE);
     }
 
-    printf("Finished First run!\n\n");*/
+    printf("Finished First run!\n\n");
 }
 
 
