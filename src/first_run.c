@@ -56,6 +56,7 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
 
     expanded_macros_file = fopen(expended_macro_file_name_with_directive, "r");
     line_num = 0;
+    /*
     while (fgets(line, MAX_LINE_LENGTH, expanded_macros_file) != NULL) {
         if (!ignore_line(line)) {
             success &= read_line(line, symbol_table, ic, dc, lines_array, macro_table, file_number, src_file_name);
@@ -64,6 +65,7 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
     }
 
     fclose(file);
+     */
 
     /*final_actions(lines_array, ic, dc);
 
