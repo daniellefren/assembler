@@ -46,13 +46,13 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
     macro_table = init_macro_table();
     rewind(file); /* Reset file pointer to the beginning before calling pre_run */
 
-    /*strcpy(src_file_name, get_filename(file_name));*/
+    strcpy(src_file_name, get_filename(file_name));
 
     /*add file num to expended_macro_file_name to make new file for the assembly input file*/
-    /*get_output_filename(expended_macro_file_name, expended_macro_file_name_with_directive, EXPENDED_MACROS_EXTENSION, src_file_name);*/
+    get_output_filename(expended_macro_file_name, expended_macro_file_name_with_directive, EXPENDED_MACROS_EXTENSION, src_file_name);
 
     /*Pre run in order to expand macros from asse,bly input file */
-    /*success = pre_run(macro_table, file, expended_macro_file_name_with_directive);*/ /* Keeps track of the number of encountered macros */
+    success = pre_run(macro_table, file, expended_macro_file_name_with_directive); /* Keeps track of the number of encountered macros */
 
     /*expanded_macros_file = fopen(expended_macro_file_name_with_directive, "r");
     line_num = 0;
