@@ -822,7 +822,7 @@ Symbol *add_new_symbol(SymbolTable *symbol_table, char* symbol_name) {
         size_t new_capacity = (symbol_table->capacity == 0) ? 10 : symbol_table->capacity * 2;
         Symbol **new_symbols = realloc(symbol_table->symbols, new_capacity * sizeof(Symbol *));
         if (!new_symbols) {
-            free(new_symbol)
+            free(new_symbol);
             print_internal_error(ERROR_CODE_15, "");
             exit(EXIT_FAILURE);
         }
