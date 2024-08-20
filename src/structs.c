@@ -320,8 +320,8 @@ Macro *macro_exists(const MacroTable *macro_table, const char *name) {
     int i;
     for (i = 0; i < macro_table->count; i++) {
         if (strcmp(macro_table->macros[i]->name, name) == 0) {
-            return macro_table->macros[i];  // Macro name found
+            return macro_table->macros[i];  /* Macro name found */
         }
     }
-    return NULL;  // Macro name not found
+    return NULL;  /* Macro name not found */
 }
