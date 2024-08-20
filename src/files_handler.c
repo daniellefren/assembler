@@ -362,10 +362,8 @@ int open_two_files_and_compare(char *file1_name, char *file2_name) {
 int search_in_file(char *filename, char *search_str) {
     FILE *file;
     char line[256];  /* Buffer to store each line from the file */
-    int line_number;
     int found;
 
-    line_number = 0;
     found = 0;
 
 
@@ -375,11 +373,9 @@ int search_in_file(char *filename, char *search_str) {
     }
 
     while (fgets(line, sizeof(line), file)) {
-        line_number++;
         if (strstr(line, search_str) != NULL) {
             found = 1;
-            /* Uncomment the next line if you want to stop after finding the first occurrence */
-            /* break; */
+            break;
         }
     }
 

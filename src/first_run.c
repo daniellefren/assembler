@@ -39,7 +39,6 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
     char src_file_name[MAX_FILE_NAME_LEN];
     MacroTable *macro_table;
     FILE *expanded_macros_file;
-    int line_num;
 
     printf("Starting First run\n");
     *ic = STARTING_IC; /* Starting point of assembler */
@@ -55,17 +54,15 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
     success = pre_run(macro_table, file, expended_macro_file_name_with_directive); /* Keeps track of the number of encountered macros */
 
     expanded_macros_file = fopen(expended_macro_file_name_with_directive, "r");
-    line_num = 0;
+
 
     while (fgets(line, MAX_LINE_LENGTH, expanded_macros_file) != NULL) {
         if (!ignore_line(line)) {
             success &= read_line(line, symbol_table, ic, dc, lines_array, macro_table, file_number, src_file_name);
         }
-        line_num++;
     }
 
     fclose(file);
-
 
     final_actions(lines_array, ic, dc);
 
@@ -116,6 +113,7 @@ int pre_run(MacroTable *macro_table, FILE *file, char* new_file_name) {
         line = trim_spaces(line);
         if (!ignore_line(line)) {
             if (is_macro_definition_start(line)) {
+
                 sscanf(line, "%*s %s", macro_name);  /* Skip "%macro" and capture the name */
                 if(is_known_assembly_keyword(macro_name)){
                     print_internal_error(ERROR_CODE_1, macro_name);
@@ -125,16 +123,19 @@ int pre_run(MacroTable *macro_table, FILE *file, char* new_file_name) {
 
             }
             else if(is_macro_definition_end(line)){
+
                 add_macro(macro_table, macro_definition);
                 macro_definition = NULL;
             }
             else if(macro_definition != NULL){
+
                 strcpy(macro_definition->body[macro_definition->lineCount++], line);
             }
             else{
+
                 macro_usage = macro_exists(macro_table, line);
+
                 if(macro_usage != NULL){
-                    expand_macro(macro_usage, stdout);
                     write_expanded_macros_to_file(macro_table, new_file_name);
                 }
                 else{
@@ -153,14 +154,6 @@ int is_macro_definition_start(char *line) {
 
 int is_macro_definition_end(char *line) {
     return strstr(line, "endmacr") != NULL;
-}
-
-
-void expand_macro(Macro *macro, FILE *outputFile) {
-    int i;
-    for (i = 0; i < macro->lineCount; ++i) {
-        fprintf(outputFile, "%s", macro->body[i]);
-    }
 }
 
 

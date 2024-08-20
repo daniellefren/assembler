@@ -59,13 +59,6 @@ int is_macro_definition_start(char *line);
 int is_macro_definition_end(char *line);
 
 /**
- * Insert to expanded macro file
- * @param macro The new macro
- * @param outputFile file to write the new code with the extracted macros
- */
-void expand_macro(Macro *macro, FILE *outputFile);
-
-/**
  * Processes a single line of assembly code, handling symbols, commands, and directives.
  * @param line The line of assembly code to be processed.
  * @param ic Pointer to the instruction counter, which tracks the memory address of the commands.
