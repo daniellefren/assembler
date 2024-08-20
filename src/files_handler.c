@@ -2,14 +2,11 @@
 #include <string.h>
 #include <stdlib.h>
 #include <sys/stat.h>
-#include <string.h>
-#include <sys/types.h>
 #include <dirent.h>
 #include <unistd.h>
 
 #include "../include/files_handler.h"
 #include "../include/errors.h"
-#include "../include/constants.h"
 #include "../include/utils.h"
 
 
