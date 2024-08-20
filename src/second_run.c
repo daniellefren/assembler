@@ -32,6 +32,7 @@ void fill_instruction_line_binary(InstructionLine *instruction_line, SymbolTable
     binary_instruction_p = instruction_line->binary_instruction;
     binary_line_count = instruction_line->binary_line_count;
     if (binary_line_count == 0){
+        printf("error here! %s", instruction_line->line_content);
         print_internal_error(ERROR_CODE_35, "");
         return;
     }

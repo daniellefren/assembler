@@ -1,9 +1,0 @@
-macr aaa
- INC r2
- mov A,r1
-endmacr
-MOV 2, ir
-stop
-dec a
-aaa
-

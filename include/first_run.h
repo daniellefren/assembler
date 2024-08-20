@@ -39,19 +39,11 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
  * and expands any macro invocations found in the source code. The expanded code is written to a new output file, which will be used in subsequent
  * assembly processing stages.
  * @param macro_table A pointer to the `MacroTable` structure that stores the names and bodies of all macros encountered during the pre-run.
- * @param macro_names An array of strings that keeps track of all macro names encountered in the source file.
  * @param file The input assembly source file to be processed.
  * @param new_file_name The name of the output file where the expanded assembly code (with macros expanded) will be written.
  * @return 1 if succeeded, else 0
  */
-int pre_run(MacroTable *macro_table, char **macroNames, FILE *file, char* new_file_name);
-
-/**
- * Adds a new macro to the macro table, expanding the table if necessary.
- * @param macro_table A pointer to the `MacroTable` structure that stores the names and bodies of all macros encountered during the pre-run.
- * @param new_macro The `Macro` structure to be added to the macro table.
- */
-void add_macro(MacroTable *table, Macro new_macro);
+int pre_run(MacroTable *macro_table, FILE *file, char* new_file_name);
 
 /**
  * Return 1 if macro definition start, 0 if not
@@ -65,24 +57,6 @@ int is_macro_definition_start(char *line);
  * @return 1 if True, else 0
  */
 int is_macro_definition_end(char *line);
-
-/**
- * Return if the line represents a macro invocation
- * @param line The line of assembly code to be processed.
- * @param macroName macro invocation name
- * @param macroNames - The array of strings to hold macro names.
- * @return 1 if True, else 0
- */
-int is_macro_invocation(char *line, char *macroName, char **macroNames);
-
-/**
- * Processes a macro definition from the assembly source file and adds it to the macro table.
- * @param file A pointer to the `FILE` object representing the assembly source file.
- * @param macro_table A pointer to the `MacroTable` structure that stores the names and bodies of all macros encountered during the pre-run.
- * @param firstLine A string containing the first line of the macro definition, typically the line that begins with "%macro".
- * @return Returns `0` if the macro definition is complete, or `1` if the end of the file is reached before completing the macro.
- */
-int handle_macro_definition(FILE *file, MacroTable *macroTable, char *firstLine);
 
 /**
  * Insert to expanded macro file

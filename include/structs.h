@@ -87,7 +87,7 @@ typedef struct {
  * Struct representing a macro in the assembly code.
  */
 typedef struct {
-    char name[MAX_SYMBOL_LENGTH];            /**< The name of the macro. */
+    char *name;            /**< The name of the macro. */
     char body[MAX_MACRO_LENGTH][MAX_LINE_LENGTH]; /**< The body of the macro, stored as an array of lines. */
     int lineCount;                           /**< The number of lines in the macro body. */
 } Macro;
@@ -96,7 +96,7 @@ typedef struct {
  * Struct representing a table of macros.
  */
 typedef struct {
-    Macro *macros;                           /**< Pointer to an array of Macro structs. */
+    Macro **macros;                           /**< Pointer to an array of Macro structs. */
     int count;                               /**< The current number of macros stored in the table. */
     int capacity;                            /**< The maximum capacity of the macro table. */
 } MacroTable;
@@ -160,7 +160,14 @@ SymbolTable * init_symbol_table(int initial_capacity);
  * Initialize a MacroTable structure with a default capacity.
  * @param table - Pointer to the MacroTable structure to initialize.
  */
-void init_macro_table(MacroTable *table);
+MacroTable *init_macro_table(void );
+
+/**
+ * Adds a new macro to the macro table, expanding the table if necessary.
+ * @param macro_table A pointer to the `MacroTable` structure that stores the names and bodies of all macros encountered during the pre-run.
+ * @param new_macro The `Macro` structure to be added to the macro table.
+ */
+void add_macro(MacroTable *table, Macro *new_macro);
 
 /**
  * Initialize an InstructionLine structure with a given line of text.
@@ -187,12 +194,6 @@ Operand *init_operand(void);
  * @return A pointer to the initialized Directive structure.
  */
 Directive *init_directive(void);
-
-/**
- * Initialize an array of macro names.
- * @param macroNames - The array of strings to hold macro names.
- */
-void init_macro_name_array(char **macroNames);
 
 /**
  * Allocates memory for storing a binary instruction in the provided InstructionLine.
@@ -283,4 +284,20 @@ Symbol *find_symbol_by_name(SymbolTable* symbol_table, char* symbol_name);
  *         otherwise, false.
  */
 int is_classification_type_register(enum operand_classification_type classification_type);
+
+/**
+ * Checks if a macro with the given name exists in the macro table.
+ *
+ * @param table The macro table to search in.
+ * @param name The name of the macro to search for.
+ * @return 1 if the macro name exists, 0 otherwise.
+ */
+Macro *macro_exists(const MacroTable *table, const char *name);
+
+/*
+ * Initialize a Macro structure with a given name.
+ * @param macro_name The name of the new macro
+ */
+Macro *init_macro(char *macro_name);
+
 #endif

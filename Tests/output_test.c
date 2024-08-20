@@ -22,7 +22,7 @@ int output_test(void) {
     char output_code_fname_with_directive[100];
     char output_correct_fname[100];
     int is_success;
-    char *test[4];
+    char *test[5];
 
     printf("Starting tests\n");
 
@@ -31,7 +31,8 @@ int output_test(void) {
     test[0] = "./Tests/Test_global/test1.as";
     test[1] = "./Tests/Test_entries/test_entry.as";
     test[2] = "./Tests/Test_externals/test_externals.as";
-    test[3] = NULL;
+    test[3] = "./Tests/Test_macros/test_macro.as";
+    test[4] = NULL;
 
     number_of_tests = count_strings(test);
     is_success = 1;

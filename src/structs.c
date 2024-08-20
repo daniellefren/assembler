@@ -115,15 +115,27 @@ void addInstructionLine(LinesArray *lines_array, InstructionLine *instruction_li
     lines_array->number_of_line++;
 }
 
-void init_macro_table(MacroTable *table) {
-    table->macros = (Macro *)malloc(10 * sizeof(Macro));
-    if (!table->macros) {
+MacroTable *init_macro_table(void) {
+    MacroTable *new_macro_table = (MacroTable *)malloc(sizeof(MacroTable));
+    if (new_macro_table == NULL) {
+        print_internal_error(ERROR_CODE_16, "");
+        exit(EXIT_FAILURE);
+    }
+
+    new_macro_table->macros = (Macro **)malloc(10 * sizeof(Macro *));
+    if (new_macro_table->macros == NULL) {
+        // Free previously allocated memory for the table itself
+        free(new_macro_table);
         print_internal_error(ERROR_CODE_10, "");
         exit(EXIT_FAILURE);
     }
-    table->count = 0;
-    table->capacity = 10;
+
+    new_macro_table->count = 0;
+    new_macro_table->capacity = 10;
+
+    return new_macro_table;
 }
+
 
 InstructionLine *init_instruction_line(char* line, int file_number, char* file_name) {
     /* Allocate memory for instruction line */
@@ -158,6 +170,27 @@ InstructionLine *init_instruction_line(char* line, int file_number, char* file_n
     strcpy(new_instruction_line->file_name, file_name);
 
     return new_instruction_line;
+}
+
+Macro *init_macro(char *macro_name){
+    Macro *new_macro = (Macro *)malloc(sizeof(Macro));
+    if (new_macro == NULL) {
+        print_internal_error(ERROR_CODE_17, "");
+        free(new_macro);
+        exit(EXIT_FAILURE);
+    }
+    new_macro->lineCount=0;
+    new_macro->name = (char *)malloc(MAX_MACRO_LENGTH + 1);
+    if(new_macro->name == NULL){
+        print_internal_error(ERROR_CODE_17, "");
+        free(new_macro);
+        exit(EXIT_FAILURE);
+    }
+    strcpy(new_macro->name, macro_name);  /* Skip "%macro" */
+    return new_macro;
+
+
+
 }
 
 
@@ -204,24 +237,33 @@ Directive *init_directive(void){
     return new_directive;
 }
 
-/* Initialize macro name array */
-void init_macro_name_array(char **macroNames) {
-    int i;
-    for (i = 0; i < MAX_MACRO_NAMES; ++i) {
-        macroNames[i] = malloc(MAX_SYMBOL_LENGTH * sizeof(char));
-        if (!macroNames[i]) {
-            print_internal_error(ERROR_CODE_21, "");
+
+void add_macro(MacroTable *macro_table, Macro *new_macro) {
+    /* Check if the array needs to be resized */
+    if (macro_table->count >= macro_table->capacity) {
+        /* Double the capacity or set an initial capacity if it's zero */
+        size_t new_capacity = (macro_table->capacity == 0) ? 10 : macro_table->capacity * 2;
+        Macro **new_lines = realloc(macro_table->macros, new_capacity * sizeof(MacroTable *));
+        if (!new_lines) {
+            print_internal_error(ERROR_CODE_15, "");
             exit(EXIT_FAILURE);
         }
-        macroNames[i][0] = '\0'; /* Ensure the string is initialized */
+        macro_table->macros = new_lines;
+        macro_table->capacity = new_capacity;
     }
+
+    /* Add the new instruction line to the array */
+    macro_table->macros[macro_table->count] = new_macro;
+    macro_table->count++;
 }
 
 void allocate_binary_instruction(InstructionLine *p_line, size_t binary_line_count, size_t binary_line_length) {
     size_t count_to_allocate;
     /* Calculate the total size needed in bytes, adding 1 for the null terminator. */
-    count_to_allocate= binary_line_count * binary_line_length + 1;
+    count_to_allocate = binary_line_count * binary_line_length + 1;
     if (binary_line_count == 0){
+        printf("no' heree %s", p_line->line_content);
+
         print_internal_error(ERROR_CODE_35, "");
         exit(EXIT_FAILURE);
     }
@@ -272,5 +314,13 @@ int is_classification_type_register(enum operand_classification_type classificat
         return 1;
     }
     return 0;
+}
 
+Macro *macro_exists(const MacroTable *macro_table, const char *name) {
+    for (int i = 0; i < macro_table->count; i++) {
+        if (strcmp(macro_table->macros[i]->name, name) == 0) {
+            return macro_table->macros[i];  // Macro name found
+        }
+    }
+    return NULL;  // Macro name not found
 }

@@ -34,19 +34,16 @@ Command COMMANDS_STRUCT[] = {
 void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTable *symbol_table, int file_number, char* file_name) {
     int success;
     char line[MAX_LINE_LENGTH];
-    char *macro_names[MAX_MACRO_NAMES];  /* Array to store pointers to macro names */
     char expended_macro_file_name[MAX_FILE_NAME_LEN];
     char expended_macro_file_name_with_directive[MAX_FILE_NAME_LEN];
     char src_file_name[MAX_FILE_NAME_LEN];
-    MacroTable macro_table;
+    MacroTable *macro_table;
     FILE *expanded_macros_file;
     int line_num;
-    int i;
 
     printf("Starting First run\n");
     *ic = STARTING_IC; /* Starting point of assembler */
-    init_macro_table(&macro_table);
-    init_macro_name_array(macro_names);
+    macro_table = init_macro_table();
     rewind(file); /* Reset file pointer to the beginning before calling pre_run */
 
     strcpy(src_file_name, get_filename(file_name));
@@ -55,12 +52,13 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
     get_output_filename(expended_macro_file_name, expended_macro_file_name_with_directive, EXPENDED_MACROS_EXTENSION, src_file_name);
 
     /*Pre run in order to expand macros from asse,bly input file */
-    success = pre_run(&macro_table, macro_names, file, expended_macro_file_name_with_directive); /* Keeps track of the number of encountered macros */
+    success = pre_run(macro_table, file, expended_macro_file_name_with_directive); /* Keeps track of the number of encountered macros */
+
     expanded_macros_file = fopen(expended_macro_file_name_with_directive, "r");
     line_num = 0;
     while (fgets(line, MAX_LINE_LENGTH, expanded_macros_file) != NULL) {
         if (!ignore_line(line)) {
-            success &= read_line(line, symbol_table, ic, dc, lines_array, &macro_table, file_number, src_file_name);
+            success &= read_line(line, symbol_table, ic, dc, lines_array, macro_table, file_number, src_file_name);
         }
         line_num++;
     }
@@ -69,13 +67,7 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
 
     final_actions(lines_array, ic, dc);
 
-    /*
-    for (i = 0; i < macro_table.count; ++i) { TODO- delete macro_names- no need of that
-        free(macro_names[i]);
-    }
-    */
-
-    /*free_macro_table(&macro_table);*/
+    free_macro_table(macro_table);
 
     if(!success){
         print_internal_error(ERROR_CODE_8, "");
@@ -107,16 +99,19 @@ void final_actions(LinesArray *lines_array, int *ic, int *dc){
     lines_array->dc = *dc;
 }
 
-int pre_run(MacroTable *macro_table, char **macro_names, FILE *file, char* new_file_name) {
-    int is_in_macro = 0;
-    int macroCount = 0;
+int pre_run(MacroTable *macro_table, FILE *file, char* new_file_name) {
     char macro_name[MAX_SYMBOL_LENGTH];
-    Macro macro;
-    char line[MAX_LINE_LENGTH];
+    Macro *macro_definition = NULL;
+    Macro *macro_usage;
+    char *line;
+
+    line = (char *) malloc(MAX_LINE_LENGTH *sizeof (char ));
 
     erase_file_data(new_file_name);
 
     while (fgets(line, MAX_LINE_LENGTH, file) != NULL) {
+        line = skip_spaces(line);
+        line = trim_spaces(line);
         if (!ignore_line(line)) {
             if (is_macro_definition_start(line)) {
                 sscanf(line, "%*s %s", macro_name);  /* Skip "%macro" and capture the name */
@@ -124,18 +119,23 @@ int pre_run(MacroTable *macro_table, char **macro_names, FILE *file, char* new_f
                     print_internal_error(ERROR_CODE_1, macro_name);
                     return 0;
                 }
-                if (macroCount < MAX_MACRO_NAMES) {
-                    strcpy(macro_names[macroCount++], macro_name);
-                } else {
-                    print_internal_error(ERROR_CODE_26, int_to_string(MAX_MACRO_NAMES));
-                }
-                is_in_macro = handle_macro_definition(file, macro_table, line); /* Pass macro_table directly */
-            } else if (is_macro_invocation(line, macro_name, macro_names)) {
-                expand_macro(&macro, stdout);
-                write_expanded_macros_to_file(macro_table, new_file_name);
+                macro_definition = init_macro(macro_name);
 
-            } else {
-                if (!is_in_macro) {
+            }
+            else if(is_macro_definition_end(line)){
+                add_macro(macro_table, macro_definition);
+                macro_definition = NULL;
+            }
+            else if(macro_definition != NULL){
+                strcpy(macro_definition->body[macro_definition->lineCount++], line);
+            }
+            else{
+                macro_usage = macro_exists(macro_table, line);
+                if(macro_usage != NULL){
+                    expand_macro(macro_usage, stdout);
+                    write_expanded_macros_to_file(macro_table, new_file_name);
+                }
+                else{
                     write_line_to_file(line, new_file_name);
                 }
             }
@@ -143,18 +143,6 @@ int pre_run(MacroTable *macro_table, char **macro_names, FILE *file, char* new_f
     }
     return 1;
 
-}
-
-void add_macro(MacroTable *macro_table, Macro new_macro) {
-    if (macro_table->count >= macro_table->capacity) {
-        macro_table->capacity *= 2;
-        macro_table->macros = (Macro *)realloc(macro_table->macros, macro_table->capacity * sizeof(Macro));
-        if (!macro_table->macros) {
-            print_internal_error(ERROR_CODE_10, "");
-            exit(EXIT_FAILURE);
-        }
-    }
-    macro_table->macros[macro_table->count++] = new_macro;
 }
 
 int is_macro_definition_start(char *line) {
@@ -165,44 +153,6 @@ int is_macro_definition_end(char *line) {
     return strstr(line, "endmacr") != NULL;
 }
 
-int is_macro_invocation(char *line, char *macro_name, char **macro_names) {
-    int i;
-    /* Extract potential macro name */
-    sscanf(line, "%s", macro_name);
-
-    /* Check if the extracted name is not empty and exists in macro_names */
-    if (macro_name[0] != '\0') {
-        for (i = 0; i < MAX_MACRO_NAMES && macro_names[i][0] != '\0'; ++i) {
-            if (strcmp(macro_name, macro_names[i]) == 0) {
-                return 1; /* Macro name found in the array */
-            }
-        }
-    }
-
-    return 0; /* Not a macro invocation or name not found */
-}
-
-int handle_macro_definition(FILE *file, MacroTable *macro_table, char *firstLine) {
-    Macro macro;
-    char line[MAX_LINE_LENGTH];
-    char macro_name[MAX_SYMBOL_LENGTH];
-
-    sscanf(firstLine, "%s", macro_name);
-    strcpy(macro.name, macro_name + 7);  /* Skip "%macro" */
-    macro.lineCount = 0;
-
-    while (fgets(line, sizeof(line), file)) {
-        if (is_macro_definition_end(line)) {
-            add_macro(macro_table, macro);
-            return 0;
-        }
-        lower_string(line);
-        strcpy(macro.body[macro.lineCount++], line);
-    }
-
-    add_macro(macro_table, macro);
-    return 1;
-}
 
 void expand_macro(Macro *macro, FILE *outputFile) {
     int i;
@@ -210,6 +160,7 @@ void expand_macro(Macro *macro, FILE *outputFile) {
         fprintf(outputFile, "%s", macro->body[i]);
     }
 }
+
 
 int read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, LinesArray *lines_array, MacroTable *macro_table, int file_number, char *file_name) {
     char symbol_name[MAX_SYMBOL_LENGTH] = "";
@@ -231,9 +182,6 @@ int read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, LinesArra
             line++;
         }
         new_symbol = handle_symbol(new_instruction_line, symbol_name, symbol_table, file_number);
-        if(!new_symbol){
-            return 0;
-        }
     }
 
     if (is_directive(line)) {
@@ -504,12 +452,11 @@ int is_valid_symbol(char *symbol_name, MacroTable *macro_table) {
     }
 
     /*check if symbol matches an existing macro name */
-    for (i = 0; i < macro_table->count; i++) {
-        if (strcmp(symbol_name, macro_table->macros[i].name) == 0) {
-            print_internal_error(ERROR_CODE_4, symbol_name);
-            return 0; /* symbol matches an existing macro name */
-        }
+    if(macro_exists(macro_table, symbol_name)){
+        print_internal_error(ERROR_CODE_4, symbol_name);
+        return 0; /* symbol matches an existing macro name */
     }
+
 
     /*Check if the first character is a letter */
     if (!isalpha((unsigned char)symbol_name[0])) {

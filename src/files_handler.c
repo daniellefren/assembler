@@ -171,7 +171,6 @@ void add_entry_to_entries_file(char *symbol_name, char* file_name, int symbol_ad
     FILE *file;
     get_output_filename(entries_file_name, entries_file_name_and_directive, ENTRIES_FILE_EXTENSION, file_name);
 
-
     file = fopen(entries_file_name_and_directive, "a");
     if (file == NULL) {
         print_internal_error(ERROR_CODE_48, entries_file_name_and_directive);
@@ -267,7 +266,7 @@ int write_line_to_file(char *line, char* new_file_name) {
         exit(EXIT_FAILURE);
     }
     /* Write the string to the file */
-    fprintf(outputFile, "%s", line);
+    fprintf(outputFile, "%s\n", line);
 
     fclose(outputFile);
     return 0;  /* Indicate success */
@@ -284,8 +283,8 @@ void write_expanded_macros_to_file(MacroTable *macro_table, char* new_file_name)
 
     /* Write each macro's body to the file */
     for (i = 0; i < macro_table->count; ++i) {
-        for (j = 0; j < macro_table->macros[i].lineCount; ++j) {
-            fprintf(outputFile, "%s", macro_table->macros[i].body[j]);
+        for (j = 0; j < macro_table->macros[i]->lineCount; ++j) {
+            fprintf(outputFile, "%s\n", macro_table->macros[i]->body[j]);
         }
     }
 
