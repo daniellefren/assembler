@@ -255,11 +255,8 @@ int handle_command(char *line, SymbolTable *symbol_table, MacroTable *macro_tabl
     }
 
     success &= is_valid_operands_in_command_line(new_command, line);
-
     new_instruction_line->binary_line_count = find_number_of_lines_in_binary(new_command);
     new_instruction_line->command = new_command;
-
-
 
     return success;
 }
@@ -647,14 +644,14 @@ int handle_directives(char *line, int *dc, SymbolTable *symbol_table, int* ic, i
             new_symbol->type = EXTERN_DIRECTIVE;
         }
         new_instruction_line->instruction_type = EXTERN_DIRECTIVE;
-        success &= handle_extern_directive(line, new_directive, symbol_table);
+        handle_extern_directive(line, new_directive, symbol_table);
 
     } else if (strcmp(directive_type, ".entry") == 0) {
         if(has_symbol){
             new_symbol->type = ENTRY_DIRECTIVE;
         }
         new_instruction_line->instruction_type = ENTRY_DIRECTIVE;
-        success &= handle_entry_directive(new_directive, symbol_table, line);
+        handle_entry_directive(new_directive, symbol_table, line);
     } else {
         new_directive->type = NOT_DIRECTIVE;
         print_internal_error(ERROR_CODE_47, directive_type);
@@ -666,7 +663,7 @@ int handle_directives(char *line, int *dc, SymbolTable *symbol_table, int* ic, i
     return success;
 }
 
-int handle_entry_directive(Directive *new_directive, SymbolTable *symbol_table, char* line){
+void handle_entry_directive(Directive *new_directive, SymbolTable *symbol_table, char* line){
     char *ptr;
     Symbol* symbol;
     ptr = line;
@@ -675,36 +672,36 @@ int handle_entry_directive(Directive *new_directive, SymbolTable *symbol_table, 
     symbol = find_symbol_by_name(symbol_table, new_directive->symbol);
     if(!symbol){
         symbol = add_new_symbol(symbol_table, new_directive->symbol);
-        if(!symbol){
-            return 0;
+        if(symbol == NULL){
+            print_internal_error(ERROR_CODE_64, new_directive->symbol);
+            exit(EXIT_FAILURE);
         }
+
         symbol->address = 0;
     }
     symbol->is_entry=1;
-
-    return 1;
 }
 
-int handle_extern_directive(char *line, Directive *new_directive, SymbolTable *symbol_table) {
+void handle_extern_directive(char *line, Directive *new_directive, SymbolTable *symbol_table) {
     Symbol *symbol;
     char *ptr;
-    char symbol_name[SYMBOL_NAME_LEN];
+    char *symbol_name;
     ptr = line;
     new_directive->type = EXTERN;
 
+    symbol_name = (char *) malloc(SYMBOL_NAME_LEN + sizeof(char));
     extract_word_after_keyword(ptr, symbol_name, ".extern");
     strcpy(new_directive->symbol, symbol_name);
     symbol = add_new_symbol(symbol_table, new_directive->symbol);
-    if (!symbol) {
-        return 0;
+    if(symbol == NULL){
+        print_internal_error(ERROR_CODE_64, symbol_name);
+        exit(EXIT_FAILURE);
     }
 
     symbol->address = 0; /* external address, will be filled by linker */
     symbol->type = EXTERN_DIRECTIVE;
     symbol->is_extern = 1;
-/*    add_extern_to_externals_file(symbol, file_number, ic); */
-
-    return 1;
+    free(symbol_name);
 }
 
 
@@ -807,8 +804,6 @@ void handle_data_directive(char *line, Directive *new_directive, InstructionLine
 Symbol *add_new_symbol(SymbolTable *symbol_table, char* symbol_name) {
     Symbol *new_symbol;
 
-    new_symbol = NULL;
-
     if(find_symbol_by_name(symbol_table, symbol_name)){
         print_internal_error(ERROR_CODE_50, symbol_name);
         return NULL;
@@ -820,14 +815,15 @@ Symbol *add_new_symbol(SymbolTable *symbol_table, char* symbol_name) {
         exit(EXIT_FAILURE);
     }
     strcpy(new_symbol->name, symbol_name);
+
 /*     Check if the array needs to be resized */
     if (symbol_table->size >= symbol_table->capacity) {
 /*         Double the capacity or set an initial capacity if it's zero */
         size_t new_capacity = (symbol_table->capacity == 0) ? 10 : symbol_table->capacity * 2;
         Symbol **new_symbols = realloc(symbol_table->symbols, new_capacity * sizeof(Symbol *));
         if (!new_symbols) {
+            free(new_symbol)
             print_internal_error(ERROR_CODE_15, "");
-            free(new_symbol);
             exit(EXIT_FAILURE);
         }
 
