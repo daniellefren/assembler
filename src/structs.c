@@ -54,6 +54,7 @@ void free_lines_array(LinesArray *lines_array) {
 
 void free_macro_table(MacroTable *macro_table) {
     free(macro_table->macros);
+    free(macro_table);
 }
 
 void free_instruction_line(InstructionLine *instruction_line) {
