@@ -54,7 +54,7 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
     /*Pre run in order to expand macros from asse,bly input file */
     success = pre_run(macro_table, file, expended_macro_file_name_with_directive); /* Keeps track of the number of encountered macros */
 
-    /*expanded_macros_file = fopen(expended_macro_file_name_with_directive, "r");
+    expanded_macros_file = fopen(expended_macro_file_name_with_directive, "r");
     line_num = 0;
     while (fgets(line, MAX_LINE_LENGTH, expanded_macros_file) != NULL) {
         if (!ignore_line(line)) {
@@ -62,7 +62,7 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
         }
         line_num++;
     }
-
+    /*
     fclose(file);
 
     final_actions(lines_array, ic, dc);
