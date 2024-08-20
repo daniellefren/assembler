@@ -124,7 +124,7 @@ MacroTable *init_macro_table(void) {
 
     new_macro_table->macros = (Macro **)malloc(10 * sizeof(Macro *));
     if (new_macro_table->macros == NULL) {
-        // Free previously allocated memory for the table itself
+        /* Free previously allocated memory for the table itself */
         free(new_macro_table);
         print_internal_error(ERROR_CODE_10, "");
         exit(EXIT_FAILURE);
@@ -317,7 +317,8 @@ int is_classification_type_register(enum operand_classification_type classificat
 }
 
 Macro *macro_exists(const MacroTable *macro_table, const char *name) {
-    for (int i = 0; i < macro_table->count; i++) {
+    int i;
+    for (i = 0; i < macro_table->count; i++) {
         if (strcmp(macro_table->macros[i]->name, name) == 0) {
             return macro_table->macros[i];  // Macro name found
         }
