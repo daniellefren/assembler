@@ -266,7 +266,7 @@ void fill_direct_binary(Operand *operand, char *binary_string, int binary_word_n
     /* Find the symbol by name in the symbol table */
     symbol = find_symbol_by_name(symbol_table, operand->value);
     if (symbol == NULL) {
-        print_internal_error(ERROR_CODE_51, " Symbol is no define");
+        print_internal_error(ERROR_CODE_51, " Symbol is not define");
         return;
     }
     /* Convert symbol address to binary and update the binary string */
