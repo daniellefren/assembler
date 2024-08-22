@@ -71,14 +71,14 @@ cd ..
 ```
 2. Then run the following command
 ```sh
-./assembler <file_name_1> ... <file_name_n?
+./assembler <file_name_1> ... <file_name_n>
 ```
 * You should write only the file name, without the directory or the file extension
 
 This will create all the output files in the `output_files\` directory.
 
 For each file from the input files, will be created:
-1. `<your_file_name>.am` (The src file after the pre-assembler)
+1. `<your_file_name>.am` (The src file after the pre-assembler - macro extension)
 2. `<your_file_name>.ent` (All the entries)
 3. `<your_file_name>.ext` (All the externals)
 4. `<your_file_name>.ob` (Final object file)
@@ -90,10 +90,10 @@ In order to run all Tests, you should run the program the following way -
 ```sh
 ./assembler test
 ```
-if you get the messege `All Tests Passed!` well, you can guess what that means
+if you get the message `All Tests Passed!` well, you can guess what that means
 
 
-# Royi David and Danielle Frenklakh ©
+## Royi David and Danielle Frenklakh ©
 
 
 
