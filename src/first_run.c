@@ -57,12 +57,13 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
             success &= read_line(line, symbol_table, ic, dc, lines_array, macro_table, file_number, src_file_name);
         }
     }
-    printf("PROBLEMMMM");
-    fflush(stdout);
+
 
     fclose(file);
 
     final_actions(lines_array, ic, dc);
+    printf("PROBLEMMMM");
+    fflush(stdout);
 
     free_macro_table(macro_table);
 
