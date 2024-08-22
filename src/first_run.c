@@ -48,7 +48,8 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
 
     /*Pre run in order to expand macros from asse,bly input file */
     success = pre_run(macro_table, file, expended_macro_file_name_with_directive); /* Keeps track of the number of encountered macros */
-
+    printf("PROBLEMMMM");
+    fflush(stdout);
     expanded_macros_file = fopen(expended_macro_file_name_with_directive, "r");
 
 
