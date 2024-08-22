@@ -82,13 +82,13 @@ void final_actions(LinesArray *lines_array, int *ic, int *dc){
         InstructionLine *instruction_line = lines_array->lines[i];
         if(instruction_line->instruction_type == DATA_DIRECTIVE || instruction_line->instruction_type == ENTRY_DIRECTIVE){
             instruction_line->starting_address += *ic;
-            if(instruction_line->is_symbol == 1){
+            if(instruction_line->is_symbol){
                 instruction_line->symbol->address += *ic;
             }
         }
         printf("PROBLEMMMM");
         fflush(stdout);
-        if(instruction_line->is_symbol){
+        if(instruction_line->is_symbol == 1){
             printf("PROBLEMMMM222");
             fflush(stdout);
             printf("issss %s", instruction_line->line_content);
