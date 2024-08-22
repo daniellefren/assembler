@@ -97,6 +97,10 @@ void final_actions(LinesArray *lines_array, int *ic, int *dc){
                 printf("!!!!!!");
                 fflush(stdout);
             }
+            else{
+                printf("elseeee");
+                fflush(stdout);
+            }
 
             if(instruction_line->symbol->is_entry){
                 printf("PROBLEMMMM333");
