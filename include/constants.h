@@ -31,21 +31,16 @@
 #define INITIAL_IC 100
 #define MAX_MACRO_LENGTH 100
 
-const char *INPUT_DIRECTORY_NAME = "input_files";
-const char *OUTPUT_DIRECTORY_NAME = "output_files";
-const char *EXTERNALS_FILE_EXTENSION = "ext";
-const char *ENTRIES_FILE_EXTENSION = "ent";
-const char *OBJECT_FILE_EXTENSION = "ob";
-const char *EXPENDED_MACROS_EXTENSION = "am";
-const char *SRC_FILE_NAME_EXTENSION = "as";
-const char *COMMANDS[] = {
-        "mov", "cmp", "add", "sub", "lea", "clr", "not", "inc", "dec", "jmp", "bne",
-        "red", "prn", "jsr", "rts", "stop"
-};
+extern const char *OUTPUT_DIRECTORY_NAME;
+extern const char *EXTERNALS_FILE_EXTENSION;
+extern const char *ENTRIES_FILE_EXTENSION;
+extern const char *OBJECT_FILE_EXTENSION;
+extern const char *EXPENDED_MACROS_EXTENSION;
+extern const char *SRC_FILE_NAME_EXTENSION;
+extern const char *COMMANDS;
+extern const char *DIRECTIVES;
+extern const char *INPUT_DIRECTORY_NAME;
 
-const char *DIRECTIVES[] = {
-        "data", "string", "struct", "entry", "extern"
-};
 #define COMMANDS_COUNT (sizeof(COMMANDS) / sizeof(COMMANDS[0]))
 #define DIRECTIVES_COUNT (sizeof(DIRECTIVES) / sizeof(DIRECTIVES[0]))
 #define TOTAL_ASSEMBLY_KEYWORDS_COUNT (COMMANDS_COUNT + DIRECTIVES_COUNT)

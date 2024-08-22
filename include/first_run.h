@@ -171,7 +171,7 @@ int is_directive(char *line);
  * @param file_number An integer representing the number of the current file being processed, used for generating unique output file names.
  * @param new_instruction_line A pointer to the `InstructionLine` structure that the symbol will be associated with.
  */
-int handle_directives(char *line, int *dc, SymbolTable *symbol_table, int* ic, int file_number, InstructionLine *new_instruction_line, int has_symbol, Symbol *new_symbol);
+void handle_directives(char *line, int *dc, SymbolTable *symbol_table, int* ic, int file_number, InstructionLine *new_instruction_line, int has_symbol, Symbol *new_symbol);
 
 /**
  * handle entry directive line - Mark symbol as entry in symbol table and add to entries file

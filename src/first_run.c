@@ -8,6 +8,7 @@
 #include "../include/utils.h"
 #include "../include/files_handler.h"
 #include "../include/errors.h"
+#include "../include/constants.h"
 
 
 Command COMMANDS_STRUCT[] = {
@@ -184,7 +185,7 @@ int read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, LinesArra
             new_symbol->type = DATA_DIRECTIVE;
             new_symbol->address = *dc;
         }
-        success &= handle_directives(line, dc, symbol_table, ic, file_number, new_instruction_line, has_symbol, new_symbol);
+        handle_directives(line, dc, symbol_table, ic, file_number, new_instruction_line, has_symbol, new_symbol);
     }
     else if (is_command(line)) {
         if(has_symbol){
@@ -617,8 +618,7 @@ int is_directive(char *line) {
 }
 
 
-int handle_directives(char *line, int *dc, SymbolTable *symbol_table, int* ic, int file_number, InstructionLine *new_instruction_line, int has_symbol, Symbol *new_symbol) {
-    int success = 1;
+void handle_directives(char *line, int *dc, SymbolTable *symbol_table, int* ic, int file_number, InstructionLine *new_instruction_line, int has_symbol, Symbol *new_symbol) {
     char directive_type[MAX_LINE_LENGTH];
     Directive *new_directive;
     new_directive = init_directive();
@@ -660,7 +660,6 @@ int handle_directives(char *line, int *dc, SymbolTable *symbol_table, int* ic, i
 
     (*dc) += new_instruction_line->binary_line_count;
     new_instruction_line->directive = new_directive;
-    return success;
 }
 
 void handle_entry_directive(Directive *new_directive, SymbolTable *symbol_table, char* line){
