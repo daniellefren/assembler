@@ -98,6 +98,9 @@ void final_actions(LinesArray *lines_array, int *ic, int *dc){
                 printf("PROBLEMMMM444");
                 fflush(stdout);
             }
+            printf("??????");
+            fflush(stdout);
+
         }
 
     }
