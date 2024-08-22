@@ -46,7 +46,8 @@ int output_test(void) {
         /* Run the assembler on the test file */
         run_assembler_on_file(input_code_fname, i + 1);
         get_output_filename(output_code_fname, output_code_fname_with_directive, OBJECT_FILE_EXTENSION, get_filename(test[i]));
-
+        printf("PROBLEMMM\n");
+        fflush(stdout);
         printf("\nStarting comparing test number %d\n\n", i+1);
         printf("Compare object file\n");
         is_success &= compare_output_files(output_code_fname_with_directive, input_code_fname, output_correct_fname, OBJECT_FILE_EXTENSION);
