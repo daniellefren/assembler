@@ -93,6 +93,10 @@ void final_actions(LinesArray *lines_array, int *ic, int *dc){
             fflush(stdout);
             printf("is entryyy %d", instruction_line->symbol->is_entry);
             fflush(stdout);
+            if(instruction_line->symbol == NULL){
+                printf("!!!!!!");
+                fflush(stdout);
+            }
 
             if(instruction_line->symbol->is_entry){
                 printf("PROBLEMMMM333");
