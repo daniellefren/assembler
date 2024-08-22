@@ -5,7 +5,6 @@
 
 #include "../include/first_run.h"
 
-
 Command COMMANDS_STRUCT[] = {
         {"mov", MOV, 2},
         {"cmp", CMP, 2},
@@ -51,21 +50,14 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
 
     expanded_macros_file = fopen(expended_macro_file_name_with_directive, "r");
 
-
     while (fgets(line, MAX_LINE_LENGTH, expanded_macros_file) != NULL) {
         if (!ignore_line(line)) {
             success &= read_line(line, symbol_table, ic, dc, lines_array, macro_table, file_number, src_file_name);
         }
     }
-
-
     fclose(file);
-
     final_actions(lines_array, ic, dc);
-
-
     free_macro_table(macro_table);
-
 
     if(!success){
         print_internal_error(ERROR_CODE_8, "");
@@ -134,9 +126,7 @@ int pre_run(MacroTable *macro_table, FILE *file, char* new_file_name) {
                 strcpy(macro_definition->body[macro_definition->lineCount++], line);
             }
             else{
-
                 macro_usage = macro_exists(macro_table, line);
-
                 if(macro_usage != NULL){
                     write_expanded_macros_to_file(macro_table, new_file_name);
                 }
@@ -147,7 +137,6 @@ int pre_run(MacroTable *macro_table, FILE *file, char* new_file_name) {
         }
     }
     return 1;
-
 }
 
 int is_macro_definition_start(char *line) {
@@ -157,7 +146,6 @@ int is_macro_definition_start(char *line) {
 int is_macro_definition_end(char *line) {
     return strstr(line, "endmacr") != NULL;
 }
-
 
 int read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, LinesArray *lines_array, MacroTable *macro_table, int file_number, char *file_name) {
     char symbol_name[MAX_SYMBOL_LENGTH] = "";
@@ -197,18 +185,14 @@ int read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, LinesArra
         success &= handle_command(line, symbol_table, macro_table, new_instruction_line);
 
         (*ic)+= (new_instruction_line->binary_line_count);
-
     }
     if(has_symbol){
         new_instruction_line->symbol = new_symbol;
     }
-
     if(new_instruction_line->instruction_type==EXTERN_DIRECTIVE || new_instruction_line->instruction_type==ENTRY_DIRECTIVE){
         return success;
     }
-
     addInstructionLine(lines_array, new_instruction_line);
-
     return success;
 }
 
@@ -286,6 +270,7 @@ int check_one_operand_command(Command* new_command, char* line){
         }
         print_internal_error(ERROR_CODE_59, line);
         return 0;
+
     } else if(new_command->opcode_command_type == JMP || new_command->opcode_command_type == BNE || new_command->opcode_command_type == JSR){
         if(new_command->dst_operand->classification_type == DIRECT ||
            new_command->dst_operand->classification_type == INDIRECT_REGISTER){
@@ -293,6 +278,7 @@ int check_one_operand_command(Command* new_command, char* line){
         }
         print_internal_error(ERROR_CODE_59, line);
         return 0;
+
     }else if(new_command->opcode_command_type == PRN){
         if(new_command->dst_operand->classification_type == IMMEDIATE || new_command->dst_operand->classification_type == DIRECT ||
            new_command->dst_operand->classification_type == INDIRECT_REGISTER || new_command->dst_operand->classification_type == DIRECT_REGISTER){
