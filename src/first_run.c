@@ -62,13 +62,10 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
     fclose(file);
 
     final_actions(lines_array, ic, dc);
-    printf("PROBLEMMMM");
-    fflush(stdout);
+
 
     free_macro_table(macro_table);
 
-    printf("PROBLEMMMM2222");
-    fflush(stdout);
 
     if(!success){
         print_internal_error(ERROR_CODE_8, "");
@@ -89,11 +86,15 @@ void final_actions(LinesArray *lines_array, int *ic, int *dc){
                 instruction_line->symbol->address += *ic;
             }
         }
+        printf("PROBLEMMMM");
+        fflush(stdout);
         if(instruction_line->is_symbol){
             if(instruction_line->symbol->is_entry){
                 add_entry_to_entries_file(instruction_line->symbol->name, instruction_line->file_name, instruction_line->starting_address);
             }
         }
+        printf("PROBLEMMMM222");
+        fflush(stdout);
     }
     /*Declare final ic and dc in lines array*/
     lines_array->ic = *ic;
