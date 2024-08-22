@@ -78,44 +78,23 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
 
 void final_actions(LinesArray *lines_array, int *ic, int *dc){
     int i;
-    for(i = 0;i<lines_array->number_of_line;i++){
+    for(i = 0;i<lines_array->number_of_line;i++) {
         InstructionLine *instruction_line = lines_array->lines[i];
-        if(instruction_line->instruction_type == DATA_DIRECTIVE || instruction_line->instruction_type == ENTRY_DIRECTIVE){
+        if (instruction_line->instruction_type == DATA_DIRECTIVE ||
+            instruction_line->instruction_type == ENTRY_DIRECTIVE) {
             instruction_line->starting_address += *ic;
-            if(instruction_line->is_symbol){
+            if (instruction_line->is_symbol == 1) {
                 instruction_line->symbol->address += *ic;
             }
         }
-        printf("PROBLEMMMM");
-        fflush(stdout);
-        if(instruction_line->is_symbol == 1){
-            printf("PROBLEMMMM222");
-            fflush(stdout);
-            printf("issss %s", instruction_line->line_content);
-            if(instruction_line->symbol == NULL){
-                printf("!!!!!!");
-                fflush(stdout);
+        if (instruction_line->is_symbol == 1) {
+            if (instruction_line->symbol->is_entry) {
+                add_entry_to_entries_file(instruction_line->symbol->name, instruction_line->file_name,
+                                          instruction_line->starting_address);
             }
-            else{
-                printf("elseeee %s\n", instruction_line->symbol->name);
-                fflush(stdout);
-            }
-
-            if(instruction_line->symbol->is_entry){
-                printf("PROBLEMMMM333");
-                fflush(stdout);
-                add_entry_to_entries_file(instruction_line->symbol->name, instruction_line->file_name, instruction_line->starting_address);
-                printf("PROBLEMMMM444");
-                fflush(stdout);
-            }
-            printf("??????");
-            fflush(stdout);
-
         }
 
     }
-    printf("endddddd");
-    fflush(stdout);
     /*Declare final ic and dc in lines array*/
     lines_array->ic = *ic;
     lines_array->dc = *dc;
@@ -234,7 +213,6 @@ int read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, LinesArra
 }
 
 Symbol* handle_symbol(InstructionLine *new_instruction_line, char* symbol_name, SymbolTable *symbol_table, int file_number){
-    printf("handleeee %s\n", new_instruction_line->line_content);
     Symbol *new_symbol;
     new_symbol = find_symbol_by_name(symbol_table, symbol_name);
     if(!new_symbol){

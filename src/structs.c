@@ -158,6 +158,7 @@ InstructionLine *init_instruction_line(char* line, int file_number, char* file_n
     new_instruction_line->length = strlen(line);
     new_instruction_line->binary_line_count = 0;
     new_instruction_line->file_number = file_number;
+    new_instruction_line->is_symbol = 0;
 
     /* Allocate memory for file_name and copy the file_name */
     new_instruction_line->file_name = (char *)malloc(strlen(file_name) + 1);
