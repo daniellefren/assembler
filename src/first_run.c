@@ -82,7 +82,7 @@ void final_actions(LinesArray *lines_array, int *ic, int *dc){
         InstructionLine *instruction_line = lines_array->lines[i];
         if(instruction_line->instruction_type == DATA_DIRECTIVE || instruction_line->instruction_type == ENTRY_DIRECTIVE){
             instruction_line->starting_address += *ic;
-            if(instruction_line->is_symbol){
+            if(instruction_line->is_symbol == 1){
                 instruction_line->symbol->address += *ic;
             }
         }
@@ -234,6 +234,7 @@ int read_line(char *line, SymbolTable *symbol_table, int *ic, int *dc, LinesArra
 }
 
 Symbol* handle_symbol(InstructionLine *new_instruction_line, char* symbol_name, SymbolTable *symbol_table, int file_number){
+    printf("handleeee %s\n", new_instruction_line->line_content);
     Symbol *new_symbol;
     new_symbol = find_symbol_by_name(symbol_table, symbol_name);
     if(!new_symbol){
