@@ -91,7 +91,7 @@ void final_actions(LinesArray *lines_array, int *ic, int *dc){
         if(instruction_line->is_symbol){
             printf("PROBLEMMMM222");
             fflush(stdout);
-
+            printf("issss %s", instruction_line->line_content);
             if(instruction_line->symbol == NULL){
                 printf("!!!!!!");
                 fflush(stdout);
@@ -114,6 +114,8 @@ void final_actions(LinesArray *lines_array, int *ic, int *dc){
         }
 
     }
+    printf("endddddd");
+    fflush(stdout);
     /*Declare final ic and dc in lines array*/
     lines_array->ic = *ic;
     lines_array->dc = *dc;
