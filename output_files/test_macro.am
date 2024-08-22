@@ -1,4 +1,0 @@
-mov #4, r1
-stop
-ABC: .string "danielle"
-mov #4, ABC
