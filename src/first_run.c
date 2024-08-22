@@ -67,6 +67,9 @@ void first_run(FILE *file, int *ic, int *dc, LinesArray *lines_array, SymbolTabl
 
     free_macro_table(macro_table);
 
+    printf("PROBLEMMMM2222");
+    fflush(stdout);
+
     if(!success){
         print_internal_error(ERROR_CODE_8, "");
         exit(EXIT_FAILURE);
