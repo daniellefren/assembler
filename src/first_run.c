@@ -89,12 +89,17 @@ void final_actions(LinesArray *lines_array, int *ic, int *dc){
         printf("PROBLEMMMM");
         fflush(stdout);
         if(instruction_line->is_symbol){
+            printf("PROBLEMMMM222");
+            fflush(stdout);
             if(instruction_line->symbol->is_entry){
+                printf("PROBLEMMMM333");
+                fflush(stdout);
                 add_entry_to_entries_file(instruction_line->symbol->name, instruction_line->file_name, instruction_line->starting_address);
+                printf("PROBLEMMMM444");
+                fflush(stdout);
             }
         }
-        printf("PROBLEMMMM222");
-        fflush(stdout);
+
     }
     /*Declare final ic and dc in lines array*/
     lines_array->ic = *ic;
