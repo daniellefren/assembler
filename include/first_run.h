@@ -6,18 +6,6 @@
 #include <string.h>
 #include "structs.h"
 
-static const char *COMMANDS[] = {
-        "mov", "cmp", "add", "sub", "lea", "clr", "not", "inc", "dec", "jmp", "bne",
-        "red", "prn", "jsr", "rts", "stop"
-};
-
-static const char *DIRECTIVES[] = {
-        "data", "string", "struct", "entry", "extern"
-};
-#define COMMANDS_COUNT (sizeof(COMMANDS) / sizeof(COMMANDS[0]))
-#define DIRECTIVES_COUNT (sizeof(DIRECTIVES) / sizeof(DIRECTIVES[0]))
-#define TOTAL_ASSEMBLY_KEYWORDS_COUNT (COMMANDS_COUNT + DIRECTIVES_COUNT)
-
 
 /**
  * Performs the first pass over the assembly source file.

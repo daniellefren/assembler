@@ -2,14 +2,6 @@
 #define ASSEMBLER_FILES_HANDLER_H
 #include "../include/structs.h"
 
-static const char *INPUT_DIRECTORY_NAME = "input_files";
-static const char *OUTPUT_DIRECTORY_NAME = "output_files";
-static const char *EXTERNALS_FILE_EXTENSION = "ext";
-static const char *ENTRIES_FILE_EXTENSION = "ent";
-static const char *OBJECT_FILE_EXTENSION = "ob";
-static const char *EXPENDED_MACROS_EXTENSION = "am";
-static const char *SRC_FILE_NAME_EXTENSION = "as";
-
 /**
  * Create an output directory if it does not already exist.
  */
