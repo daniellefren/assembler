@@ -91,6 +91,9 @@ void final_actions(LinesArray *lines_array, int *ic, int *dc){
         if(instruction_line->is_symbol){
             printf("PROBLEMMMM222");
             fflush(stdout);
+            printf("is entryyy %d", instruction_line->symbol->is_entry);
+            fflush(stdout);
+
             if(instruction_line->symbol->is_entry){
                 printf("PROBLEMMMM333");
                 fflush(stdout);
