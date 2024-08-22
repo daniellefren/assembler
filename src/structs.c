@@ -3,7 +3,6 @@
 #include <ctype.h>
 #include <string.h>
 #include "../include/structs.h"
-#include "../include/errors.h"
 
 /* Lines array functions*/
 
@@ -324,4 +323,69 @@ Macro *macro_exists(const MacroTable *macro_table, const char *name) {
         }
     }
     return NULL;  /* Macro name not found */
+}
+
+void print_directive(Directive *directive) {
+    int i;
+
+    if (is_directive_data(directive)) {
+        if (directive->data_values_count > 0) {
+            printf("The length of the directive is %lu\n", (unsigned long) directive->data_values_count);
+            for (i = 0; i < directive->data_values_count; ++i) {
+                if (directive->value != NULL) {
+                    printf(" %s", directive->value[i]);
+                }
+            }
+            printf("\n");
+        } else {
+            printf("The directive length is 0 and has no values\n");
+        }
+    } else {
+        if (directive->value != NULL) {
+            printf("The length of the directive is %lu and the value is %s\n",
+                   (unsigned long) directive->data_values_count, directive->value[0]);
+        } else {
+            print_internal_error(ERROR_CODE_41, "");
+        }
+    }
+}
+
+
+void print_command(Command *command) {
+    if (command->operand_number > 0) {
+        printf("Src Operand value is %s, its type is %u and the classification type is %d\n",
+               command->src_operand->value, command->src_operand->type, command->src_operand->classification_type);
+    } else {
+        printf("No Operands :(\n");
+    }
+
+    if (command->operand_number > 1) {
+        printf("Dst Operand value is %s, its type is %u and the classification type is %d\n",
+               command->dst_operand->value, command->dst_operand->type, command->dst_operand->classification_type);
+    }
+}
+
+void print_instruction_line(InstructionLine *instructionLine) {
+    printf("The Content of line is %s\n", instructionLine->line_content);
+    printf("The Address of line is %d\n", instructionLine->starting_address);
+
+    if (instructionLine->command != NULL) {
+        print_command(instructionLine->command);
+    } else if (instructionLine->directive != NULL) {
+        print_directive(instructionLine->directive);
+    }
+}
+
+int is_directive_data(Directive *directive) {
+    if (directive->type == DATA) {
+        return 1;
+    }
+    return 0;
+}
+
+int is_directive_string(Directive *directive) {
+    if (directive->type == STRING) {
+        return 1;
+    }
+    return 0;
 }

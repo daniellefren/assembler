@@ -1,6 +1,7 @@
 #ifndef ASSEMBLER_UTILS_H
 #define ASSEMBLER_UTILS_H
-#include "../include/structs.h"
+#include "errors.h"
+#include "constants.h"
 
 /**
  * Convert a string to lowercase.
@@ -18,23 +19,6 @@ char *trim_spaces(char *str);
 
 char* itoa(int val, int base);
 
-/**
- * Print the details of a command structure.
- * @param command - A pointer to the Command structure to print.
- */
-void print_command(Command *command);
-
-/**
- * Print the details of an instruction line structure.
- * @param instructionLine - A pointer to the InstructionLine structure to print.
- */
-void print_instruction_line(InstructionLine *instructionLine);
-
-/**
- * Print the details of a directive structure.
- * @param directive - A pointer to the Directive structure to print.
- */
-void print_directive(Directive *directive);
 
 /**
  * Erase the contents of a file by truncating it.
@@ -56,28 +40,6 @@ void extract_numbers(char *input, int length);
  * @return The integer value of the string.
  */
 int char_to_int(char *c);
-
-/**
- * Checks if the directive is of type DATA.
- *
- * Determines whether the given directive is a data directive. Prints a message
- * if the directive type is DATA.
- *
- * @param directive Pointer to the Directive structure to check.
- * @return 1 if the directive type is DATA, 0 otherwise.
- */
-int is_directive_data(Directive *directive);
-
-/**
- * Checks if the directive is of type STRING.
- *
- * Determines whether the given directive is a string directive. Prints a message
- * if the directive type is STRING.
- *
- * @param directive Pointer to the Directive structure to check.
- * @return 1 if the directive type is STRING, 0 otherwise.
- */
-int is_directive_string(Directive *directive);
 
 /**
  * Converts a portion of a binary string to an octal string.

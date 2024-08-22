@@ -1,6 +1,6 @@
 #ifndef ASSEMBLER_STRUCTS_H
 #define ASSEMBLER_STRUCTS_H
-#include "constants.h"
+#include "utils.h"
 
 
 /**
@@ -299,5 +299,46 @@ Macro *macro_exists(const MacroTable *table, const char *name);
  * @param macro_name The name of the new macro
  */
 Macro *init_macro(char *macro_name);
+
+/**
+ * Print the details of a command structure.
+ * @param command - A pointer to the Command structure to print.
+ */
+void print_command(Command *command);
+
+/**
+ * Print the details of an instruction line structure.
+ * @param instructionLine - A pointer to the InstructionLine structure to print.
+ */
+void print_instruction_line(InstructionLine *instructionLine);
+
+/**
+ * Print the details of a directive structure.
+ * @param directive - A pointer to the Directive structure to print.
+ */
+void print_directive(Directive *directive);
+
+
+/**
+ * Checks if the directive is of type DATA.
+ *
+ * Determines whether the given directive is a data directive. Prints a message
+ * if the directive type is DATA.
+ *
+ * @param directive Pointer to the Directive structure to check.
+ * @return 1 if the directive type is DATA, 0 otherwise.
+ */
+int is_directive_data(Directive *directive);
+
+/**
+ * Checks if the directive is of type STRING.
+ *
+ * Determines whether the given directive is a string directive. Prints a message
+ * if the directive type is STRING.
+ *
+ * @param directive Pointer to the Directive structure to check.
+ * @return 1 if the directive type is STRING, 0 otherwise.
+ */
+int is_directive_string(Directive *directive);
 
 #endif

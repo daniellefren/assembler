@@ -3,12 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "../include/structs.h"
 #include "../include/first_run.h"
-#include "../include/utils.h"
-#include "../include/files_handler.h"
-#include "../include/errors.h"
-#include "../include/constants.h"
 
 
 Command COMMANDS_STRUCT[] = {

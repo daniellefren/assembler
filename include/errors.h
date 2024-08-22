@@ -1,6 +1,7 @@
 #ifndef ASSEMBLER_ERRORS_H
 #define ASSEMBLER_ERRORS_H
 
+
 /* Represents an error with an associated error ID and error message */
 typedef struct Error {
     int error_id;     /* Unique identifier for the error */

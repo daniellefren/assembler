@@ -1,5 +1,5 @@
 
-#include "include/constants.h"
+#include "../include/constants.h"
 
 const char *INPUT_DIRECTORY_NAME = "input_files";
 const char *OUTPUT_DIRECTORY_NAME = "output_files";

@@ -2,8 +2,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include "../include/second_run.h"
-#include "../include/files_handler.h"
-#include "../include/errors.h"
 
 
 void start_second_run(LinesArray *assembly_lines_array, SymbolTable *symbol_table, char* file_name){

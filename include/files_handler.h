@@ -1,16 +1,6 @@
 #ifndef ASSEMBLER_FILES_HANDLER_H
 #define ASSEMBLER_FILES_HANDLER_H
-#include "../include/structs.h"
-
-extern const char OUTPUT_DIRECTORY_NAME;
-extern const char EXTERNALS_FILE_EXTENSION;
-extern const char ENTRIES_FILE_EXTENSION;
-extern const char OBJECT_FILE_EXTENSION;
-extern const char EXPENDED_MACROS_EXTENSION;
-extern const char SRC_FILE_NAME_EXTENSION;
-extern const char COMMANDS;
-extern const char DIRECTIVES;
-extern const char *INPUT_DIRECTORY_NAME;
+#include "structs.h"
 
 /**
  * Create an output directory if it does not already exist.

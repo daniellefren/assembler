@@ -6,8 +6,6 @@
 #include <unistd.h>
 
 #include "../include/files_handler.h"
-#include "../include/errors.h"
-#include "../include/utils.h"
 
 
 void create_ob_file(LinesArray *linesArray, char* file_name){

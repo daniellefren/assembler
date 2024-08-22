@@ -1,10 +1,10 @@
 #ifndef ASSEMBLER_ASSEMBLER_H
 #define ASSEMBLER_ASSEMBLER_H
-#include "../include/first_run.h"
-#include "../include/second_run.h"
-#include "../include/errors.h"
-#include "../include/files_handler.h"
+#include "first_run.h"
+#include "second_run.h"
 #include "../Tests/output_test.h"
+#include "structs.h"
+
 
 /**
  * Run the assembler on a given assembly source file.

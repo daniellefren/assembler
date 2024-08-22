@@ -2,11 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
+
 #include "../include/utils.h"
-#include "../include/errors.h"
 
 void lower_string(char *string){
 /* Convert command_name to lowercase */
@@ -34,61 +31,6 @@ char *trim_spaces(char *str) {
 
     return str;
 }
-
-
-void print_command(Command *command) {
-    if (command->operand_number > 0) {
-        printf("Src Operand value is %s, its type is %u and the classification type is %d\n",
-               command->src_operand->value, command->src_operand->type, command->src_operand->classification_type);
-    } else {
-        printf("No Operands :(\n");
-    }
-
-    if (command->operand_number > 1) {
-        printf("Dst Operand value is %s, its type is %u and the classification type is %d\n",
-               command->dst_operand->value, command->dst_operand->type, command->dst_operand->classification_type);
-    }
-}
-
-
-void print_directive(Directive *directive) {
-    int i;
-
-    if (is_directive_data(directive)) {
-        if (directive->data_values_count > 0) {
-            printf("The length of the directive is %lu\n", (unsigned long) directive->data_values_count);
-            for (i = 0; i < directive->data_values_count; ++i) {
-                if (directive->value != NULL) {
-                    printf(" %s", directive->value[i]);
-                }
-            }
-            printf("\n");
-        } else {
-            printf("The directive length is 0 and has no values\n");
-        }
-    } else {
-        if (directive->value != NULL) {
-            printf("The length of the directive is %lu and the value is %s\n",
-                   (unsigned long) directive->data_values_count, directive->value[0]);
-        } else {
-            print_internal_error(ERROR_CODE_41, "");
-        }
-    }
-}
-
-
-void print_instruction_line(InstructionLine *instructionLine) {
-    printf("The Content of line is %s\n", instructionLine->line_content);
-    printf("The Address of line is %d\n", instructionLine->starting_address);
-
-    if (instructionLine->command != NULL) {
-        print_command(instructionLine->command);
-    } else if (instructionLine->directive != NULL) {
-        print_directive(instructionLine->directive);
-    }
-}
-
-
 
 
 void erase_file_data(char *filename) {
@@ -177,19 +119,6 @@ void remove_first_character(char *str) {
     }
 }
 
-int is_directive_data(Directive *directive) {
-    if (directive->type == DATA) {
-        return 1;
-    }
-    return 0;
-}
-
-int is_directive_string(Directive *directive) {
-    if (directive->type == STRING) {
-        return 1;
-    }
-    return 0;
-}
 
 void fill_octal_string_from_binary(char *binary_string, int number_of_binary_bits, int offset, char *octal_string) {
     char octal_value[OCTAL_LENGTH + 1] = {0};  /* Buffer for octal value (assuming up to 5 octal digits + null) */

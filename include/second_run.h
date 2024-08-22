@@ -1,6 +1,8 @@
 #ifndef ASSEMBLER_SECOND_RUN_H
 #define ASSEMBLER_SECOND_RUN_H
-#include "../include/utils.h"
+#include "structs.h"
+#include "files_handler.h"
+
 
 /**
  * Performs the second pass over the assembly lines stored in `assembly_lines_array`.
